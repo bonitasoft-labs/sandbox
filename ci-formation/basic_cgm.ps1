@@ -1,1 +1,1 @@
-write-output "YVALUE=5" |out-file -enc ascii graph.properties
+write-output "YVALUE=3" |out-file -enc ascii graph.properties

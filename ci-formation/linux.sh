@@ -1,1 +1,1 @@
-echo "YVALUE=3" > ../graph.properties
+echo "YVALUE=3" > graph.properties

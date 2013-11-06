@@ -32,6 +32,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
 import org.bonitasoft.poc.model.Car;
+import org.bonitasoft.poc.model.Garage;
 import org.bonitasoft.poc.model.Person;
 import org.bonitasoft.poc.util.PersistenceUtil;
 import org.junit.After;
@@ -49,6 +50,7 @@ public class CarTest {
 
 	@After
 	public void clearDatabase(){
+		deleteEntity(Garage.class);
 		deleteEntity(Person.class);
 		deleteEntity(Car.class);
 	}
@@ -253,7 +255,44 @@ public class CarTest {
 		TypedQuery<Car> selectAllCars = entityManager.createQuery(createQuery.select(cars));
 		entityManager.close();
 		assertEquals("The car of Romain has not been persisted",1,selectAllCars.getResultList().size());
-		
 	}
+	
+	@Test
+	public void aGarageContainsMultipleCars() {
+		Car car1 = createACar("456ER45","Ferrari","Testarossa",3); 
+		Car car2 = createACar("456BJR35","Ferrari","Enzo",3); 
+		Car car3 = createACar("45RA36","McLaren","F1",2); 
+		
+		Garage myGarage = new Garage();
+		myGarage.setName("Chez Jojo");
+		myGarage.addCar(car1);
+		myGarage.addCar(car2);
+		myGarage.addCar(car3);
+		
+		PersistenceUtil persistenceUtil = PersistenceUtil.getInstance();
+		EntityManager entityManager = persistenceUtil.createEntityManagerAndBeginTransaction();
+		entityManager.persist(myGarage);
+		entityManager.getTransaction().commit();
+		entityManager.close();
+
+		entityManager = persistenceUtil.createEntityManagerAndBeginTransaction();
+		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+		CriteriaQuery<Car> createQuery = cb.createQuery(Car.class);
+		Root<Car> cars = createQuery.from(Car.class);
+		TypedQuery<Car> selectAllCars = entityManager.createQuery(createQuery.select(cars));
+		entityManager.close();
+		assertEquals("The car of Romain has not been persisted",3,selectAllCars.getResultList().size());
+	}
+
+	private Car createACar(String registrationNumber, String brand, String model, int numberOfDoors) {
+		Car myCar = new Car();
+		myCar.setRegistrationNumber(registrationNumber);
+		myCar.setConstructor(brand);
+		myCar.setModel(model);
+		myCar.setNumberOfDoors(numberOfDoors);
+		return myCar;
+	}
+	
+	
 
 }

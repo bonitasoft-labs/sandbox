@@ -20,9 +20,11 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
 import java.util.List;
+import java.util.Random;
 import java.util.UUID;
 
 import javax.persistence.EntityManager;
+import javax.persistence.EntityTransaction;
 import javax.persistence.PersistenceException;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -41,6 +43,8 @@ import org.junit.Test;
  * @author Matthieu Chaffotte
  */
 public class CarTest {
+
+    private static PersistenceUtil persistenceUtil = PersistenceUtil.getInstance();
 
 
 	@After
@@ -63,6 +67,49 @@ public class CarTest {
 		entityManager.close();
 	}
 
+    @Test(expected = PersistenceException.class)
+    public void outdatedModificationThrowsException() throws Exception {
+        Car car = buildRandomCar();
+        final EntityManager entityManager = persistenceUtil.createEntityManagerAndBeginTransaction();
+        entityManager.persist(car);
+        persistenceUtil.closeTransactionAndEntityManager(entityManager);
+
+        // retrieve the car a first time:
+        final EntityManager entityManager1 = persistenceUtil.createEntityManagerAndBeginTransaction();
+        Car foundCar = entityManager1.find(Car.class, car.getRegistrationNumber());
+        foundCar.setModel("toto");
+
+        // retrieve the car a first time:
+        final EntityManager entityManager2 = persistenceUtil.createEntityManagerAndBeginTransaction();
+        Car sameCar = entityManager2.find(Car.class, car.getRegistrationNumber());
+        sameCar.setConstructor("TutTut-Pouet");
+        persistenceUtil.closeTransactionAndEntityManager(entityManager2);
+
+        try {
+            // Try to commit the first open transaction afterwards:
+            EntityTransaction transaction = entityManager1.getTransaction();
+            if (transaction.isActive()) {
+                transaction.commit();
+            }
+            fail("Concurrent modification of Car should be forbidden by Optimistic locking");
+        } finally {
+            entityManager1.close();
+        }
+    }
+
+    private Car buildRandomCar() {
+        Car myCar = new Car();
+        String regNb = "";
+        for (int i = 0; i < new Random().nextInt(12); i++) {
+            regNb += new Random().nextInt();
+        }
+        myCar.setRegistrationNumber(regNb);
+        myCar.setConstructor("Lada");
+        myCar.setModel("Turbo-61");
+        myCar.setNumberOfDoors(new Random().nextInt());
+        return myCar;
+    }
+
     @Test
     public void storeAndGetCar() {
         Car myCar = new Car();
@@ -71,7 +118,6 @@ public class CarTest {
         myCar.setModel("SLR-500");
         myCar.setNumberOfDoors(3);
 
-        PersistenceUtil persistenceUtil = PersistenceUtil.getInstance();
         EntityManager entityManager = persistenceUtil.createEntityManagerAndBeginTransaction();
         entityManager.persist(myCar);
         persistenceUtil.closeTransactionAndEntityManager(entityManager);
@@ -91,7 +137,6 @@ public class CarTest {
         myCar.setModel("SLR-500");
         myCar.setNumberOfDoors(3);
 
-        PersistenceUtil persistenceUtil = PersistenceUtil.getInstance();
         EntityManager entityManager = persistenceUtil.createEntityManagerAndBeginTransaction();
         entityManager.persist(myCar);
         persistenceUtil.closeTransactionAndEntityManager(entityManager);
@@ -116,7 +161,6 @@ public class CarTest {
         myCar.setModel("SLR-500");
         myCar.setNumberOfDoors(3);
 
-        PersistenceUtil persistenceUtil = PersistenceUtil.getInstance();
         EntityManager entityManager = persistenceUtil.createEntityManagerAndBeginTransaction();
         entityManager.persist(myCar);
         persistenceUtil.closeTransactionAndEntityManager(entityManager);
@@ -134,7 +178,6 @@ public class CarTest {
 
     @Test
     public void findCarByConstructor() {
-        PersistenceUtil persistenceUtil = PersistenceUtil.getInstance();
         EntityManager entityManager = persistenceUtil.createEntityManagerAndBeginTransaction();
         for (int i = 0; i < 10; i++) {
             Car myCar = new Car();

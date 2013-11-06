@@ -41,9 +41,7 @@ public class PersistenceUtil {
 
     public void closeTransactionAndEntityManager(final EntityManager entityManager) {
         EntityTransaction transaction = entityManager.getTransaction();
-        if (transaction.isActive()) {
-            transaction.commit();
-        }
+        transaction.commit();
         entityManager.close();
     }
 

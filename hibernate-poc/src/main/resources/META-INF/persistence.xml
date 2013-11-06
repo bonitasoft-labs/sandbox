@@ -8,6 +8,8 @@
             <property name="hibernate.connection.password" value="admin" />
             <property name="hibernate.connection.username" value="admin" />
             <property name="hibernate.hbm2ddl.auto" value="create" />
+            <property name="hibernate.show_sql" value="true" />
+            <property name="hibernate.format_sql" value="true" />
         </properties>
     </persistence-unit>
 </persistence>

@@ -45,13 +45,18 @@ public class CarTest {
 
 	@After
 	public void clearDatabase(){
+		deleteEntity(Person.class);
+		deleteEntity(Car.class);
+	}
+
+	protected <T> void deleteEntity(Class<T> entityType) {
 		PersistenceUtil persistenceUtil = PersistenceUtil.getInstance();
 		EntityManager entityManager = persistenceUtil.createEntityManagerAndBeginTransaction();
 		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-		CriteriaQuery<Car> criteria = cb.createQuery(Car.class);
-		Root<Car> cars = criteria.from(Car.class);
-		CriteriaQuery<Car> all = criteria.select(cars);
-		for( Car car : entityManager.createQuery(all).getResultList()){
+		CriteriaQuery<T> criteria = cb.createQuery(entityType);
+		Root<T> allInstances = criteria.from(entityType);
+		CriteriaQuery<T> all = criteria.select(allInstances);
+		for( Object car : entityManager.createQuery(all).getResultList()){
 			entityManager.remove(car);
 		}
 		entityManager.getTransaction().commit();

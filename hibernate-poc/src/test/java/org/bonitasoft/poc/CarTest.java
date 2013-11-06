@@ -30,6 +30,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
 import org.bonitasoft.poc.model.Car;
+import org.bonitasoft.poc.model.Person;
 import org.bonitasoft.poc.util.PersistenceUtil;
 import org.junit.After;
 import org.junit.Test;
@@ -175,6 +176,36 @@ public class CarTest {
 		}finally{
 			entityManager.close();
 		}
+	}
+	
+	@Test
+	public void aCarBelongsToAPerson() {
+		Car myCar = new Car();
+		myCar.setRegistrationNumber("145AA38");
+		myCar.setConstructor("Mercedes");
+		myCar.setModel("SLR-500");
+		myCar.setNumberOfDoors(3);
+		
+		Person romain = new Person();
+		romain.setFirstName("Romain");
+		romain.setLastName("Bioteau");
+		romain.setCar(myCar);
+	
+		PersistenceUtil persistenceUtil = PersistenceUtil.getInstance();
+		EntityManager entityManager = persistenceUtil.createEntityManagerAndBeginTransaction();
+		entityManager.persist(romain);
+		entityManager.getTransaction().commit();
+		entityManager.close();
+		
+		
+		entityManager = persistenceUtil.createEntityManagerAndBeginTransaction();
+		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+		CriteriaQuery<Car> createQuery = cb.createQuery(Car.class);
+		Root<Car> cars = createQuery.from(Car.class);
+		TypedQuery<Car> selectAllCars = entityManager.createQuery(createQuery.select(cars));
+		entityManager.close();
+		assertEquals("The car of Romain has not been persisted",1,selectAllCars.getResultList().size());
+		
 	}
 
 }

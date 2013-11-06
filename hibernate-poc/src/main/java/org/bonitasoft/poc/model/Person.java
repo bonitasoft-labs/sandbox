@@ -36,7 +36,7 @@ public class Person {
 	private String firstName ;
 	private String lastName ;
 	
-	@OneToOne(cascade=CascadeType.ALL)
+	@OneToOne(cascade={CascadeType.REFRESH,CascadeType.PERSIST})
 	private Car car;
 	
 	@Embedded

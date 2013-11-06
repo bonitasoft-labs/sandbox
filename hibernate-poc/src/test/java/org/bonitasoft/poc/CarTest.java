@@ -46,7 +46,7 @@ import org.junit.Test;
  */
 public class CarTest {
 
-    private static PersistenceUtil persistenceUtil = PersistenceUtil.getInstance();
+	private static PersistenceUtil persistenceUtil = PersistenceUtil.getInstance();
 
 
 	@After
@@ -70,145 +70,146 @@ public class CarTest {
 		entityManager.close();
 	}
 
-    @Test(expected = PersistenceException.class)
-    public void outdatedModificationThrowsException() throws Exception {
-        Car car = buildRandomCar();
-        final EntityManager entityManager = persistenceUtil.createEntityManagerAndBeginTransaction();
-        entityManager.persist(car);
-        persistenceUtil.closeTransactionAndEntityManager(entityManager);
+	@Test(expected = PersistenceException.class)
+	public void outdatedModificationThrowsException() throws Exception {
+		Car car = buildRandomCar();
+		final EntityManager entityManager = persistenceUtil.createEntityManagerAndBeginTransaction();
+		entityManager.persist(car);
+		persistenceUtil.closeTransactionAndEntityManager(entityManager);
 
-        // retrieve the car a first time:
-        final EntityManager entityManager1 = persistenceUtil.createEntityManagerAndBeginTransaction();
-        Car foundCar = entityManager1.find(Car.class, car.getRegistrationNumber());
-        foundCar.setModel("toto");
+		// retrieve the car a first time:
+		final EntityManager entityManager1 = persistenceUtil.createEntityManagerAndBeginTransaction();
+		Car foundCar = entityManager1.find(Car.class, car.getRegistrationNumber());
+		foundCar.setModel("toto");
 
-        // retrieve the car a first time:
-        final EntityManager entityManager2 = persistenceUtil.createEntityManagerAndBeginTransaction();
-        Car sameCar = entityManager2.find(Car.class, car.getRegistrationNumber());
-        sameCar.setConstructor("TutTut-Pouet");
-        persistenceUtil.closeTransactionAndEntityManager(entityManager2);
+		// retrieve the car a first time:
+		final EntityManager entityManager2 = persistenceUtil.createEntityManagerAndBeginTransaction();
+		Car sameCar = entityManager2.find(Car.class, car.getRegistrationNumber());
+		sameCar.setConstructor("TutTut-Pouet");
+		persistenceUtil.closeTransactionAndEntityManager(entityManager2);
 
-        try {
-            // Try to commit the first open transaction afterwards:
-            EntityTransaction transaction = entityManager1.getTransaction();
-            if (transaction.isActive()) {
-                transaction.commit();
-            }
-            fail("Concurrent modification of Car should be forbidden by Optimistic locking");
-        } finally {
-            entityManager1.close();
-        }
-    }
+		try {
+			// Try to commit the first open transaction afterwards:
+			EntityTransaction transaction = entityManager1.getTransaction();
+			if (transaction.isActive()) {
+				transaction.commit();
+			}
+			fail("Concurrent modification of Car should be forbidden by Optimistic locking");
+		} finally {
+			entityManager1.close();
+		}
+	}
 
-    private Car buildRandomCar() {
-        Car myCar = new Car();
-        String regNb = "";
-        for (int i = 0; i < new Random().nextInt(12); i++) {
-            regNb += new Random().nextInt();
-        }
-        myCar.setRegistrationNumber(regNb);
-        myCar.setConstructor("Lada");
-        myCar.setModel("Turbo-61");
-        myCar.setNumberOfDoors(new Random().nextInt());
-        return myCar;
-    }
+	private Car buildRandomCar() {
+		Car myCar = new Car();
+		String regNb = "";
+		for (int i = 0; i < new Random().nextInt(12); i++) {
+			regNb += new Random().nextInt();
+		}
+		myCar.setRegistrationNumber(regNb);
+		myCar.setConstructor("Lada");
+		myCar.setModel("Turbo-61");
+		myCar.setNumberOfDoors(new Random().nextInt());
+		return myCar;
+	}
 
-    @Test
-    public void storeAndGetCar() {
-        Car myCar = new Car();
-        myCar.setRegistrationNumber("316DJV38");
-        myCar.setConstructor("Mercedes");
-        myCar.setModel("SLR-500");
-        myCar.setNumberOfDoors(3);
+	@Test
+	public void storeAndGetCar() {
+		Car myCar = new Car();
+		myCar.setRegistrationNumber("316DJV38");
+		myCar.setConstructor("Mercedes");
+		myCar.setModel("SLR-500");
+		myCar.setNumberOfDoors(3);
 
-        EntityManager entityManager = persistenceUtil.createEntityManagerAndBeginTransaction();
-        entityManager.persist(myCar);
-        persistenceUtil.closeTransactionAndEntityManager(entityManager);
-        entityManager = persistenceUtil.createEntityManagerAndBeginTransaction();
+		EntityManager entityManager = persistenceUtil.createEntityManagerAndBeginTransaction();
+		entityManager.persist(myCar);
+		persistenceUtil.closeTransactionAndEntityManager(entityManager);
+		entityManager = persistenceUtil.createEntityManagerAndBeginTransaction();
 
-        Car foundCar = entityManager.find(Car.class, myCar.getRegistrationNumber());
-        persistenceUtil.closeTransactionAndEntityManager(entityManager);
-        assertNotNull("Car not found", foundCar);
-        assertEquals(foundCar, myCar);
-    }
+		Car foundCar = entityManager.find(Car.class, myCar.getRegistrationNumber());
+		persistenceUtil.closeTransactionAndEntityManager(entityManager);
+		assertNotNull("Car not found", foundCar);
+		assertEquals(foundCar, myCar);
+	}
 
-    @Test
-    public void updateCar() {
-        Car myCar = new Car();
-        myCar.setRegistrationNumber("45DV38");
-        myCar.setConstructor("Mercedes");
-        myCar.setModel("SLR-500");
-        myCar.setNumberOfDoors(3);
+	@Test
+	public void updateCar() {
+		Car myCar = new Car();
+		myCar.setRegistrationNumber("45DV38");
+		myCar.setConstructor("Mercedes");
+		myCar.setModel("SLR-500");
+		myCar.setNumberOfDoors(3);
 
-        EntityManager entityManager = persistenceUtil.createEntityManagerAndBeginTransaction();
-        entityManager.persist(myCar);
-        persistenceUtil.closeTransactionAndEntityManager(entityManager);
+		EntityManager entityManager = persistenceUtil.createEntityManagerAndBeginTransaction();
+		entityManager.persist(myCar);
+		persistenceUtil.closeTransactionAndEntityManager(entityManager);
 
-        entityManager = persistenceUtil.createEntityManagerAndBeginTransaction();
-        Car foundCar = entityManager.find(Car.class, myCar.getRegistrationNumber());
-        foundCar.setConstructor("Mercedes-Benz");
-        persistenceUtil.closeTransactionAndEntityManager(entityManager);
+		entityManager = persistenceUtil.createEntityManagerAndBeginTransaction();
+		Car foundCar = entityManager.find(Car.class, myCar.getRegistrationNumber());
+		foundCar.setConstructor("Mercedes-Benz");
+		persistenceUtil.closeTransactionAndEntityManager(entityManager);
 
-        entityManager = persistenceUtil.createEntityManagerAndBeginTransaction();
-        foundCar = entityManager.find(Car.class, myCar.getRegistrationNumber());
-        persistenceUtil.closeTransactionAndEntityManager(entityManager);
-        assertNotNull("Car not found", foundCar);
-        assertEquals("Update failed", "Mercedes-Benz", foundCar.getConstructor());
-    }
+		entityManager = persistenceUtil.createEntityManagerAndBeginTransaction();
+		foundCar = entityManager.find(Car.class, myCar.getRegistrationNumber());
+		persistenceUtil.closeTransactionAndEntityManager(entityManager);
+		assertNotNull("Car not found", foundCar);
+		assertEquals("Update failed", "Mercedes-Benz", foundCar.getConstructor());
+	}
 
-    @Test
-    public void deleteCar() {
-        Car myCar = new Car();
-        myCar.setRegistrationNumber("145AA38");
-        myCar.setConstructor("Mercedes");
-        myCar.setModel("SLR-500");
-        myCar.setNumberOfDoors(3);
+	@Test
+	public void deleteCar() {
+		Car myCar = new Car();
+		myCar.setRegistrationNumber("145AA38");
+		myCar.setConstructor("Mercedes");
+		myCar.setModel("SLR-500");
+		myCar.setNumberOfDoors(3);
 
-        EntityManager entityManager = persistenceUtil.createEntityManagerAndBeginTransaction();
-        entityManager.persist(myCar);
-        persistenceUtil.closeTransactionAndEntityManager(entityManager);
+		EntityManager entityManager = persistenceUtil.createEntityManagerAndBeginTransaction();
+		entityManager.persist(myCar);
+		persistenceUtil.closeTransactionAndEntityManager(entityManager);
 
-        entityManager = persistenceUtil.createEntityManagerAndBeginTransaction();
-        Car foundCar = entityManager.find(Car.class, myCar.getRegistrationNumber());
-        entityManager.remove(foundCar);
-        persistenceUtil.closeTransactionAndEntityManager(entityManager);
+		entityManager = persistenceUtil.createEntityManagerAndBeginTransaction();
+		Car foundCar = entityManager.find(Car.class, myCar.getRegistrationNumber());
+		entityManager.remove(foundCar);
+		persistenceUtil.closeTransactionAndEntityManager(entityManager);
 
-        entityManager = persistenceUtil.createEntityManagerAndBeginTransaction();
-        foundCar = entityManager.find(Car.class, myCar.getRegistrationNumber());
-        persistenceUtil.closeTransactionAndEntityManager(entityManager);
-        assertNull(foundCar);
-    }
+		entityManager = persistenceUtil.createEntityManagerAndBeginTransaction();
+		foundCar = entityManager.find(Car.class, myCar.getRegistrationNumber());
+		persistenceUtil.closeTransactionAndEntityManager(entityManager);
+		assertNull(foundCar);
+	}
 
-    @Test
-    public void findCarByConstructor() {
-        EntityManager entityManager = persistenceUtil.createEntityManagerAndBeginTransaction();
-        for (int i = 0; i < 10; i++) {
-            Car myCar = new Car();
-            myCar.setRegistrationNumber(UUID.randomUUID().toString());
-            if (i % 3 == 0) {
-                myCar.setConstructor("Mercedes");
-            } else {
-                myCar.setConstructor("Porsche");
-            }
-            myCar.setModel("SLR-500");
-            myCar.setNumberOfDoors(3);
-            entityManager.persist(myCar);
-        }
-        persistenceUtil.closeTransactionAndEntityManager(entityManager);
 
-        entityManager = persistenceUtil.createEntityManagerAndBeginTransaction();
+	@Test
+	public void findCarByConstructor() {
+		EntityManager entityManager = persistenceUtil.createEntityManagerAndBeginTransaction();
+		for (int i = 0; i < 10; i++) {
+			Car myCar = new Car();
+			myCar.setRegistrationNumber(UUID.randomUUID().toString());
+			if (i % 3 == 0) {
+				myCar.setConstructor("Mercedes");
+			} else {
+				myCar.setConstructor("Porsche");
+			}
+			myCar.setModel("SLR-500");
+			myCar.setNumberOfDoors(3);
+			entityManager.persist(myCar);
+		}
+		persistenceUtil.closeTransactionAndEntityManager(entityManager);
 
-        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-        CriteriaQuery<Car> criteria = cb.createQuery(Car.class);
-        Root<Car> cars = criteria.from(Car.class);
-        criteria.where(cb.equal(cars.get("constructor"), "Mercedes"));
-        TypedQuery<Car> constructorQuery = entityManager.createQuery(criteria);
-        constructorQuery.setFirstResult(0);
-        constructorQuery.setMaxResults(20);
-        List<Car> result = constructorQuery.getResultList();
-        assertEquals("Invalid number of Mercedes", 4, result.size());
-        persistenceUtil.closeTransactionAndEntityManager(entityManager);
-    }
+		entityManager = persistenceUtil.createEntityManagerAndBeginTransaction();
+
+		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+		CriteriaQuery<Car> criteria = cb.createQuery(Car.class);
+		Root<Car> cars = criteria.from(Car.class);
+		criteria.where(cb.equal(cars.get("constructor"), "Mercedes"));
+		TypedQuery<Car> constructorQuery = entityManager.createQuery(criteria);
+		constructorQuery.setFirstResult(0);
+		constructorQuery.setMaxResults(20);
+		List<Car> result = constructorQuery.getResultList();
+		assertEquals("Invalid number of Mercedes", 4, result.size());
+		persistenceUtil.closeTransactionAndEntityManager(entityManager);
+	}
 
 
 	@Test(expected=PersistenceException.class)
@@ -228,7 +229,7 @@ public class CarTest {
 			entityManager.close();
 		}
 	}
-	
+
 	@Test
 	public void aCarBelongsToAPerson() {
 		Car myCar = new Car();
@@ -236,19 +237,19 @@ public class CarTest {
 		myCar.setConstructor("Mercedes");
 		myCar.setModel("SLR-500");
 		myCar.setNumberOfDoors(3);
-		
+
 		Person romain = new Person();
 		romain.setFirstName("Romain");
 		romain.setLastName("Bioteau");
 		romain.setCar(myCar);
-	
+
 		PersistenceUtil persistenceUtil = PersistenceUtil.getInstance();
 		EntityManager entityManager = persistenceUtil.createEntityManagerAndBeginTransaction();
 		entityManager.persist(romain);
 		entityManager.getTransaction().commit();
 		entityManager.close();
-		
-		
+
+
 		entityManager = persistenceUtil.createEntityManagerAndBeginTransaction();
 		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
 		CriteriaQuery<Car> createQuery = cb.createQuery(Car.class);
@@ -257,19 +258,19 @@ public class CarTest {
 		entityManager.close();
 		assertEquals("The car of Romain has not been persisted",1,selectAllCars.getResultList().size());
 	}
-	
+
 	@Test
 	public void aGarageContainsMultipleCars() {
 		Car car1 = createACar("456ER45","Ferrari","Testarossa",3); 
 		Car car2 = createACar("456BJR35","Ferrari","Enzo",3); 
 		Car car3 = createACar("45RA36","McLaren","F1",2); 
-		
+
 		Garage myGarage = new Garage();
 		myGarage.setName("Chez Jojo");
 		myGarage.addCar(car1);
 		myGarage.addCar(car2);
 		myGarage.addCar(car3);
-		
+
 		PersistenceUtil persistenceUtil = PersistenceUtil.getInstance();
 		EntityManager entityManager = persistenceUtil.createEntityManagerAndBeginTransaction();
 		entityManager.persist(myGarage);
@@ -290,21 +291,21 @@ public class CarTest {
 		Person romain = new Person();
 		romain.setFirstName("Romain");
 		romain.setLastName("Bioteau");
-		
+
 		Address myAddress = new Address();
 		myAddress.setStreet("32, rue Gustave Eiffel");
 		myAddress.setZipCode("38000");
 		myAddress.setCity("Grenoble");
 		romain.setAddress(myAddress);
-		
+
 		PersistenceUtil persistenceUtil = PersistenceUtil.getInstance();
 		EntityManager entityManager = persistenceUtil.createEntityManagerAndBeginTransaction();
 		entityManager.persist(romain);
 		entityManager.getTransaction().commit();
 		entityManager.close();
-	
+
 	}
-	
+
 	private Car createACar(String registrationNumber, String brand, String model, int numberOfDoors) {
 		Car myCar = new Car();
 		myCar.setRegistrationNumber(registrationNumber);
@@ -313,7 +314,75 @@ public class CarTest {
 		myCar.setNumberOfDoors(numberOfDoors);
 		return myCar;
 	}
-	
-	
+
+	@Test
+	public void deleteCarBelongingToAPersonWithoutDeletingThePerson() {
+		Car myCar = new Car();
+		myCar.setRegistrationNumber("145AA38");
+		myCar.setConstructor("Mercedes");
+		myCar.setModel("SLR-500");
+		myCar.setNumberOfDoors(3);
+
+		Person romain = new Person();
+		romain.setFirstName("Romain");
+		romain.setLastName("Bioteau");
+		romain.setCar(myCar);
+
+		EntityManager entityManager = persistenceUtil.createEntityManagerAndBeginTransaction();
+		entityManager.persist(romain);
+		persistenceUtil.closeTransactionAndEntityManager(entityManager);
+
+		entityManager = persistenceUtil.createEntityManagerAndBeginTransaction();
+		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+		CriteriaQuery<Person> cQuery = cb.createQuery(Person.class);
+		Root<Person> persons = cQuery.from(Person.class);
+		Person p = entityManager.createQuery(cQuery.select(persons)).getResultList().get(0);
+		p.setCar(null);
+		Car foundCar = entityManager.find(Car.class, myCar.getRegistrationNumber());
+		entityManager.remove(foundCar);
+		persistenceUtil.closeTransactionAndEntityManager(entityManager);
+
+		entityManager = persistenceUtil.createEntityManagerAndBeginTransaction();
+		cb = entityManager.getCriteriaBuilder();
+		cQuery = cb.createQuery(Person.class);
+		persons = cQuery.from(Person.class);
+		p = entityManager.createQuery(cQuery.select(persons)).getResultList().get(0);
+		persistenceUtil.closeTransactionAndEntityManager(entityManager);
+		assertNotNull(p);
+	}
+
+	@Test
+	public void deleteAPersonWithACarWithoutDeletingTheCar() {
+		Car myCar = new Car();
+		myCar.setRegistrationNumber("145AA38");
+		myCar.setConstructor("Mercedes");
+		myCar.setModel("SLR-500");
+		myCar.setNumberOfDoors(3);
+
+		Person romain = new Person();
+		romain.setFirstName("Romain");
+		romain.setLastName("Bioteau");
+		romain.setCar(myCar);
+
+		EntityManager entityManager = persistenceUtil.createEntityManagerAndBeginTransaction();
+		entityManager.persist(romain);
+		persistenceUtil.closeTransactionAndEntityManager(entityManager);
+
+		entityManager = persistenceUtil.createEntityManagerAndBeginTransaction();
+		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+		CriteriaQuery<Person> cQuery = cb.createQuery(Person.class);
+		Root<Person> persons = cQuery.from(Person.class);
+		Person p = entityManager.createQuery(cQuery.select(persons)).getResultList().get(0);
+		String myCarRegistration = p.getCar().getRegistrationNumber();
+		entityManager.remove(p);
+		persistenceUtil.closeTransactionAndEntityManager(entityManager);
+
+		entityManager = persistenceUtil.createEntityManagerAndBeginTransaction();
+		Car foundCar = entityManager.find(Car.class, myCarRegistration);
+		persistenceUtil.closeTransactionAndEntityManager(entityManager);
+		assertNotNull(foundCar);
+	}
+
+
 
 }

@@ -16,57 +16,46 @@
  */
 package org.bonitasoft.poc.model;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import javax.persistence.Embeddable;
 
 /**
  * @author Romain Bioteau
  *
  */
-@Entity
-public class Garage {
+@Embeddable
+public class Address {
 
-	@Id
-	@GeneratedValue
-	private Long id;
+	private String street ;
 	
-	private String name;
+	private String zipCode;
 	
-	@OneToMany(cascade=CascadeType.ALL)
-	private List<Car> cars = new ArrayList<Car>();
+	private String city;
 
-	public Long getId() {
-		return id;
+	public String getStreet() {
+		return street;
 	}
 
-	public void setId(Long id) {
-		this.id = id;
+	public void setStreet(String street) {
+		this.street = street;
 	}
 
-	public String getName() {
-		return name;
+	public String getZipCode() {
+		return zipCode;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setZipCode(String zipcode) {
+		this.zipCode = zipcode;
 	}
 
-	public List<Car> getCars() {
-		return cars;
+	public String getCity() {
+		return city;
 	}
 
-	public void setCars(List<Car> cars) {
-		this.cars = cars;
+	public void setCity(String city) {
+		this.city = city;
 	}
 	
-	public void addCar(Car car){
-		this.cars.add(car);
-	}
+	
+	
 	
 }

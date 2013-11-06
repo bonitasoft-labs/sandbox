@@ -31,6 +31,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
+import org.bonitasoft.poc.model.Address;
 import org.bonitasoft.poc.model.Car;
 import org.bonitasoft.poc.model.Garage;
 import org.bonitasoft.poc.model.Person;
@@ -284,6 +285,26 @@ public class CarTest {
 		assertEquals("The car of Romain has not been persisted",3,selectAllCars.getResultList().size());
 	}
 
+	@Test
+	public void aPersonHasAnEmbeddedAdress() {
+		Person romain = new Person();
+		romain.setFirstName("Romain");
+		romain.setLastName("Bioteau");
+		
+		Address myAddress = new Address();
+		myAddress.setStreet("32, rue Gustave Eiffel");
+		myAddress.setZipCode("38000");
+		myAddress.setCity("Grenoble");
+		romain.setAddress(myAddress);
+		
+		PersistenceUtil persistenceUtil = PersistenceUtil.getInstance();
+		EntityManager entityManager = persistenceUtil.createEntityManagerAndBeginTransaction();
+		entityManager.persist(romain);
+		entityManager.getTransaction().commit();
+		entityManager.close();
+	
+	}
+	
 	private Car createACar(String registrationNumber, String brand, String model, int numberOfDoors) {
 		Car myCar = new Car();
 		myCar.setRegistrationNumber(registrationNumber);

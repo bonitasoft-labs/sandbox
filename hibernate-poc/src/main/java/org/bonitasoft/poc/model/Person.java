@@ -17,6 +17,7 @@
 package org.bonitasoft.poc.model;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -37,6 +38,9 @@ public class Person {
 	
 	@OneToOne(cascade=CascadeType.ALL)
 	private Car car;
+	
+	@Embedded
+	private Address address ;
 	
 	public Long getId() {
 		return id;
@@ -61,6 +65,12 @@ public class Person {
 	}
 	public void setCar(Car car) {
 		this.car = car;
+	}
+	public Address getAddress() {
+		return address;
+	}
+	public void setAddress(Address address) {
+		this.address = address;
 	}
 	
 }

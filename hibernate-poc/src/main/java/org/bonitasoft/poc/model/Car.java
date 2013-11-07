@@ -17,6 +17,7 @@ package org.bonitasoft.poc.model;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Table;
 import javax.persistence.Version;
 
 /**
@@ -24,6 +25,7 @@ import javax.persistence.Version;
  * @author Emmanuel Duchastenier
  */
 @Entity
+@Table(name = "Car")
 public class Car {
 
     @Version
@@ -75,39 +77,49 @@ public class Car {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((constructor == null) ? 0 : constructor.hashCode());
-        result = prime * result + ((model == null) ? 0 : model.hashCode());
+        result = prime * result + (constructor == null ? 0 : constructor.hashCode());
+        result = prime * result + (model == null ? 0 : model.hashCode());
         result = prime * result + numberOfDoors;
-        result = prime * result + ((registrationNumber == null) ? 0 : registrationNumber.hashCode());
+        result = prime * result + (registrationNumber == null ? 0 : registrationNumber.hashCode());
         return result;
     }
 
     @Override
     public boolean equals(final Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (obj == null) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
-        Car other = (Car) obj;
+        }
+        final Car other = (Car) obj;
         if (constructor == null) {
-            if (other.constructor != null)
+            if (other.constructor != null) {
                 return false;
-        } else if (!constructor.equals(other.constructor))
+            }
+        } else if (!constructor.equals(other.constructor)) {
             return false;
+        }
         if (model == null) {
-            if (other.model != null)
+            if (other.model != null) {
                 return false;
-        } else if (!model.equals(other.model))
+            }
+        } else if (!model.equals(other.model)) {
             return false;
-        if (numberOfDoors != other.numberOfDoors)
+        }
+        if (numberOfDoors != other.numberOfDoors) {
             return false;
+        }
         if (registrationNumber == null) {
-            if (other.registrationNumber != null)
+            if (other.registrationNumber != null) {
                 return false;
-        } else if (!registrationNumber.equals(other.registrationNumber))
+            }
+        } else if (!registrationNumber.equals(other.registrationNumber)) {
             return false;
+        }
         return true;
     }
 

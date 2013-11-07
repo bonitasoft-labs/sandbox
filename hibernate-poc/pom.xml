@@ -6,7 +6,6 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<hibernate.version></hibernate.version>
 	</properties>
 
 	<dependencies>

@@ -40,14 +40,22 @@ public class PersistenceUtil {
     }
 
     public void closeTransactionAndEntityManager(final EntityManager entityManager) {
-        EntityTransaction transaction = entityManager.getTransaction();
-        transaction.commit();
-        entityManager.close();
+        final EntityTransaction transaction = entityManager.getTransaction();
+        try {
+            transaction.commit();
+            entityManager.close();
+        } catch (final RuntimeException re) {
+            if (transaction.isActive()) {
+                transaction.rollback();
+            }
+            entityManager.close();
+            throw re;
+        }
     }
 
     public EntityManager createEntityManagerAndBeginTransaction() {
-        EntityManagerFactory managerFactory = getEntityManagerFactory();
-        EntityManager entityManager = managerFactory.createEntityManager();
+        final EntityManagerFactory managerFactory = getEntityManagerFactory();
+        final EntityManager entityManager = managerFactory.createEntityManager();
         entityManager.getTransaction().begin();
         return entityManager;
     }

@@ -98,4 +98,8 @@ public class Employee {
         projects.add(project);
     }
 
+    public void removeProjects() {
+        projects.clear();
+    }
+
 }

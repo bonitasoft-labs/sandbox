@@ -492,30 +492,4 @@ public class CarTest extends AbstractTest {
         assertEquals("Only Wally lives at Winter town", 1, persons.size());
     }
 
-    @Test
-    public void updateTheCarsSchema() {
-        final Car car1 = createACar("456ER45", "Ferrari", "Testarossa", 3);
-        final PersistenceUtil persistenceUtil = PersistenceUtil.getInstance();
-        EntityManager entityManager = persistenceUtil.createEntityManagerAndBeginTransaction();
-        entityManager.persist(car1);
-        persistenceUtil.closeTransactionAndEntityManager(entityManager);
-
-        entityManager = persistenceUtil.createEntityManagerAndBeginTransaction();
-        final CarBis carBis = new CarBis();
-        carBis.setRegistrationNumber("38-PRO-83");
-        carBis.setConstructor("Subaru");
-        carBis.setModel("Impreza");
-        carBis.setWheels(4);
-        entityManager.persist(carBis);
-        persistenceUtil.closeTransactionAndEntityManager(entityManager);
-
-        entityManager = persistenceUtil.createEntityManagerAndBeginTransaction();
-        final CarBis subaru = entityManager.find(CarBis.class, "38-PRO-83");
-        assertEquals(4, subaru.getWheels());
-
-        final Car ferrari = entityManager.find(Car.class, "456ER45");
-        // assertEquals(0, ferrari.getWheels());
-        persistenceUtil.closeTransactionAndEntityManager(entityManager);
-    }
-
 }

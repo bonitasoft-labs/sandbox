@@ -492,4 +492,46 @@ public class CarTest extends AbstractTest {
         assertEquals("Only Wally lives at Winter town", 1, persons.size());
     }
 
+    @Test
+    public void countTheNumberOfGaragesWhichContainsAtLeastACarOfTheConctructor() {
+        final Garage joeGarage = new Garage();
+        joeGarage.setName("Joe's");
+        joeGarage.addCar(createACar("456ER45", "Ferrari", "Testarossa", 3));
+        joeGarage.addCar(createACar("456BJR35", "Ferrari", "Enzo", 3));
+        joeGarage.addCar(createACar("45RA36", "McLaren", "F1", 0));
+
+        final Garage mikeGarage = new Garage();
+        mikeGarage.setName("Mike's");
+        mikeGarage.addCar(createACar("45-RDS-78", "Lamborghini", "Countach", 3));
+        mikeGarage.addCar(createACar("65-PRE-51", "Lotus", "Elan", 3));
+        mikeGarage.addCar(createACar("78-NRD-15", "Ferrari", "Testarossa", 3));
+
+        final Garage johnGarage = new Garage();
+        johnGarage.setName("John's");
+        johnGarage.addCar(createACar("45-RBS-74", "Porsche", "911", 3));
+        johnGarage.addCar(createACar("65-NRE-51", "Porsche", "Panamera", 5));
+        johnGarage.addCar(createACar("78-QSD-15", "Porsche", "918", 2));
+
+        final PersistenceUtil persistenceUtil = PersistenceUtil.getInstance();
+        EntityManager entityManager = persistenceUtil.createEntityManagerAndBeginTransaction();
+        entityManager.persist(joeGarage);
+        entityManager.persist(mikeGarage);
+        entityManager.persist(johnGarage);
+        entityManager.getTransaction().commit();
+        entityManager.close();
+
+        entityManager = persistenceUtil.createEntityManagerAndBeginTransaction();
+
+        final CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+        final CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+        final Root<Garage> from = cq.from(Garage.class);
+        final Join<Object, Object> join = from.join("cars");
+        cq.select(cb.countDistinct(from));
+        cq.where(cb.equal(join.get("constructor"), "Porsche"));
+        final TypedQuery<Long> select = entityManager.createQuery(cq);
+        final Long count = select.getSingleResult();
+        entityManager.close();
+        assertEquals("Only one garage contains cars built by Porsche", Long.valueOf(1), count);
+    }
+
 }

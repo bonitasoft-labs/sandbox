@@ -1,0 +1,24 @@
+<archetype xmlns="http://maven.apache.org/plugins/maven-archetype-plugin/archetype/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+  xsi:schemaLocation="http://maven.apache.org/plugins/maven-archetype-plugin/archetype/1.0.0 http://maven.apache.org/xsd/archetype-1.0.0.xsd">
+
+  <id>embedded-engine-example</id>
+
+  <sources>
+
+    <source>src/main/java/com/bonitasoft/example/App.java</source>
+    <source>src/main/java/com/bonitasoft/example/platform/PlatformManager.java</source>
+    <source>src/main/java/org/bonitasoft/engine/local/MemoryJNDISetup.java</source>
+    <source>src/main/java/org/bonitasoft/engine/local/SimpleMemoryContext.java</source>
+    <source>src/main/java/org/bonitasoft/engine/local/SimpleMemoryContextFactory.java</source>
+
+  </sources>
+  
+  <resources>
+  	<resource>src/main/resources/datasource.xml</resource>
+  	<resource>src/main/resources/datasource-dependency-h2.xml</resource>
+  	<resource>src/main/resources/jdbc-h2.properties</resource>
+  	<resource>src/main/resources/jndi-setup.xml</resource>
+  </resources>
+
+</archetype>

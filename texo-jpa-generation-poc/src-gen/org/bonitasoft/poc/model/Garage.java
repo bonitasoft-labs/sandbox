@@ -7,7 +7,6 @@ import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.JoinTable;
 import javax.persistence.OneToMany;
 
 /**
@@ -16,7 +15,7 @@ import javax.persistence.OneToMany;
  * 
  * @generated
  */
-@Entity(name = "poc_Garage")
+@Entity(name = "Garage")
 public class Garage {
 
 	/**
@@ -42,7 +41,6 @@ public class Garage {
 	 * @generated
 	 */
 	@OneToMany(cascade = { CascadeType.ALL })
-	@JoinTable()
 	private List<Car> cars = new ArrayList<Car>();
 
 	/**

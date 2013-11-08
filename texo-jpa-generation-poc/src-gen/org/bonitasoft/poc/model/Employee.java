@@ -16,7 +16,7 @@ import javax.persistence.ManyToMany;
  * 
  * @generated
  */
-@Entity(name = "poc_Employee")
+@Entity(name = "Employee")
 public class Employee {
 
 	/**

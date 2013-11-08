@@ -2,9 +2,7 @@ package org.bonitasoft.poc.model;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
-import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Version;
@@ -15,8 +13,7 @@ import javax.persistence.Version;
  * 
  * @generated
  */
-@DiscriminatorValue("")
-@Entity(name = "poc_Car")
+@Entity(name = "Car")
 @Table(name = "Car")
 public class Car {
 
@@ -26,7 +23,6 @@ public class Car {
 	 * @generated
 	 */
 	@Id()
-	@GeneratedValue()
 	private String registrationNumber = null;
 
 	/**

@@ -16,7 +16,7 @@ import javax.persistence.ManyToMany;
  * 
  * @generated
  */
-@Entity(name = "poc_Project")
+@Entity(name = "Project")
 public class Project {
 
 	/**
@@ -42,7 +42,7 @@ public class Project {
 	 * @generated
 	 */
 	@ManyToMany(cascade = { CascadeType.MERGE, CascadeType.PERSIST,
-			CascadeType.REFRESH }, mappedBy = "projects")
+			CascadeType.REFRESH })
 	@JoinTable()
 	private List<Employee> employees = new ArrayList<Employee>();
 

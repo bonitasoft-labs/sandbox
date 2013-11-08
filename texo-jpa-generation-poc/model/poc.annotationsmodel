@@ -3,11 +3,12 @@
   <annotatedEPackages>
     <ePackage href="poc.ecore#/"/>
     <ePackageAnnotations xsi:type="modelannotations:EPackageModelGenAnnotation" description="" documentation="" addRuntimeModelBehavior="false" packagePath="" modelClassesPackagePath="" simpleClassName="" simpleModelFactoryClassName="" javaFileHeader="" generateSafeManyAccess="false" rootClassExtends="" rootInterfaceExtends="" featureMapClassExtends="" daoClassesPackagePath=""/>
+    <ePackageAnnotations xsi:type="ormannotations:EPackageORMAnnotation" description="" generateFullDbSchemaNames="false" columnNamePrefix="" maximumSqlNameLength="255" lowerCasedNames="false" upperCasedNames="false" enforceUniqueNames="false" useJoinTablesForContainment="false" useJoinTablesForNonContainment="false" generateJavaAnnotations="false" addOrderColumnToListMappings="false" renameSQLReservedNames="true" uniqueEntityNames="false" setDelimitedIdentifierTagInORM="false"/>
     <annotatedEClassifiers xsi:type="annotationsmodel:AnnotatedEClass">
       <eClass href="poc.ecore#//Car"/>
       <eClassAnnotations xsi:type="modelannotations:EClassModelGenAnnotation"/>
       <eClassAnnotations xsi:type="ormannotations:EClassORMAnnotation">
-        <entity description="" discriminatorValue="" partitioned="" class="" name="" parentClass="">
+        <entity partitioned="" class="" parentClass="">
           <table name="Car"/>
         </entity>
       </eClassAnnotations>
@@ -15,9 +16,7 @@
         <eAttribute href="poc.ecore#//Car/registrationNumber"/>
         <eAttributeAnnotations xsi:type="modelannotations:EAttributeModelGenAnnotation" description="" getter="" setter="" validJavaMemberName="" featureMapQualifiedClassName=""/>
         <eAttributeAnnotations xsi:type="ormannotations:EAttributeORMAnnotation" description="">
-          <id>
-            <generatedValue/>
-          </id>
+          <id/>
         </eAttributeAnnotations>
       </annotatedEStructuralFeatures>
       <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEAttribute">
@@ -116,12 +115,6 @@
             <generatedValue/>
           </id>
         </eAttributeAnnotations>
-      </annotatedEStructuralFeatures>
-      <annotatedEStructuralFeatures xsi:type="annotationsmodel:AnnotatedEReference">
-        <eReference href="poc.ecore#//Project/employees"/>
-        <eReferenceAnnotations xsi:type="ormannotations:EReferenceORMAnnotation">
-          <manyToMany mappedBy="projects"/>
-        </eReferenceAnnotations>
       </annotatedEStructuralFeatures>
     </annotatedEClassifiers>
   </annotatedEPackages>

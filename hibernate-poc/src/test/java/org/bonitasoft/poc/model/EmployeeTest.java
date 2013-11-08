@@ -37,7 +37,7 @@ public class EmployeeTest extends AbstractTest {
         persistenceUtil.closeTransactionAndEntityManager(entityManager);
 
         entityManager = persistenceUtil.createEntityManagerAndBeginTransaction();
-        employee.addProject(project);
+        employee.addToProjects(project);
         entityManager.merge(employee);
         persistenceUtil.closeTransactionAndEntityManager(entityManager);
 
@@ -64,7 +64,7 @@ public class EmployeeTest extends AbstractTest {
 
         final Employee employee = new Employee();
         employee.setName("Matti");
-        employee.addProject(project);
+        employee.addToProjects(project);
         EntityManager entityManager = persistenceUtil.createEntityManagerAndBeginTransaction();
         entityManager.persist(project);
         entityManager.persist(employee);
@@ -75,7 +75,7 @@ public class EmployeeTest extends AbstractTest {
         List<Employee> employees = query.getResultList();
         assertEquals(1, employees.size());
         Employee matti = employees.get(0);
-        matti.removeProjects();
+        matti.getProjects().clear();
         persistenceUtil.closeTransactionAndEntityManager(entityManager);
 
         entityManager = persistenceUtil.createEntityManagerAndBeginTransaction();
@@ -94,7 +94,7 @@ public class EmployeeTest extends AbstractTest {
 
         final Employee employee = new Employee();
         employee.setName("Matti");
-        employee.addProject(project);
+        employee.addToProjects(project);
         EntityManager entityManager = persistenceUtil.createEntityManagerAndBeginTransaction();
         entityManager.persist(project);
         entityManager.persist(employee);

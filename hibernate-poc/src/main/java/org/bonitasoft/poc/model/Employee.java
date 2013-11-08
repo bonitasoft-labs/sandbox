@@ -94,11 +94,11 @@ public class Employee {
         return true;
     }
 
-    public void addProject(final Project project) {
+    public void addToProjects(final Project project) {
         projects.add(project);
     }
 
-    public void removeProjects() {
+    public void removeFromProjects() {
         projects.clear();
     }
 

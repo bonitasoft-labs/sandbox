@@ -65,7 +65,7 @@ public class Garage {
 		this.cars = cars;
 	}
 	
-	public void addCar(Car car){
+	public void addToCars(Car car){
 		this.cars.add(car);
 	}
 	

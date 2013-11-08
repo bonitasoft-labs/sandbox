@@ -267,9 +267,9 @@ public class CarTest extends AbstractTest {
 
         final Garage myGarage = new Garage();
         myGarage.setName("Chez Jojo");
-        myGarage.addCar(car1);
-        myGarage.addCar(car2);
-        myGarage.addCar(car3);
+        myGarage.addToCars(car1);
+        myGarage.addToCars(car2);
+        myGarage.addToCars(car3);
 
         final PersistenceUtil persistenceUtil = PersistenceUtil.getInstance();
         EntityManager entityManager = persistenceUtil.createEntityManagerAndBeginTransaction();
@@ -387,21 +387,21 @@ public class CarTest extends AbstractTest {
     public void getTheGaragesWhichContainsAtLeastACarOfAType() {
         final Garage joeGarage = new Garage();
         joeGarage.setName("Joe's");
-        joeGarage.addCar(createACar("456ER45", "Ferrari", "Testarossa", 3));
-        joeGarage.addCar(createACar("456BJR35", "Ferrari", "Enzo", 3));
-        joeGarage.addCar(createACar("45RA36", "McLaren", "F1", 0));
+        joeGarage.addToCars(createACar("456ER45", "Ferrari", "Testarossa", 3));
+        joeGarage.addToCars(createACar("456BJR35", "Ferrari", "Enzo", 3));
+        joeGarage.addToCars(createACar("45RA36", "McLaren", "F1", 0));
 
         final Garage mikeGarage = new Garage();
         mikeGarage.setName("Mike's");
-        mikeGarage.addCar(createACar("45-RDS-78", "Lamborghini", "Countach", 3));
-        mikeGarage.addCar(createACar("65-PRE-51", "Lotus", "Elan", 3));
-        mikeGarage.addCar(createACar("78-NRD-15", "Ferrari", "Testarossa", 3));
+        mikeGarage.addToCars(createACar("45-RDS-78", "Lamborghini", "Countach", 3));
+        mikeGarage.addToCars(createACar("65-PRE-51", "Lotus", "Elan", 3));
+        mikeGarage.addToCars(createACar("78-NRD-15", "Ferrari", "Testarossa", 3));
 
         final Garage johnGarage = new Garage();
         johnGarage.setName("John's");
-        johnGarage.addCar(createACar("45-RBS-74", "Porsche", "911", 3));
-        johnGarage.addCar(createACar("65-NRE-51", "Porsche", "Panamera", 5));
-        johnGarage.addCar(createACar("78-QSD-15", "Porsche", "918", 2));
+        johnGarage.addToCars(createACar("45-RBS-74", "Porsche", "911", 3));
+        johnGarage.addToCars(createACar("65-NRE-51", "Porsche", "Panamera", 5));
+        johnGarage.addToCars(createACar("78-QSD-15", "Porsche", "918", 2));
 
         final PersistenceUtil persistenceUtil = PersistenceUtil.getInstance();
         EntityManager entityManager = persistenceUtil.createEntityManagerAndBeginTransaction();
@@ -496,21 +496,21 @@ public class CarTest extends AbstractTest {
     public void countTheNumberOfGaragesWhichContainsAtLeastACarOfTheConctructor() {
         final Garage joeGarage = new Garage();
         joeGarage.setName("Joe's");
-        joeGarage.addCar(createACar("456ER45", "Ferrari", "Testarossa", 3));
-        joeGarage.addCar(createACar("456BJR35", "Ferrari", "Enzo", 3));
-        joeGarage.addCar(createACar("45RA36", "McLaren", "F1", 0));
+        joeGarage.addToCars(createACar("456ER45", "Ferrari", "Testarossa", 3));
+        joeGarage.addToCars(createACar("456BJR35", "Ferrari", "Enzo", 3));
+        joeGarage.addToCars(createACar("45RA36", "McLaren", "F1", 0));
 
         final Garage mikeGarage = new Garage();
         mikeGarage.setName("Mike's");
-        mikeGarage.addCar(createACar("45-RDS-78", "Lamborghini", "Countach", 3));
-        mikeGarage.addCar(createACar("65-PRE-51", "Lotus", "Elan", 3));
-        mikeGarage.addCar(createACar("78-NRD-15", "Ferrari", "Testarossa", 3));
+        mikeGarage.addToCars(createACar("45-RDS-78", "Lamborghini", "Countach", 3));
+        mikeGarage.addToCars(createACar("65-PRE-51", "Lotus", "Elan", 3));
+        mikeGarage.addToCars(createACar("78-NRD-15", "Ferrari", "Testarossa", 3));
 
         final Garage johnGarage = new Garage();
         johnGarage.setName("John's");
-        johnGarage.addCar(createACar("45-RBS-74", "Porsche", "911", 3));
-        johnGarage.addCar(createACar("65-NRE-51", "Porsche", "Panamera", 5));
-        johnGarage.addCar(createACar("78-QSD-15", "Porsche", "918", 2));
+        johnGarage.addToCars(createACar("45-RBS-74", "Porsche", "911", 3));
+        johnGarage.addToCars(createACar("65-NRE-51", "Porsche", "Panamera", 5));
+        johnGarage.addToCars(createACar("78-QSD-15", "Porsche", "918", 2));
 
         final PersistenceUtil persistenceUtil = PersistenceUtil.getInstance();
         EntityManager entityManager = persistenceUtil.createEntityManagerAndBeginTransaction();

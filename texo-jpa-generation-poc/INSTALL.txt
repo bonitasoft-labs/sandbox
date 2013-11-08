@@ -1,0 +1,6 @@
+How to install EMF Texo in Eclipse:
+Help->Install New Software...
+Use the following update site :  http://download.eclipse.org/modeling/emft/texo/updates/interim
+And install all IUs.
+
+You can now right-click on the ecore model and use Texo generation.

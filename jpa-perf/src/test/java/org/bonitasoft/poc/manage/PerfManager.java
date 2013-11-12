@@ -29,12 +29,13 @@ public class PerfManager {
 		final AtomicInteger nbInsertErrors = new AtomicInteger();
 		final AtomicInteger nbUpdateErrors = new AtomicInteger();
 		final AtomicInteger nbDeleteErrors = new AtomicInteger();
+		final AtomicInteger nbOptimisticLockError = new AtomicInteger();
 		final AtomicLong errorDuration = new AtomicLong();
 		final EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("DefaultPersistenceUnit");
 		ExecutorService executorService = Executors.newFixedThreadPool(POOL_SIZE);
 
 		for (int i = 0; i < 10; i++) {
-			final InsertEmployeeThread insertEmployeeThread = new InsertEmployeeThread(entityManagerFactory, nbInsertErrors, errorDuration, nbInserts, insertDuration);
+			final InsertEmployeeThread insertEmployeeThread = new InsertEmployeeThread(entityManagerFactory, nbInsertErrors, errorDuration, nbInserts, insertDuration,nbOptimisticLockError);
 			executorService.execute(insertEmployeeThread);
 		}
 		executorService.shutdown();
@@ -46,18 +47,18 @@ public class PerfManager {
 			final int nextInt = random.nextInt(10);
 			if (nextInt % 5 == 0) {
 				final DeleteEmployees deleteEmployees = new DeleteEmployees(entityManagerFactory, nbDeleteErrors, errorDuration, nbDeletes,
-						deleteDuration);
+						deleteDuration,nbOptimisticLockError);
 				executorService.execute(deleteEmployees);
 			} else  if (nextInt % 3 == 0) {
 				final InsertEmployeeThread insertEmployeeThread = new InsertEmployeeThread(entityManagerFactory, nbInsertErrors, errorDuration, nbInserts,
-						insertDuration);
+						insertDuration,nbOptimisticLockError);
 				executorService.execute(insertEmployeeThread);
 			}else  if (nextInt % 2 == 0) {
 				final DeleteEmployeesAddress deleteEmployeesAddress = new DeleteEmployeesAddress(entityManagerFactory, nbDeleteErrors, errorDuration, nbDeletes,
-						deleteDuration);
+						deleteDuration,nbOptimisticLockError);
 				executorService.execute(deleteEmployeesAddress);
 			} else {
-				final GetUpdateEmployee updateEmployee = new GetUpdateEmployee(entityManagerFactory, nbUpdateErrors, errorDuration, nbUpdates, updateDuration);
+				final GetUpdateEmployee updateEmployee = new GetUpdateEmployee(entityManagerFactory, nbUpdateErrors, errorDuration, nbUpdates, updateDuration,nbOptimisticLockError);
 				executorService.execute(updateEmployee);
 			}
 
@@ -77,7 +78,10 @@ public class PerfManager {
 		System.out.println("\t #update_errors=" + nbUpdateErrors.get());
 		System.out.println("\t #delete=" + nbDeletes + ", avg=" + avgDeleteDuration + " ms");
 		System.out.println("\t #delete_errors=" + nbDeleteErrors.get());
-		int totalExecutions = nbInserts.get() + nbUpdates.get() + nbDeletes.get() + nbDeleteErrors.get() + nbInsertErrors.get() + nbUpdateErrors.get();
+		System.out.println("\t #optimistic_loc_errors=" + nbOptimisticLockError.get());
+		int nbErrors = nbDeleteErrors.get() + nbInsertErrors.get() + nbUpdateErrors.get();
+		System.out.println("\t #total_errors=" + nbErrors);
+		int totalExecutions = nbInserts.get() + nbUpdates.get() + nbDeletes.get() + nbErrors;
 		System.out.println("\t #total_exec=" + totalExecutions);
 
 	}

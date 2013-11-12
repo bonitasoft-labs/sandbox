@@ -13,8 +13,8 @@ import org.bonitasoft.poc.model.Employee;
 public class DeleteEmployees extends DeleteThread {
 
     public DeleteEmployees(final EntityManagerFactory entityManagerFactory, final AtomicInteger nbErrors, final AtomicLong errorDuration,
-            final AtomicInteger nbDeletes, final AtomicLong deleteDuration) {
-        super(entityManagerFactory, nbErrors, errorDuration, nbDeletes, deleteDuration);
+            final AtomicInteger nbDeletes, final AtomicLong deleteDuration,final AtomicInteger nbOptimisticLockError) {
+        super(entityManagerFactory, nbErrors, errorDuration, nbDeletes, deleteDuration,nbOptimisticLockError);
     }
 
     @Override

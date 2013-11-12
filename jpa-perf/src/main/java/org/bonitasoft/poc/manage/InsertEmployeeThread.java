@@ -15,8 +15,8 @@ import org.bonitasoft.poc.model.Employee;
 public class InsertEmployeeThread extends InsertThread {
 
     public InsertEmployeeThread(final EntityManagerFactory entityManagerFactory, final AtomicInteger nbErrors, final AtomicLong errorDuration,
-            final AtomicInteger nbInserts, final AtomicLong insertDuration) {
-        super(entityManagerFactory, nbErrors, errorDuration, nbInserts, insertDuration);
+            final AtomicInteger nbInserts, final AtomicLong insertDuration,final AtomicInteger nbOptimisticLockError) {
+        super(entityManagerFactory, nbErrors, errorDuration, nbInserts, insertDuration,nbOptimisticLockError);
     }
 
     @Override

@@ -14,8 +14,8 @@ public abstract class DeleteThread extends JPAThread {
 	private AtomicInteger nbDeleteErrors;
 
     public DeleteThread(final EntityManagerFactory entityManagerFactory, final AtomicInteger nbDeleteErrors, final AtomicLong errorDuration,
-            final AtomicInteger nbDeletes, final AtomicLong deleteDuration) {
-        super(entityManagerFactory, errorDuration);
+            final AtomicInteger nbDeletes, final AtomicLong deleteDuration,final AtomicInteger nbOptimisticLockError) {
+        super(entityManagerFactory, errorDuration,nbOptimisticLockError);
         this.nbDeletes = nbDeletes;
         this.deleteDuration = deleteDuration;
         this.nbDeleteErrors = nbDeleteErrors;

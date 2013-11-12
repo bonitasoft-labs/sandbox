@@ -14,8 +14,8 @@ public abstract class UpdateThread extends JPAThread {
 	private AtomicInteger nbUpdateErrors;
 
     public UpdateThread(final EntityManagerFactory entityManagerFactory, final AtomicInteger nbUpdateErrors, final AtomicLong errorDuration,
-            final AtomicInteger nbUpdates, final AtomicLong updateDuration) {
-        super(entityManagerFactory, errorDuration);
+            final AtomicInteger nbUpdates, final AtomicLong updateDuration,final AtomicInteger nbOptimisticLockError) {
+        super(entityManagerFactory, errorDuration,nbOptimisticLockError);
         this.nbUpdates = nbUpdates;
         this.updateDuration = updateDuration;
         this.nbUpdateErrors = nbUpdateErrors;

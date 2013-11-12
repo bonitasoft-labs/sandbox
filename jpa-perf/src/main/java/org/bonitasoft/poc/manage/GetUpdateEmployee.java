@@ -14,8 +14,8 @@ import org.bonitasoft.poc.model.Employee;
 public class GetUpdateEmployee extends UpdateThread {
 
     public GetUpdateEmployee(final EntityManagerFactory entityManagerFactory, final AtomicInteger nbErrors, final AtomicLong errorDuration,
-            final AtomicInteger nbUpdates, final AtomicLong updateDuration) {
-        super(entityManagerFactory, nbErrors, errorDuration, nbUpdates, updateDuration);
+            final AtomicInteger nbUpdates, final AtomicLong updateDuration,final AtomicInteger nbOptimisticLockError) {
+        super(entityManagerFactory, nbErrors, errorDuration, nbUpdates, updateDuration,nbOptimisticLockError);
     }
 
     @Override

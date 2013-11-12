@@ -14,8 +14,8 @@ public abstract class InsertThread extends JPAThread {
 	private AtomicInteger nbInsertErrors;
 
     public InsertThread(final EntityManagerFactory entityManagerFactory, final AtomicInteger nbInsertErrors, final AtomicLong errorDuration,
-            final AtomicInteger nbInserts, final AtomicLong insertDuration) {
-        super(entityManagerFactory,errorDuration);
+            final AtomicInteger nbInserts, final AtomicLong insertDuration,final AtomicInteger nbOptimisticLockError) {
+        super(entityManagerFactory,errorDuration,nbOptimisticLockError);
         this.nbInserts = nbInserts;
         this.insertDuration = insertDuration;
         this.nbInsertErrors = nbInsertErrors;

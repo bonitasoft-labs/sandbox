@@ -2,36 +2,44 @@ package org.bonitasoft.poc.manage;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.EntityTransaction;
 
-public abstract class JPAThread extends Thread {
+public abstract class JPAThread implements Runnable {
 
-    private long time;
+    private long duration;
+
+    private final EntityManagerFactory entityManagerFactory;
+
+    public JPAThread(final EntityManagerFactory entityManagerFactory) {
+        this.entityManagerFactory = entityManagerFactory;
+    }
 
     @Override
     public void run() {
-        super.run();
-        time = System.currentTimeMillis();
-        final EntityManagerFactory entityManagerFactory = EntityManagerFactorySingleton.getInstance().getEntityManagerFactory();
+        final long startTime = System.currentTimeMillis();
         final EntityManager entityManager = entityManagerFactory.createEntityManager();
+        final EntityTransaction transaction = entityManager.getTransaction();
         try {
-            entityManager.getTransaction().begin();
-            execute(entityManager);
-            entityManager.getTransaction().commit();
-        } catch (final RuntimeException re) {
-            if (entityManager.getTransaction().isActive()) {
-                entityManager.getTransaction().rollback();
+            transaction.begin();
+            try {
+                execute(entityManager);
+                transaction.commit();
+            } catch (final RuntimeException re) {
+                transaction.rollback();
+                throw re;
             }
-            throw re;
+        } catch (final RuntimeException e) {
+            //
         } finally {
             entityManager.close();
-            time = System.currentTimeMillis() - time;
+            duration = System.currentTimeMillis() - startTime;
         }
     }
 
     public abstract void execute(EntityManager entityManager);
 
-    public long getTime() {
-        return time;
+    public long getDuration() {
+        return duration;
     }
 
 }

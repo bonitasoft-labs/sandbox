@@ -29,7 +29,7 @@ public abstract class JPAThread implements Runnable {
                 execute(entityManager);
                 transaction.commit();
             } catch (final RollbackException re) {
-                // throw ole;
+                throw re;
             } catch (final RuntimeException re) {
                 re.printStackTrace();
                 transaction.rollback();

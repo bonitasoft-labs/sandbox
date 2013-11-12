@@ -1,6 +1,7 @@
 package org.bonitasoft.poc.model;
 
 import java.util.List;
+import java.util.Random;
 
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -16,15 +17,14 @@ public abstract class AbstractTest {
 
     @After
     public void tearDown() {
-        for (final Class<?> entityType : getEntityTypes()) {
+        for (final Class<?> entityType : getEntityTypesToCleanAfterTest()) {
             deleteEntity(entityType);
         }
     }
 
-    public abstract List<Class<?>> getEntityTypes();
+    public abstract List<Class<?>> getEntityTypesToCleanAfterTest();
 
     protected <T> void deleteEntity(final Class<T> entityType) {
-        final PersistenceUtil persistenceUtil = PersistenceUtil.getInstance();
         final EntityManager entityManager = persistenceUtil.createEntityManagerAndBeginTransaction();
         final CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         final CriteriaQuery<T> criteria = cb.createQuery(entityType);
@@ -35,6 +35,19 @@ public abstract class AbstractTest {
         }
         entityManager.getTransaction().commit();
         entityManager.close();
+    }
+
+    protected Car buildRandomCar() {
+        final Car myCar = new Car();
+        String regNb = "";
+        for (int i = 0; i < new Random().nextInt(12); i++) {
+            regNb += new Random().nextInt();
+        }
+        myCar.setRegistrationNumber(regNb);
+        myCar.setConstructor("Lada");
+        myCar.setModel("Turbo-61");
+        myCar.setNumberOfDoors(new Random().nextInt());
+        return myCar;
     }
 
 }

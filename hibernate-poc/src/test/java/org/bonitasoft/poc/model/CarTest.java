@@ -21,11 +21,9 @@ import static org.junit.Assert.fail;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Random;
 import java.util.UUID;
 
 import javax.persistence.EntityManager;
-import javax.persistence.EntityTransaction;
 import javax.persistence.PersistenceException;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -44,51 +42,8 @@ import org.junit.Test;
 public class CarTest extends AbstractTest {
 
     @Override
-    public List<Class<?>> getEntityTypes() {
+    public List<Class<?>> getEntityTypesToCleanAfterTest() {
         return Arrays.asList(Garage.class, Person.class, Car.class);
-    }
-
-    @Test(expected = PersistenceException.class)
-    public void outdatedModificationThrowsException() throws Exception {
-        final Car car = buildRandomCar();
-        final EntityManager entityManager = persistenceUtil.createEntityManagerAndBeginTransaction();
-        entityManager.persist(car);
-        persistenceUtil.closeTransactionAndEntityManager(entityManager);
-
-        // retrieve the car a first time:
-        final EntityManager entityManager1 = persistenceUtil.createEntityManagerAndBeginTransaction();
-        final Car foundCar = entityManager1.find(Car.class, car.getRegistrationNumber());
-        foundCar.setModel("toto");
-
-        // retrieve the car a first time:
-        final EntityManager entityManager2 = persistenceUtil.createEntityManagerAndBeginTransaction();
-        final Car sameCar = entityManager2.find(Car.class, car.getRegistrationNumber());
-        sameCar.setConstructor("TutTut-Pouet");
-        persistenceUtil.closeTransactionAndEntityManager(entityManager2);
-
-        try {
-            // Try to commit the first open transaction afterwards:
-            final EntityTransaction transaction = entityManager1.getTransaction();
-            if (transaction.isActive()) {
-                transaction.commit();
-            }
-            fail("Concurrent modification of Car should be forbidden by Optimistic locking");
-        } finally {
-            entityManager1.close();
-        }
-    }
-
-    private Car buildRandomCar() {
-        final Car myCar = new Car();
-        String regNb = "";
-        for (int i = 0; i < new Random().nextInt(12); i++) {
-            regNb += new Random().nextInt();
-        }
-        myCar.setRegistrationNumber(regNb);
-        myCar.setConstructor("Lada");
-        myCar.setModel("Turbo-61");
-        myCar.setNumberOfDoors(new Random().nextInt());
-        return myCar;
     }
 
     @Test

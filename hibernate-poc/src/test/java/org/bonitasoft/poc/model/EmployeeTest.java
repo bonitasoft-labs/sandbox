@@ -20,7 +20,7 @@ import org.junit.Test;
 public class EmployeeTest extends AbstractTest {
 
     @Override
-    public List<Class<?>> getEntityTypes() {
+    public List<Class<?>> getEntityTypesToCleanAfterTest() {
         return Arrays.asList(Employee.class, Project.class);
     }
 

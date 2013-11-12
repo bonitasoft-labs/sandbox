@@ -60,7 +60,7 @@ public class PersistenceUtil {
         return entityManager;
     }
 
-    private EntityManagerFactory getEntityManagerFactory() {
+    public EntityManagerFactory getEntityManagerFactory() {
         return entityFactory;
     }
 

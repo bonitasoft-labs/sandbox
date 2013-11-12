@@ -30,8 +30,8 @@ public abstract class AbstractTest {
         final CriteriaQuery<T> criteria = cb.createQuery(entityType);
         final Root<T> allInstances = criteria.from(entityType);
         final CriteriaQuery<T> all = criteria.select(allInstances);
-        for (final Object car : entityManager.createQuery(all).getResultList()) {
-            entityManager.remove(car);
+        for (final Object entity : entityManager.createQuery(all).getResultList()) {
+            entityManager.remove(entity);
         }
         entityManager.getTransaction().commit();
         entityManager.close();

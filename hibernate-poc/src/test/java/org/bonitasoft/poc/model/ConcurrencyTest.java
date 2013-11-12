@@ -32,7 +32,7 @@ public class ConcurrencyTest extends AbstractTest {
 
     @Override
     public List<Class<?>> getEntityTypesToCleanAfterTest() {
-        return Arrays.asList(Car.class, Person.class);
+        return Arrays.asList(Garage.class, Car.class);
     }
 
     @Test(expected = PersistenceException.class)
@@ -86,9 +86,27 @@ public class ConcurrencyTest extends AbstractTest {
         throw carUpdater1.getException();
     }
 
-    // @Test(expected = PersistenceException.class)
-    // public void two_threads_concurrently_modifying_same_car_with_relations_throws_exception() throws Exception {
-    //
-    // }
+    @Test(expected = PersistenceException.class)
+    public void two_threads_concurrently_modifying_same_garage_with_some_cars_throws_exception() throws Exception {
+        final Garage myGarage = new Garage();
+        myGarage.setName("Garage Marcel");
+        myGarage.addToCars(buildRandomCar());
+        final EntityManager entityManager = persistenceUtil.createEntityManagerAndBeginTransaction();
+        entityManager.persist(myGarage);
+        persistenceUtil.closeTransactionAndEntityManager(entityManager);
+
+        CountDownLatch latch = new CountDownLatch(1);
+        final FirstGarageUpdater garageUpdater1 = new FirstGarageUpdater(myGarage.getId(), latch);
+        final SecondGarageUpdater garageUpdater2 = new SecondGarageUpdater(myGarage.getId(), latch);
+        garageUpdater1.start();
+        garageUpdater2.start();
+
+        // wait for threads to finish:
+        garageUpdater1.join();
+        garageUpdater2.join();
+
+        throw garageUpdater1.getException();
+
+    }
 
 }

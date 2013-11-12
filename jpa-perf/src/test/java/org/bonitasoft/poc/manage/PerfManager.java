@@ -1,11 +1,11 @@
 package org.bonitasoft.poc.manage;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
@@ -16,17 +16,23 @@ public class PerfManager {
 
     private static final int POOL_SIZE = 50;
 
-    private static final int NB_THREADS = 150;
+    private static final int NB_THREADS = 1500;
 
     @Test
     public void mainTest() throws InterruptedException {
-        final List<JPAThread> runnables = new ArrayList<JPAThread>();
+        final AtomicInteger nbInserts = new AtomicInteger();
+        final AtomicLong insertDuration = new AtomicLong();
+        final AtomicInteger nbUpdates = new AtomicInteger();
+        final AtomicLong updateDuration = new AtomicLong();
+        final AtomicInteger nbDeletes = new AtomicInteger();
+        final AtomicLong deleteDuration = new AtomicLong();
+        final AtomicInteger nbErrors = new AtomicInteger();
+        final AtomicLong errorDuration = new AtomicLong();
         final EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("DefaultPersistenceUnit");
         ExecutorService executorService = Executors.newFixedThreadPool(POOL_SIZE);
 
         for (int i = 0; i < 10; i++) {
-            final InsertEmployeeThread insertEmployeeThread = new InsertEmployeeThread(entityManagerFactory);
-            runnables.add(insertEmployeeThread);
+            final InsertEmployeeThread insertEmployeeThread = new InsertEmployeeThread(entityManagerFactory, nbErrors, errorDuration, nbInserts, insertDuration);
             executorService.execute(insertEmployeeThread);
         }
         executorService.shutdown();
@@ -37,74 +43,37 @@ public class PerfManager {
         for (int i = 0; i < NB_THREADS; i++) {
             final int nextInt = random.nextInt(10);
             if (nextInt % 3 == 0) {
-                final InsertEmployeeThread insertEmployeeThread = new InsertEmployeeThread(entityManagerFactory);
-                runnables.add(insertEmployeeThread);
+                final InsertEmployeeThread insertEmployeeThread = new InsertEmployeeThread(entityManagerFactory, nbErrors, errorDuration, nbInserts,
+                        insertDuration);
                 executorService.execute(insertEmployeeThread);
             } else {
                 if (nextInt % 2 == 0) {
-                    final DeleteEmployeesAddress deleteEmployeesAddress = new DeleteEmployeesAddress(entityManagerFactory);
-                    runnables.add(deleteEmployeesAddress);
+                    final DeleteEmployeesAddress deleteEmployeesAddress = new DeleteEmployeesAddress(entityManagerFactory, nbErrors, errorDuration, nbDeletes,
+                            deleteDuration);
                     executorService.execute(deleteEmployeesAddress);
                 } else {
-                    final GetUpdateEmployee updateEmployee = new GetUpdateEmployee(entityManagerFactory);
-                    runnables.add(updateEmployee);
+                    final GetUpdateEmployee updateEmployee = new GetUpdateEmployee(entityManagerFactory, nbErrors, errorDuration, nbUpdates, updateDuration);
                     executorService.execute(updateEmployee);
                 }
             }
         }
         executorService.shutdown();
-        executorService.awaitTermination(100, TimeUnit.SECONDS);
+        executorService.awaitTermination(NB_THREADS * 2, TimeUnit.SECONDS);
 
-        int total = 0;
-        int nbInserts = 0;
-        int totalInsert = 0;
-        int nbUpdates = 0;
-        int totalUpdate = 0;
-        int nbDeletes = 0;
-        int totalDelete = 0;
-        int nbOtherErrors = 0;
-        int nbInsertErrors = 0;
-        int nbDeleteErrors = 0;
-        int nbUpdateErrors = 0;
-        for (final JPAThread runnable : runnables) {
-            if (!runnable.isCompleted()) {
-            	  if (runnable instanceof InsertEmployeeThread) {
-            		  nbInsertErrors++;
-            	  }else if(runnable instanceof DeleteEmployeesAddress){
-            		  nbDeleteErrors++;
-            	  }else if(runnable instanceof GetUpdateEmployee){
-            		  nbUpdateErrors++;
-            	  }else{
-            		  nbOtherErrors++;
-            	  }
-            
-            } else {
-                total += runnable.getDuration();
-                if (runnable instanceof InsertEmployeeThread) {
-                    nbInserts++;
-                    totalInsert += runnable.getDuration();
-                }
-                if (runnable instanceof DeleteEmployeesAddress) {
-                    nbDeletes++;
-                    totalDelete += runnable.getDuration();
-                } else {
-                    nbUpdates++;
-                    totalUpdate += runnable.getDuration();
-                }
-            }
-        }
-        final double avgDuration = total / runnables.size();
-        final double avgInsertDuration = totalInsert / nbInserts;
-        final double avgUpdateDuration = totalUpdate / nbUpdates;
-        final double avgDeleteDuration = totalDelete / nbDeletes;
+        final double avgInsertDuration = insertDuration.get() / nbInserts.get();
+        final double avgUpdateDuration = updateDuration.get() / nbUpdates.get();
+        final double avgDeleteDuration = deleteDuration.get() / nbDeletes.get();
+        final double avgDuration = (insertDuration.get() + updateDuration.get() + deleteDuration.get()) / (nbInserts.get() + nbUpdates.get() + nbDeletes.get());
+
         System.out.println("DONE avg=" + avgDuration + " ms");
         System.out.println("\t #inserts=" + nbInserts + ", avg=" + avgInsertDuration + " ms");
         System.out.println("\t #updates=" + nbUpdates + ", avg=" + avgUpdateDuration + " ms");
         System.out.println("\t #delete=" + nbDeletes + ", avg=" + avgDeleteDuration + " ms");
-        System.out.println("\t #insert_errors=" + nbInsertErrors);
-        System.out.println("\t #delete_errors=" + nbDeleteErrors);
-        System.out.println("\t #update_errors=" + nbUpdateErrors);
-        System.out.println("\t #other_errors=" + nbOtherErrors);
+        // System.out.println("\t #insert_errors=" + nbInsertErrors);
+        // System.out.println("\t #delete_errors=" + nbDeleteErrors);
+        // System.out.println("\t #update_errors=" + nbUpdateErrors);
+        // System.out.println("\t #other_errors=" + nbOtherErrors);
+        System.out.println("\t #errors=" + nbErrors.get());
     }
 
 }

@@ -1,6 +1,8 @@
 package org.bonitasoft.poc.manage;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -9,10 +11,11 @@ import javax.persistence.Query;
 import org.bonitasoft.poc.model.Address;
 import org.bonitasoft.poc.model.Employee;
 
-public class DeleteEmployeesAddress extends JPAThread {
+public class DeleteEmployeesAddress extends DeleteThread {
 
-    public DeleteEmployeesAddress(final EntityManagerFactory entityManagerFactory) {
-        super(entityManagerFactory);
+    public DeleteEmployeesAddress(final EntityManagerFactory entityManagerFactory, final AtomicInteger nbErrors, final AtomicLong errorDuration,
+            final AtomicInteger nbDeletes, final AtomicLong deleteDuration) {
+        super(entityManagerFactory, nbErrors, errorDuration, nbDeletes, deleteDuration);
     }
 
     @Override

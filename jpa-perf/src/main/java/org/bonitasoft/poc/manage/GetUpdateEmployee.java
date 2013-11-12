@@ -2,6 +2,8 @@ package org.bonitasoft.poc.manage;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -9,10 +11,11 @@ import javax.persistence.Query;
 
 import org.bonitasoft.poc.model.Employee;
 
-public class GetUpdateEmployee extends JPAThread {
+public class GetUpdateEmployee extends UpdateThread {
 
-    public GetUpdateEmployee(final EntityManagerFactory entityManagerFactory) {
-        super(entityManagerFactory);
+    public GetUpdateEmployee(final EntityManagerFactory entityManagerFactory, final AtomicInteger nbErrors, final AtomicLong errorDuration,
+            final AtomicInteger nbUpdates, final AtomicLong updateDuration) {
+        super(entityManagerFactory, nbErrors, errorDuration, nbUpdates, updateDuration);
     }
 
     @Override
@@ -29,7 +32,6 @@ public class GetUpdateEmployee extends JPAThread {
         final List<Employee> employees = query.getResultList();
         final Employee employee = employees.get(0);
         employee.setTitle(UUID.randomUUID().toString());
-        // entityManager.merge(employee);
     }
 
 }

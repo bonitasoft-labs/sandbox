@@ -1,5 +1,8 @@
 package org.bonitasoft.poc.manage;
 
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
+
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
@@ -7,19 +10,21 @@ import javax.persistence.RollbackException;
 
 public abstract class JPAThread implements Runnable {
 
-    private boolean completed;
+    private final AtomicInteger nbErrors;
 
-    private long duration;
+    private final AtomicLong errorDuration;
 
     private final EntityManagerFactory entityManagerFactory;
 
-    public JPAThread(final EntityManagerFactory entityManagerFactory) {
+    public JPAThread(final EntityManagerFactory entityManagerFactory, final AtomicInteger nbErrors, final AtomicLong errorDuration) {
         this.entityManagerFactory = entityManagerFactory;
+        this.nbErrors = nbErrors;
+        this.errorDuration = errorDuration;
     }
 
     @Override
     public void run() {
-        completed = true;
+        boolean status = true;
         final long startTime = System.currentTimeMillis();
         final EntityManager entityManager = entityManagerFactory.createEntityManager();
         final EntityTransaction transaction = entityManager.getTransaction();
@@ -28,6 +33,7 @@ public abstract class JPAThread implements Runnable {
             try {
                 execute(entityManager);
                 transaction.commit();
+                incrementCounter();
             } catch (final RollbackException re) {
                 throw re;
             } catch (final RuntimeException re) {
@@ -36,21 +42,23 @@ public abstract class JPAThread implements Runnable {
                 throw re;
             }
         } catch (final RuntimeException e) {
-            completed = false;
+            nbErrors.getAndIncrement();
+            status = false;
             throw e;
         } finally {
-            duration = System.currentTimeMillis() - startTime;
             entityManager.close();
+            if (!status) {
+                errorDuration.addAndGet(System.currentTimeMillis() - startTime);
+            } else {
+                computeDuration(System.currentTimeMillis() - startTime);
+            }
         }
     }
 
-    public abstract void execute(EntityManager entityManager);
+    protected abstract void computeDuration(long millis);
 
-    public long getDuration() {
-        return duration;
-    }
+    protected abstract void incrementCounter();
 
-    public boolean isCompleted() {
-        return completed;
-    }
+    protected abstract void execute(EntityManager entityManager);
+
 }

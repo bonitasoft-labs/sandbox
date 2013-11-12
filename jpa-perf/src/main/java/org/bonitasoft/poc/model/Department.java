@@ -3,30 +3,15 @@ package org.bonitasoft.poc.model;
 import java.util.Collection;
 
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
 @Entity
-public class Department {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private int id;
+public class Department extends VersionEntity {
 
     private String name;
 
-    @OneToMany(mappedBy = "employee")
+    @OneToMany
     private Collection<Employee> employees;
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(final int id) {
-        this.id = id;
-    }
 
     public String getName() {
         return name;
@@ -47,8 +32,41 @@ public class Department {
     }
 
     @Override
-    public String toString() {
-        return "Department [employees=" + employees + ", id=" + id + ", name=" + name + "]";
+    public int hashCode() {
+        final int prime = 31;
+        int result = super.hashCode();
+        result = prime * result + (employees == null ? 0 : employees.hashCode());
+        result = prime * result + (name == null ? 0 : name.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (!super.equals(obj)) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Department other = (Department) obj;
+        if (employees == null) {
+            if (other.employees != null) {
+                return false;
+            }
+        } else if (!employees.equals(other.employees)) {
+            return false;
+        }
+        if (name == null) {
+            if (other.name != null) {
+                return false;
+            }
+        } else if (!name.equals(other.name)) {
+            return false;
+        }
+        return true;
     }
 
 }

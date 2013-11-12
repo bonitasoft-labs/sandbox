@@ -1,18 +1,15 @@
 package org.bonitasoft.poc.model;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.OneToMany;
 
 @Entity
-public class Employee {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+public class Employee extends VersionEntity {
 
     private String name;
 
@@ -22,12 +19,11 @@ public class Employee {
 
     private Date created;
 
-    public Long getId() {
-        return id;
-    }
+    @OneToMany(cascade = CascadeType.ALL)
+    private List<Address> addresses;
 
-    public void setId(final Long id) {
-        this.id = id;
+    public Employee() {
+        addresses = new ArrayList<Address>();
     }
 
     public String getName() {
@@ -62,17 +58,33 @@ public class Employee {
         this.created = created;
     }
 
+    public List<Address> getAddresses() {
+        return addresses;
+    }
+
+    public void addAddress(final Address address) {
+        addresses.add(address);
+    }
+
+    public void removeAddress(final Address address) {
+        addresses.remove(address);
+    }
+
+    public void setAddresses(final List<Address> addresses) {
+        this.addresses = addresses;
+    }
+
     @Override
     public String toString() {
-        return "Employee [id=" + id + ", name=" + name + ", surname=" + surname + ", title=" + title + "]";
+        return "Employee [name=" + name + ", surname=" + surname + ", title=" + title + ", created=" + created + "]";
     }
 
     @Override
     public int hashCode() {
         final int prime = 31;
-        int result = 1;
+        int result = super.hashCode();
+        result = prime * result + (addresses == null ? 0 : addresses.hashCode());
         result = prime * result + (created == null ? 0 : created.hashCode());
-        result = prime * result + (id == null ? 0 : id.hashCode());
         result = prime * result + (name == null ? 0 : name.hashCode());
         result = prime * result + (surname == null ? 0 : surname.hashCode());
         result = prime * result + (title == null ? 0 : title.hashCode());
@@ -84,25 +96,25 @@ public class Employee {
         if (this == obj) {
             return true;
         }
-        if (obj == null) {
+        if (!super.equals(obj)) {
             return false;
         }
         if (getClass() != obj.getClass()) {
             return false;
         }
         final Employee other = (Employee) obj;
+        if (addresses == null) {
+            if (other.addresses != null) {
+                return false;
+            }
+        } else if (!addresses.equals(other.addresses)) {
+            return false;
+        }
         if (created == null) {
             if (other.created != null) {
                 return false;
             }
         } else if (!created.equals(other.created)) {
-            return false;
-        }
-        if (id == null) {
-            if (other.id != null) {
-                return false;
-            }
-        } else if (!id.equals(other.id)) {
             return false;
         }
         if (name == null) {

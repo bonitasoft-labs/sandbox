@@ -62,18 +62,23 @@ public class PerfManager {
         int totalUpdate = 0;
         int nbDeletes = 0;
         int totalDelete = 0;
+        int nbErrors = 0;
         for (final JPAThread runnable : runnables) {
-            total += runnable.getDuration();
-            if (runnable instanceof InsertEmployeeThread) {
-                nbInserts++;
-                totalInsert += runnable.getDuration();
-            }
-            if (runnable instanceof DeleteEmployeesAddress) {
-                nbDeletes++;
-                totalDelete += runnable.getDuration();
+            if (!runnable.isCompleted()) {
+                nbErrors++;
             } else {
-                nbUpdates++;
-                totalUpdate += runnable.getDuration();
+                total += runnable.getDuration();
+                if (runnable instanceof InsertEmployeeThread) {
+                    nbInserts++;
+                    totalInsert += runnable.getDuration();
+                }
+                if (runnable instanceof DeleteEmployeesAddress) {
+                    nbDeletes++;
+                    totalDelete += runnable.getDuration();
+                } else {
+                    nbUpdates++;
+                    totalUpdate += runnable.getDuration();
+                }
             }
         }
         final double avgDuration = total / runnables.size();
@@ -84,6 +89,7 @@ public class PerfManager {
         System.out.println("\t #inserts=" + nbInserts + ", avg=" + avgInsertDuration + " ms");
         System.out.println("\t #updates=" + nbUpdates + ", avg=" + avgUpdateDuration + " ms");
         System.out.println("\t #delete=" + nbDeletes + ", avg=" + avgDeleteDuration + " ms");
+        System.out.println("\t #errors=" + nbErrors);
     }
 
 }

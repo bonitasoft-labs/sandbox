@@ -5,18 +5,22 @@ import java.util.Date;
 import java.util.List;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
 
 @Entity
 public class Employee extends VersionEntity {
 
+    @Column(nullable = false, length = 50)
     private String name;
 
+    @Column(length = 25)
     private String surname;
 
     private String title;
 
+    @Column(nullable = false)
     private Date created;
 
     @OneToMany(cascade = CascadeType.ALL)

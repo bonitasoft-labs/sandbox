@@ -1,6 +1,7 @@
 package org.bonitasoft.poc.manage;
 
 import java.util.Date;
+import java.util.Random;
 import java.util.UUID;
 
 import javax.persistence.EntityManager;
@@ -17,14 +18,16 @@ public class InsertEmployeeThread extends JPAThread {
 
     @Override
     public void execute(final EntityManager entityManager) {
-        final Address address = new Address();
-        address.setStreet(UUID.randomUUID().toString());
-        address.setCity(UUID.randomUUID().toString());
-
         final Employee employee = new Employee();
         employee.setName("Matti" + UUID.randomUUID().toString());
         employee.setCreated(new Date());
-        employee.addAddress(address);
+        final Random random = new Random();
+        for (int i = 0; i < random.nextInt(10) + 1; i++) {
+            final Address address = new Address();
+            address.setStreet(UUID.randomUUID().toString());
+            address.setCity(UUID.randomUUID().toString());
+            employee.addAddress(address);
+        }
         entityManager.persist(employee);
     }
 

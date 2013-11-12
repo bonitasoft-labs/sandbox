@@ -29,8 +29,10 @@ public class DeleteEmployeesAddress extends JPAThread {
         final List<Employee> employees = query.getResultList();
         final Employee employee = employees.get(0);
         final List<Address> addresses = employee.getAddresses();
-        final Address address = addresses.get(0);
-        employee.removeAddress(address);
+        if (!addresses.isEmpty()) {
+            final Address address = addresses.get(0);
+            employee.removeAddress(address);
+        }
     }
 
 }

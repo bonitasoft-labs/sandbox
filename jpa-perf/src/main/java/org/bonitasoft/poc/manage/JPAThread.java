@@ -3,8 +3,11 @@ package org.bonitasoft.poc.manage;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
+import javax.persistence.RollbackException;
 
 public abstract class JPAThread implements Runnable {
+
+    private boolean completed;
 
     private long duration;
 
@@ -16,6 +19,7 @@ public abstract class JPAThread implements Runnable {
 
     @Override
     public void run() {
+        completed = true;
         final long startTime = System.currentTimeMillis();
         final EntityManager entityManager = entityManagerFactory.createEntityManager();
         final EntityTransaction transaction = entityManager.getTransaction();
@@ -24,15 +28,19 @@ public abstract class JPAThread implements Runnable {
             try {
                 execute(entityManager);
                 transaction.commit();
+            } catch (final RollbackException re) {
+                // throw ole;
             } catch (final RuntimeException re) {
+                re.printStackTrace();
                 transaction.rollback();
                 throw re;
             }
         } catch (final RuntimeException e) {
-            //
+            completed = false;
+            throw e;
         } finally {
-            entityManager.close();
             duration = System.currentTimeMillis() - startTime;
+            entityManager.close();
         }
     }
 
@@ -42,4 +50,7 @@ public abstract class JPAThread implements Runnable {
         return duration;
     }
 
+    public boolean isCompleted() {
+        return completed;
+    }
 }

@@ -11,11 +11,14 @@ public abstract class UpdateThread extends JPAThread {
 
     private final AtomicLong updateDuration;
 
-    public UpdateThread(final EntityManagerFactory entityManagerFactory, final AtomicInteger nbErrors, final AtomicLong errorDuration,
+	private AtomicInteger nbUpdateErrors;
+
+    public UpdateThread(final EntityManagerFactory entityManagerFactory, final AtomicInteger nbUpdateErrors, final AtomicLong errorDuration,
             final AtomicInteger nbUpdates, final AtomicLong updateDuration) {
-        super(entityManagerFactory, nbErrors, errorDuration);
+        super(entityManagerFactory, errorDuration);
         this.nbUpdates = nbUpdates;
         this.updateDuration = updateDuration;
+        this.nbUpdateErrors = nbUpdateErrors;
     }
 
     @Override
@@ -28,4 +31,8 @@ public abstract class UpdateThread extends JPAThread {
         updateDuration.addAndGet(millis);
     }
 
+    @Override
+    protected void incrementErrorCounter() {
+    	nbUpdateErrors.getAndIncrement();
+    }
 }

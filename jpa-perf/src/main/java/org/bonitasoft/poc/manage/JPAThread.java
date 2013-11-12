@@ -1,6 +1,5 @@
 package org.bonitasoft.poc.manage;
 
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
 import javax.persistence.EntityManager;
@@ -10,15 +9,12 @@ import javax.persistence.RollbackException;
 
 public abstract class JPAThread implements Runnable {
 
-    private final AtomicInteger nbErrors;
-
     private final AtomicLong errorDuration;
 
     private final EntityManagerFactory entityManagerFactory;
 
-    public JPAThread(final EntityManagerFactory entityManagerFactory, final AtomicInteger nbErrors, final AtomicLong errorDuration) {
+    public JPAThread(final EntityManagerFactory entityManagerFactory,final AtomicLong errorDuration) {
         this.entityManagerFactory = entityManagerFactory;
-        this.nbErrors = nbErrors;
         this.errorDuration = errorDuration;
     }
 
@@ -42,7 +38,7 @@ public abstract class JPAThread implements Runnable {
                 throw re;
             }
         } catch (final RuntimeException e) {
-            nbErrors.getAndIncrement();
+        	incrementErrorCounter();
             status = false;
             throw e;
         } finally {
@@ -56,6 +52,8 @@ public abstract class JPAThread implements Runnable {
     }
 
     protected abstract void computeDuration(long millis);
+    
+    protected abstract void incrementErrorCounter();
 
     protected abstract void incrementCounter();
 

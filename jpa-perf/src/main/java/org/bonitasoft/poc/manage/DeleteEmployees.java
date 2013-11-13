@@ -6,7 +6,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
-import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 
 import org.bonitasoft.poc.model.Employee;
 
@@ -25,7 +25,7 @@ public class DeleteEmployees extends DeleteThread {
         } else {
             builder.append(" DESC");
         }
-        final Query query = entityManager.createQuery(builder.toString());
+        final TypedQuery<Employee> query = entityManager.createQuery(builder.toString(),Employee.class);
         query.setFirstResult(0);
         query.setMaxResults(1);
         final List<Employee> employees = query.getResultList();

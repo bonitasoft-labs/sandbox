@@ -13,6 +13,7 @@ import javax.persistence.TypedQuery;
 import org.bonitasoft.poc.model.Employee;
 
 import com.codahale.metrics.Counter;
+import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 import com.codahale.metrics.Timer.Context;
 
@@ -24,12 +25,12 @@ public abstract class JPAThread implements Runnable {
 	private Random random;
 	protected Counter employeeNotFoundCounter;
 
-	public JPAThread(final EntityManagerFactory entityManagerFactory,final Timer errorTimer,final Counter optimisticLockErrorCounter, Counter employeeNotFoundCounter) {
+	public JPAThread(final EntityManagerFactory entityManagerFactory,final MetricRegistry metricRegisrty) {
 		this.random = new Random();
 		this.entityManagerFactory = entityManagerFactory;
-		this.errorTimer = errorTimer;
-		this.optimisticLockErrorCounter = optimisticLockErrorCounter;
-		this.employeeNotFoundCounter = employeeNotFoundCounter;
+		this.errorTimer = metricRegisrty.timer("error-timer");
+		this.optimisticLockErrorCounter = metricRegisrty.counter("optimistic-lock-errors");
+		this.employeeNotFoundCounter = metricRegisrty.counter("employee-not-found-counter");
 	}
 
 	@Override
@@ -44,7 +45,6 @@ public abstract class JPAThread implements Runnable {
 			try {
 				execute(entityManager);
 				transaction.commit();
-				incrementCounter();
 			} catch (final RollbackException re) {
 				errorContext = errorTimer.time();
 				if(re.getCause() instanceof OptimisticLockException){
@@ -78,8 +78,6 @@ public abstract class JPAThread implements Runnable {
 
 
 	protected abstract void incrementErrorCounter();
-
-	protected abstract void incrementCounter();
 
 	protected abstract void execute(EntityManager entityManager);
 

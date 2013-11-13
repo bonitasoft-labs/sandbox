@@ -8,14 +8,12 @@ import javax.persistence.EntityManagerFactory;
 import org.bonitasoft.poc.model.Address;
 import org.bonitasoft.poc.model.Employee;
 
-import com.codahale.metrics.Counter;
-import com.codahale.metrics.Timer;
+import com.codahale.metrics.MetricRegistry;
 
 public class DeleteEmployeesAddress extends DeleteThread {
 
-	public DeleteEmployeesAddress(final EntityManagerFactory entityManagerFactory, final Counter deleteErrorCounter, final Timer errorTimer,
-			final Counter deleteCounter, final Timer deleteTimer,final Counter optimisticLockErrorCounter,final Counter employeeNotFoundCounter) {
-		super(entityManagerFactory, deleteErrorCounter, errorTimer, deleteCounter, deleteTimer,optimisticLockErrorCounter,employeeNotFoundCounter);
+	public DeleteEmployeesAddress(final EntityManagerFactory entityManagerFactory, final MetricRegistry metricRegistry) {
+		super(entityManagerFactory, metricRegistry);
 	}
 
 	@Override

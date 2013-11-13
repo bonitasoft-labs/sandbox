@@ -10,14 +10,12 @@ import javax.persistence.EntityManagerFactory;
 import org.bonitasoft.poc.model.Address;
 import org.bonitasoft.poc.model.Employee;
 
-import com.codahale.metrics.Counter;
-import com.codahale.metrics.Timer;
+import com.codahale.metrics.MetricRegistry;
 
 public class InsertEmployeeThread extends InsertThread {
 
-    public InsertEmployeeThread(final EntityManagerFactory entityManagerFactory, final Counter insertionErrorCounter, final Timer errorTimer,
-            final Counter insertionCounter, final Timer insertTimer,final Counter optimisticLockErrorCounter) {
-        super(entityManagerFactory, insertionErrorCounter, errorTimer, insertionCounter, insertTimer,optimisticLockErrorCounter);
+    public InsertEmployeeThread(final EntityManagerFactory entityManagerFactory, final MetricRegistry metricRegistry) {
+        super(entityManagerFactory, metricRegistry);
     }
 
     @Override

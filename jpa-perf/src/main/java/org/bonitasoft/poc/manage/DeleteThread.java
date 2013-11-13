@@ -3,27 +3,19 @@ package org.bonitasoft.poc.manage;
 import javax.persistence.EntityManagerFactory;
 
 import com.codahale.metrics.Counter;
+import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 
 public abstract class DeleteThread extends JPAThread {
-
-    private final Counter deleteCounter;
 
     private final Timer deleteTimer;
 
 	private Counter deleteErrorCounter;
 
-	public DeleteThread(final EntityManagerFactory entityManagerFactory, final Counter deleteErrorCounter, final Timer errorDuration,
-            final Counter deleteCounter, final Timer deleteTimer,final Counter nbOptimisticLockError,final Counter employeeNotFoundCounter) {
-        super(entityManagerFactory, errorDuration,nbOptimisticLockError,employeeNotFoundCounter);
-        this.deleteCounter = deleteCounter;
-        this.deleteTimer = deleteTimer;
-        this.deleteErrorCounter = deleteErrorCounter;
-    }
-
-    @Override
-    protected void incrementCounter() {
-    	deleteCounter.inc();
+	public DeleteThread(final EntityManagerFactory entityManagerFactory, final MetricRegistry metricRegistry) {
+        super(entityManagerFactory, metricRegistry);
+        this.deleteTimer = metricRegistry.timer("delete-timer");
+        this.deleteErrorCounter = metricRegistry.counter("number-of-delete-errors");
     }
     
     @Override

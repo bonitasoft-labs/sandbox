@@ -24,8 +24,9 @@ public class InsertEmployeeThread extends InsertThread {
     public void execute(final EntityManager entityManager) {
         final Employee employee = new Employee();
         employee.setName("Matti" + UUID.randomUUID().toString());
+        Random random = getRandom();
+        employee.setAge(random.nextInt(42)+20);
         employee.setCreated(new Date());
-        final Random random = new Random();
         for (int i = 0; i < random.nextInt(10) + 1; i++) {
             final Address address = new Address();
             address.setStreet(UUID.randomUUID().toString());
@@ -34,5 +35,7 @@ public class InsertEmployeeThread extends InsertThread {
         }
         entityManager.persist(employee);
     }
+
+	
 
 }

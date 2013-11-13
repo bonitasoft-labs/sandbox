@@ -20,6 +20,8 @@ public class Employee extends VersionEntity {
 
     private String title;
 
+    private Integer age;
+
     @Column(nullable = false)
     private Date created;
 
@@ -144,5 +146,13 @@ public class Employee extends VersionEntity {
         }
         return true;
     }
+
+	public Integer getAge() {
+		return age;
+	}
+
+	public void setAge(Integer age) {
+		this.age = age;
+	}
 
 }

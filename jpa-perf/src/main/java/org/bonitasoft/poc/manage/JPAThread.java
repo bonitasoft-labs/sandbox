@@ -1,10 +1,16 @@
 package org.bonitasoft.poc.manage;
 
+import java.util.List;
+import java.util.Random;
+
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.OptimisticLockException;
 import javax.persistence.RollbackException;
+import javax.persistence.TypedQuery;
+
+import org.bonitasoft.poc.model.Employee;
 
 import com.codahale.metrics.Counter;
 import com.codahale.metrics.Timer;
@@ -13,15 +19,17 @@ import com.codahale.metrics.Timer.Context;
 public abstract class JPAThread implements Runnable {
 
 	private final Timer errorTimer;
-
 	private final EntityManagerFactory entityManagerFactory;
-
 	private Counter optimisticLockErrorCounter;
+	private Random random;
+	protected Counter employeeNotFoundCounter;
 
-	public JPAThread(final EntityManagerFactory entityManagerFactory,final Timer errorTimer,final Counter optimisticLockErrorCounter) {
+	public JPAThread(final EntityManagerFactory entityManagerFactory,final Timer errorTimer,final Counter optimisticLockErrorCounter, Counter employeeNotFoundCounter) {
+		this.random = new Random();
 		this.entityManagerFactory = entityManagerFactory;
 		this.errorTimer = errorTimer;
 		this.optimisticLockErrorCounter = optimisticLockErrorCounter;
+		this.employeeNotFoundCounter = employeeNotFoundCounter;
 	}
 
 	@Override
@@ -76,6 +84,32 @@ public abstract class JPAThread implements Runnable {
 	protected abstract void execute(EntityManager entityManager);
 
 	protected abstract Timer getTimer() ;
+	
+	protected Random getRandom() {
+		return random;
+	}
 
+	protected Employee findRandomEmployee(final EntityManager entityManager) {
+		Random random = getRandom();
+		int randomAge1 = random.nextInt(42)+20;
+		int randomAge2 = random.nextInt(42)+20 ;
+		int max = Math.max(randomAge1, randomAge2);
+		int min = Math.min(randomAge1, randomAge2);
+		final StringBuilder builder = new StringBuilder("FROM Employee WHERE name LIKE 'Matti%' AND age > "+min+" AND age < "+max+" ORDER BY name ");
+		if (random.nextInt() % 2 == 0) {
+			builder.append(" ASC");
+		} else {
+			builder.append(" DESC");
+		}
+		final TypedQuery<Employee> query = entityManager.createQuery(builder.toString(),Employee.class);
+		query.setFirstResult(0);
+		query.setMaxResults(1);
+		final List<Employee> employees = query.getResultList();
+		if(employees.isEmpty()){
+			employeeNotFoundCounter.inc();
+			return null;
+		}
+		return employees.get(0);
+	}
 
 }

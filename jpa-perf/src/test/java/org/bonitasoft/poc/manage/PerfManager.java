@@ -18,7 +18,7 @@ import com.codahale.metrics.Timer;
 public class PerfManager {
 
 	private static final int POOL_SIZE = 50;
-	private static final int NB_THREADS = 1500;
+	private static final int NB_THREADS = 4000;
 
 	
 	@Test
@@ -38,6 +38,7 @@ public class PerfManager {
 		final Counter insertionErrorCounter = metrics.counter("number-of-insertion-errors");
 		final Counter updateErrorCounter = metrics.counter("number-of-update-errors");
 		final Counter deleteErrorCounter = metrics.counter("number-of-delete-errors");
+		final Counter employeeNotFoundCounter = metrics.counter("employee-not-found-counter");
 	
 		ConsoleReporter reporter = ConsoleReporter.forRegistry(metrics).convertDurationsTo(TimeUnit.MILLISECONDS).convertRatesTo(TimeUnit.MILLISECONDS).build();
 		
@@ -57,7 +58,7 @@ public class PerfManager {
 			final int nextInt = random.nextInt(10);
 			if (nextInt % 5 == 0) {
 				final DeleteEmployees deleteEmployees = new DeleteEmployees(entityManagerFactory, deleteErrorCounter, errorTimer, deleteCounter,
-						deleteTimer,optimisticLockErrorCounter);
+						deleteTimer,optimisticLockErrorCounter,employeeNotFoundCounter);
 				executorService.execute(deleteEmployees);
 			} else  if (nextInt % 3 == 0) {
 				final InsertEmployeeThread insertEmployeeThread = new InsertEmployeeThread(entityManagerFactory, insertionErrorCounter, errorTimer, insertionCounter,
@@ -65,10 +66,10 @@ public class PerfManager {
 				executorService.execute(insertEmployeeThread);
 			}else  if (nextInt % 2 == 0) {
 				final DeleteEmployeesAddress deleteEmployeesAddress = new DeleteEmployeesAddress(entityManagerFactory, deleteErrorCounter, errorTimer, deleteCounter,
-						deleteTimer,optimisticLockErrorCounter);
+						deleteTimer,optimisticLockErrorCounter,employeeNotFoundCounter);
 				executorService.execute(deleteEmployeesAddress);
 			} else {
-				final GetUpdateEmployee updateEmployee = new GetUpdateEmployee(entityManagerFactory, updateErrorCounter, errorTimer, updateCounter, updateTimer,optimisticLockErrorCounter);
+				final JPAThread updateEmployee = new GetUpdateEmployee(entityManagerFactory, updateErrorCounter, errorTimer, updateCounter, updateTimer,optimisticLockErrorCounter,employeeNotFoundCounter);
 				executorService.execute(updateEmployee);
 			}
 

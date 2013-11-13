@@ -13,9 +13,9 @@ public abstract class DeleteThread extends JPAThread {
 
 	private Counter deleteErrorCounter;
 
-    public DeleteThread(final EntityManagerFactory entityManagerFactory, final Counter deleteErrorCounter, final Timer errorDuration,
-            final Counter deleteCounter, final Timer deleteTimer,final Counter nbOptimisticLockError) {
-        super(entityManagerFactory, errorDuration,nbOptimisticLockError);
+	public DeleteThread(final EntityManagerFactory entityManagerFactory, final Counter deleteErrorCounter, final Timer errorDuration,
+            final Counter deleteCounter, final Timer deleteTimer,final Counter nbOptimisticLockError,final Counter employeeNotFoundCounter) {
+        super(entityManagerFactory, errorDuration,nbOptimisticLockError,employeeNotFoundCounter);
         this.deleteCounter = deleteCounter;
         this.deleteTimer = deleteTimer;
         this.deleteErrorCounter = deleteErrorCounter;
@@ -35,6 +35,5 @@ public abstract class DeleteThread extends JPAThread {
     protected void incrementErrorCounter() {
     	deleteErrorCounter.inc();
     }
-    
 
 }

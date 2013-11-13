@@ -14,8 +14,8 @@ public abstract class UpdateThread extends JPAThread {
 	private final Counter updateErrorCounter;
 
 	public UpdateThread(final EntityManagerFactory entityManagerFactory, final Counter updateErrorCounter, final Timer errorTimer,
-			final Counter updateCounter, final Timer updateTimer,final Counter nbOptimisticLockError) {
-		super(entityManagerFactory, errorTimer,nbOptimisticLockError);
+			final Counter updateCounter, final Timer updateTimer,final Counter nbOptimisticLockError, Counter employeeNotFoundCounter) {
+		super(entityManagerFactory, errorTimer,nbOptimisticLockError,employeeNotFoundCounter);
 		this.updateCounter = updateCounter;
 		this.updateTimer = updateTimer;
 		this.updateErrorCounter = updateErrorCounter;

@@ -207,12 +207,9 @@ public class CarTest extends AbstractTest {
         entityManager.close();
 
         entityManager = persistenceUtil.createEntityManagerAndBeginTransaction();
-        final CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-        final CriteriaQuery<Car> createQuery = cb.createQuery(Car.class);
-        final Root<Car> cars = createQuery.from(Car.class);
-        final TypedQuery<Car> selectAllCars = entityManager.createQuery(createQuery.select(cars));
+        List<Car> resultList = getAllEntities(Car.class, entityManager);
         entityManager.close();
-        assertEquals("The car of Romain has not been persisted", 1, selectAllCars.getResultList().size());
+        assertEquals("The car of Romain has not been persisted", 1, resultList.size());
     }
 
     @Test
@@ -234,12 +231,9 @@ public class CarTest extends AbstractTest {
         entityManager.close();
 
         entityManager = persistenceUtil.createEntityManagerAndBeginTransaction();
-        final CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-        final CriteriaQuery<Car> createQuery = cb.createQuery(Car.class);
-        final Root<Car> cars = createQuery.from(Car.class);
-        final TypedQuery<Car> selectAllCars = entityManager.createQuery(createQuery.select(cars));
+        List<Car> resultList = getAllEntities(Car.class, entityManager);
         entityManager.close();
-        assertEquals("The car of Romain has not been persisted", 3, selectAllCars.getResultList().size());
+        assertEquals("The car of Romain has not been persisted", 3, resultList.size());
     }
 
     @Test
@@ -289,20 +283,16 @@ public class CarTest extends AbstractTest {
         persistenceUtil.closeTransactionAndEntityManager(entityManager);
 
         entityManager = persistenceUtil.createEntityManagerAndBeginTransaction();
-        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-        CriteriaQuery<Person> cQuery = cb.createQuery(Person.class);
-        Root<Person> persons = cQuery.from(Person.class);
-        Person p = entityManager.createQuery(cQuery.select(persons)).getResultList().get(0);
+        List<Person> resultList = getAllEntities(Person.class, entityManager);
+        Person p = resultList.get(0);
         p.setCar(null);
         final Car foundCar = entityManager.find(Car.class, myCar.getRegistrationNumber());
         entityManager.remove(foundCar);
         persistenceUtil.closeTransactionAndEntityManager(entityManager);
 
         entityManager = persistenceUtil.createEntityManagerAndBeginTransaction();
-        cb = entityManager.getCriteriaBuilder();
-        cQuery = cb.createQuery(Person.class);
-        persons = cQuery.from(Person.class);
-        p = entityManager.createQuery(cQuery.select(persons)).getResultList().get(0);
+        List<Person> myPersons = getAllEntities(Person.class, entityManager);
+        p = myPersons.get(0);
         persistenceUtil.closeTransactionAndEntityManager(entityManager);
         assertNotNull(p);
     }
@@ -325,10 +315,8 @@ public class CarTest extends AbstractTest {
         persistenceUtil.closeTransactionAndEntityManager(entityManager);
 
         entityManager = persistenceUtil.createEntityManagerAndBeginTransaction();
-        final CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-        final CriteriaQuery<Person> cQuery = cb.createQuery(Person.class);
-        final Root<Person> persons = cQuery.from(Person.class);
-        final Person p = entityManager.createQuery(cQuery.select(persons)).getResultList().get(0);
+        List<Person> myPersons = getAllEntities(Person.class, entityManager);
+        final Person p = myPersons.get(0);
         final String myCarRegistration = p.getCar().getRegistrationNumber();
         entityManager.remove(p);
         persistenceUtil.closeTransactionAndEntityManager(entityManager);

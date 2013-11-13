@@ -16,7 +16,7 @@ import com.codahale.metrics.MetricRegistry;
 public class PerfManager {
 
 	private static final int POOL_SIZE = 50;
-	private static final int NB_THREADS = 1000;
+	private static final int NB_THREADS = 2000;
 
 	
 	@Test

@@ -1,39 +1,39 @@
 package org.bonitasoft.poc.manage;
 
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
-
 import javax.persistence.EntityManagerFactory;
+
+import com.codahale.metrics.Counter;
+import com.codahale.metrics.Timer;
 
 public abstract class DeleteThread extends JPAThread {
 
-    private final AtomicInteger nbDeletes;
+    private final Counter deleteCounter;
 
-    private final AtomicLong deleteDuration;
+    private final Timer deleteTimer;
 
-	private AtomicInteger nbDeleteErrors;
+	private Counter deleteErrorCounter;
 
-    public DeleteThread(final EntityManagerFactory entityManagerFactory, final AtomicInteger nbDeleteErrors, final AtomicLong errorDuration,
-            final AtomicInteger nbDeletes, final AtomicLong deleteDuration,final AtomicInteger nbOptimisticLockError) {
+    public DeleteThread(final EntityManagerFactory entityManagerFactory, final Counter deleteErrorCounter, final Timer errorDuration,
+            final Counter deleteCounter, final Timer deleteTimer,final Counter nbOptimisticLockError) {
         super(entityManagerFactory, errorDuration,nbOptimisticLockError);
-        this.nbDeletes = nbDeletes;
-        this.deleteDuration = deleteDuration;
-        this.nbDeleteErrors = nbDeleteErrors;
+        this.deleteCounter = deleteCounter;
+        this.deleteTimer = deleteTimer;
+        this.deleteErrorCounter = deleteErrorCounter;
     }
 
     @Override
     protected void incrementCounter() {
-        nbDeletes.getAndIncrement();
+    	deleteCounter.inc();
     }
-
+    
     @Override
-    protected void computeDuration(final long millis) {
-        deleteDuration.addAndGet(millis);
+    protected Timer getTimer() {
+    	return deleteTimer;
     }
     
     @Override
     protected void incrementErrorCounter() {
-    	nbDeleteErrors.getAndIncrement();
+    	deleteErrorCounter.inc();
     }
     
 

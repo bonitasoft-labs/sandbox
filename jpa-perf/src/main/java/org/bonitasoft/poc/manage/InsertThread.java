@@ -1,39 +1,39 @@
 package org.bonitasoft.poc.manage;
 
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
-
 import javax.persistence.EntityManagerFactory;
+
+import com.codahale.metrics.Counter;
+import com.codahale.metrics.Timer;
 
 public abstract class InsertThread extends JPAThread {
 
-    private final AtomicInteger nbInserts;
+    private final Counter insertionCounter;
 
-    private final AtomicLong insertDuration;
+    private final Timer insertTimer;
 
-	private AtomicInteger nbInsertErrors;
+	private final Counter insertionErrorCounter;
 
-    public InsertThread(final EntityManagerFactory entityManagerFactory, final AtomicInteger nbInsertErrors, final AtomicLong errorDuration,
-            final AtomicInteger nbInserts, final AtomicLong insertDuration,final AtomicInteger nbOptimisticLockError) {
-        super(entityManagerFactory,errorDuration,nbOptimisticLockError);
-        this.nbInserts = nbInserts;
-        this.insertDuration = insertDuration;
-        this.nbInsertErrors = nbInsertErrors;
+    public InsertThread(final EntityManagerFactory entityManagerFactory, final Counter insertionErrorCounter, final Timer errorTimer,
+            final Counter insertionCounter, final Timer insertTimer,final Counter optimisticLockErrorCounter) {
+        super(entityManagerFactory,errorTimer,optimisticLockErrorCounter);
+        this.insertionCounter = insertionCounter;
+        this.insertTimer = insertTimer;
+        this.insertionErrorCounter = insertionErrorCounter;
     }
 
     @Override
     protected void incrementCounter() {
-        nbInserts.getAndIncrement();
+    	insertionCounter.inc();
     }
 
     @Override
-    protected void computeDuration(final long millis) {
-        insertDuration.addAndGet(millis);
+    protected Timer getTimer() {
+    	return insertTimer;
     }
     
     @Override
     protected void incrementErrorCounter() {
-    	nbInsertErrors.getAndIncrement();
+    	insertionErrorCounter.inc();
     }
 
 }

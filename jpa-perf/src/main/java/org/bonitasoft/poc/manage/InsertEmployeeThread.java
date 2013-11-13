@@ -3,8 +3,6 @@ package org.bonitasoft.poc.manage;
 import java.util.Date;
 import java.util.Random;
 import java.util.UUID;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -12,11 +10,14 @@ import javax.persistence.EntityManagerFactory;
 import org.bonitasoft.poc.model.Address;
 import org.bonitasoft.poc.model.Employee;
 
+import com.codahale.metrics.Counter;
+import com.codahale.metrics.Timer;
+
 public class InsertEmployeeThread extends InsertThread {
 
-    public InsertEmployeeThread(final EntityManagerFactory entityManagerFactory, final AtomicInteger nbErrors, final AtomicLong errorDuration,
-            final AtomicInteger nbInserts, final AtomicLong insertDuration,final AtomicInteger nbOptimisticLockError) {
-        super(entityManagerFactory, nbErrors, errorDuration, nbInserts, insertDuration,nbOptimisticLockError);
+    public InsertEmployeeThread(final EntityManagerFactory entityManagerFactory, final Counter insertionErrorCounter, final Timer errorTimer,
+            final Counter insertionCounter, final Timer insertTimer,final Counter optimisticLockErrorCounter) {
+        super(entityManagerFactory, insertionErrorCounter, errorTimer, insertionCounter, insertTimer,optimisticLockErrorCounter);
     }
 
     @Override

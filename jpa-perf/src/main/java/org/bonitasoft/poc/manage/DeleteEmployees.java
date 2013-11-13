@@ -1,8 +1,6 @@
 package org.bonitasoft.poc.manage;
 
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -10,11 +8,14 @@ import javax.persistence.TypedQuery;
 
 import org.bonitasoft.poc.model.Employee;
 
+import com.codahale.metrics.Counter;
+import com.codahale.metrics.Timer;
+
 public class DeleteEmployees extends DeleteThread {
 
-    public DeleteEmployees(final EntityManagerFactory entityManagerFactory, final AtomicInteger nbErrors, final AtomicLong errorDuration,
-            final AtomicInteger nbDeletes, final AtomicLong deleteDuration,final AtomicInteger nbOptimisticLockError) {
-        super(entityManagerFactory, nbErrors, errorDuration, nbDeletes, deleteDuration,nbOptimisticLockError);
+    public DeleteEmployees(final EntityManagerFactory entityManagerFactory, final Counter deleteErrorCounter, final Timer errorTimer,
+            final Counter deleteCounter, final Timer deleteTimer,final Counter nbOptimisticLockError) {
+        super(entityManagerFactory, deleteErrorCounter, errorTimer, deleteCounter, deleteTimer,nbOptimisticLockError);
     }
 
     @Override

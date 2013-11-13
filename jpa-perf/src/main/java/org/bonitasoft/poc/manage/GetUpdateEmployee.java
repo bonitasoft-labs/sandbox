@@ -2,8 +2,6 @@ package org.bonitasoft.poc.manage;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -11,11 +9,14 @@ import javax.persistence.TypedQuery;
 
 import org.bonitasoft.poc.model.Employee;
 
+import com.codahale.metrics.Counter;
+import com.codahale.metrics.Timer;
+
 public class GetUpdateEmployee extends UpdateThread {
 
-    public GetUpdateEmployee(final EntityManagerFactory entityManagerFactory, final AtomicInteger nbErrors, final AtomicLong errorDuration,
-            final AtomicInteger nbUpdates, final AtomicLong updateDuration,final AtomicInteger nbOptimisticLockError) {
-        super(entityManagerFactory, nbErrors, errorDuration, nbUpdates, updateDuration,nbOptimisticLockError);
+    public GetUpdateEmployee(final EntityManagerFactory entityManagerFactory, final Counter updateErrorCounter, final Timer errorTimer,
+            final Counter updateCounter, final Timer updatTimer,final Counter nbOptimisticLockError) {
+        super(entityManagerFactory, updateErrorCounter, errorTimer, updateCounter, updatTimer,nbOptimisticLockError);
     }
 
     @Override

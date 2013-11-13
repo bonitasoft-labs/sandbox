@@ -26,15 +26,19 @@ public abstract class AbstractTest {
 
     protected <T> void deleteEntity(final Class<T> entityType) {
         final EntityManager entityManager = persistenceUtil.createEntityManagerAndBeginTransaction();
-        final CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-        final CriteriaQuery<T> criteria = cb.createQuery(entityType);
-        final Root<T> allInstances = criteria.from(entityType);
-        final CriteriaQuery<T> all = criteria.select(allInstances);
-        for (final Object entity : entityManager.createQuery(all).getResultList()) {
+        for (final T entity : getAllEntities(entityType, entityManager)) {
             entityManager.remove(entity);
         }
         entityManager.getTransaction().commit();
         entityManager.close();
+    }
+
+    protected <T> List<T> getAllEntities(final Class<T> entityType, final EntityManager entityManager) {
+        final CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+        final CriteriaQuery<T> criteria = cb.createQuery(entityType);
+        final Root<T> allInstances = criteria.from(entityType);
+        final CriteriaQuery<T> all = criteria.select(allInstances);
+        return entityManager.createQuery(all).getResultList();
     }
 
     protected Car buildRandomCar() {

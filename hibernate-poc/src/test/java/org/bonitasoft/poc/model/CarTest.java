@@ -491,45 +491,69 @@ public class CarTest extends AbstractTest {
     }
 
     @Test
-    public void cleanCacheAfterDeletingACar(){
-    	  final Car myCar = new Car();
-          myCar.setRegistrationNumber("316DJV38");
-          myCar.setConstructor("Mercedes");
-          myCar.setModel("SLR-500");
-          myCar.setNumberOfDoors(3);
+    public void cleanCacheAfterDeletingACar() {
+        final Car myCar = new Car();
+        myCar.setRegistrationNumber("316DJV38");
+        myCar.setConstructor("Mercedes");
+        myCar.setModel("SLR-500");
+        myCar.setNumberOfDoors(3);
 
-          EntityManager entityManager = persistenceUtil.createEntityManagerAndBeginTransaction();
-          entityManager.persist(myCar);
-          persistenceUtil.closeTransactionAndEntityManager(entityManager);
-        
-          entityManager = persistenceUtil.createEntityManagerAndBeginTransaction();
-          Query deleteQuery = entityManager.createQuery("DELETE FROM Car WHERE registrationNumber = '"+myCar.getRegistrationNumber()+"'");
-          deleteQuery.executeUpdate();
-          persistenceUtil.closeTransactionAndEntityManager(entityManager);
+        EntityManager entityManager = persistenceUtil.createEntityManagerAndBeginTransaction();
+        entityManager.persist(myCar);
+        persistenceUtil.closeTransactionAndEntityManager(entityManager);
 
-          entityManager = persistenceUtil.createEntityManagerAndBeginTransaction();
-          final Car foundCar = entityManager.find(Car.class, myCar.getRegistrationNumber());
-          persistenceUtil.closeTransactionAndEntityManager(entityManager);
-          assertNull("Car has been found in cache", foundCar);
+        entityManager = persistenceUtil.createEntityManagerAndBeginTransaction();
+        Query deleteQuery = entityManager.createQuery("DELETE FROM Car WHERE registrationNumber = '" + myCar.getRegistrationNumber() + "'");
+        deleteQuery.executeUpdate();
+        persistenceUtil.closeTransactionAndEntityManager(entityManager);
+
+        entityManager = persistenceUtil.createEntityManagerAndBeginTransaction();
+        final Car foundCar = entityManager.find(Car.class, myCar.getRegistrationNumber());
+        persistenceUtil.closeTransactionAndEntityManager(entityManager);
+        assertNull("Car has been found in cache", foundCar);
     }
-    
+
     @Test
-    public void cleanCacheAfterDeletingACarInOneTransaction(){
-    	  final Car myCar = new Car();
-          myCar.setRegistrationNumber("316DJV38");
-          myCar.setConstructor("Mercedes");
-          myCar.setModel("SLR-500");
-          myCar.setNumberOfDoors(3);
+    public void cleanCacheAfterDeletingACarInOneTransaction() {
+        final Car myCar = new Car();
+        myCar.setRegistrationNumber("316DJV38");
+        myCar.setConstructor("Mercedes");
+        myCar.setModel("SLR-500");
+        myCar.setNumberOfDoors(3);
 
-          EntityManager entityManager = persistenceUtil.createEntityManagerAndBeginTransaction();
-          entityManager.persist(myCar);
-          persistenceUtil.closeTransactionAndEntityManager(entityManager);
-        
-          entityManager = persistenceUtil.createEntityManagerAndBeginTransaction();
-          Query deleteQuery = entityManager.createQuery("DELETE FROM Car WHERE registrationNumber = '"+myCar.getRegistrationNumber()+"'");
-          deleteQuery.executeUpdate();
-          final Car foundCar = entityManager.find(Car.class, myCar.getRegistrationNumber());
-          persistenceUtil.closeTransactionAndEntityManager(entityManager);
-          assertNull("Car has been found in cache", foundCar);
+        EntityManager entityManager = persistenceUtil.createEntityManagerAndBeginTransaction();
+        entityManager.persist(myCar);
+        persistenceUtil.closeTransactionAndEntityManager(entityManager);
+
+        entityManager = persistenceUtil.createEntityManagerAndBeginTransaction();
+        Query deleteQuery = entityManager.createQuery("DELETE FROM Car WHERE registrationNumber = '" + myCar.getRegistrationNumber() + "'");
+        deleteQuery.executeUpdate();
+        final Car foundCar = entityManager.find(Car.class, myCar.getRegistrationNumber());
+        persistenceUtil.closeTransactionAndEntityManager(entityManager);
+        assertNull("Car has been found in cache", foundCar);
     }
+
+    public void deletingAGarageAlsoDeletesAllItsCars() {
+        final Garage garage = new Garage();
+        garage.setName("Marcel");
+        garage.addToCars(createACar("456ER45", "Ferrari", "Testarossa", 3));
+        garage.addToCars(createACar("456BJR35", "Ferrari", "Enzo", 3));
+
+        final PersistenceUtil persistenceUtil = PersistenceUtil.getInstance();
+        EntityManager entityManager = persistenceUtil.createEntityManagerAndBeginTransaction();
+        entityManager.persist(garage);
+        persistenceUtil.closeTransactionAndEntityManager(entityManager);
+
+        entityManager = persistenceUtil.createEntityManagerAndBeginTransaction();
+        final Garage foundGarage = entityManager.find(Garage.class, garage.getId());
+        assertEquals(2, foundGarage.getCars().size());
+        entityManager.remove(foundGarage);
+        persistenceUtil.closeTransactionAndEntityManager(entityManager);
+
+        entityManager = persistenceUtil.createEntityManagerAndBeginTransaction();
+        List<Car> resultList = getAllEntities(Car.class, entityManager);
+        assertEquals("Deleting a garage should also have deleted all related cars", 0, resultList.size());
+        persistenceUtil.closeTransactionAndEntityManager(entityManager);
+    }
+
 }

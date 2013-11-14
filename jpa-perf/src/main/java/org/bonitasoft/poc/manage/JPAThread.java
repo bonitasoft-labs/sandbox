@@ -25,144 +25,147 @@ import com.codahale.metrics.Timer.Context;
 
 public abstract class JPAThread implements Runnable {
 
-	private final Timer errorTimer;
-	private final EntityManagerFactory entityManagerFactory;
-	private Counter optimisticLockErrorCounter;
-	private Random random;
-	protected Counter employeeNotFoundCounter;
+    private final Timer errorTimer;
 
-	public JPAThread(final EntityManagerFactory entityManagerFactory,final MetricRegistry metricRegisrty) {
-		this.random = new Random();
-		this.entityManagerFactory = entityManagerFactory;
-		this.errorTimer = metricRegisrty.timer("error-timer");
-		this.optimisticLockErrorCounter = metricRegisrty.counter("optimistic-lock-errors");
-		this.employeeNotFoundCounter = metricRegisrty.counter("employee-not-found-counter");
-	}
+    private final EntityManagerFactory entityManagerFactory;
 
-	@Override
-	public void run() {
-		Context context = getTimer().time();
-		Context errorContext = null;
-	
-		InitialContext ctx = null;
-		try {
-			ctx = new InitialContext();
-			UserTransaction ut = (UserTransaction) ctx.lookup("java:comp/UserTransaction");
-			final EntityManager entityManager = entityManagerFactory.createEntityManager();
-			beginTransaction(ut,entityManager,errorContext);
-			execute(entityManager);
-			commitTransaction(ut,errorContext);
-			context.stop();
-		} catch (NamingException e1) {
-			e1.printStackTrace();
-		}
-	}
+    private final Counter optimisticLockErrorCounter;
 
-	protected void commitTransaction(UserTransaction ut, Context errorContext) {
-		try {
-			ut.commit();
-		} catch (SecurityException e) {
-			if(errorContext == null){
-				errorContext = errorTimer.time();
-			}
-			rollbackTransaction(ut, errorContext);
-		} catch (IllegalStateException e) {
-			if(errorContext == null){
-				errorContext = errorTimer.time();
-			}
-			rollbackTransaction(ut, errorContext);
-		} catch (RollbackException e) {
-			if(errorContext == null){
-				errorContext = errorTimer.time();
-			}
-			if(e.getCause() instanceof OptimisticLockException){
-				optimisticLockErrorCounter.inc();
-			}
-			rollbackTransaction(ut, errorContext);
-		} catch (HeuristicMixedException e) {
-			if(errorContext == null){
-				errorContext = errorTimer.time();
-			}
-			rollbackTransaction(ut, errorContext);
-		} catch (HeuristicRollbackException e) {
-			if(errorContext == null){
-				errorContext = errorTimer.time();
-			}
-			rollbackTransaction(ut, errorContext);
-		} catch (SystemException e) {
-			if(errorContext == null){
-				errorContext = errorTimer.time();
-			}
-			rollbackTransaction(ut, errorContext);
-		}
-	}
+    private final Random random;
 
-	protected void beginTransaction(UserTransaction ut, EntityManager entityManager, Context errorContext) {
-		try {
-			ut.begin();
-		} catch (NotSupportedException e) {
-			if(errorContext == null){
-				errorContext = errorTimer.time();
-			}
-		} catch (SystemException e) {
-			if(errorContext == null){
-				errorContext = errorTimer.time();
-			}
-		}
-		entityManager.joinTransaction();
-	}
+    protected Counter employeeNotFoundCounter;
 
+    public JPAThread(final EntityManagerFactory entityManagerFactory, final MetricRegistry metricRegisrty) {
+        random = new Random();
+        this.entityManagerFactory = entityManagerFactory;
+        errorTimer = metricRegisrty.timer("error-timer");
+        optimisticLockErrorCounter = metricRegisrty.counter("optimistic-lock-errors");
+        employeeNotFoundCounter = metricRegisrty.counter("employee-not-found-counter");
+    }
 
-	private void rollbackTransaction(UserTransaction ut,Context errorContext) {
-		try {
-			ut.rollback();
-		} catch (IllegalStateException e) {
-			if(errorContext == null){
-				errorContext = errorTimer.time();
-			}
-		} catch (SecurityException e) {
-			if(errorContext == null){
-				errorContext = errorTimer.time();
-			}
-		} catch (SystemException e) {
-			if(errorContext == null){
-				errorContext = errorTimer.time();
-			}
-		}
-		errorContext.stop();
-	}
+    @Override
+    public void run() {
+        final Context context = getTimer().time();
+        final Context errorContext = null;
 
-	protected abstract void incrementErrorCounter();
+        InitialContext ctx = null;
+        try {
+            ctx = new InitialContext();
+            final UserTransaction ut = (UserTransaction) ctx.lookup("java:comp/UserTransaction");
+            final EntityManager entityManager = entityManagerFactory.createEntityManager();
+            beginTransaction(ut, entityManager, errorContext);
+            execute(entityManager);
+            commitTransaction(ut, errorContext);
+            context.stop();
+        } catch (final NamingException e1) {
+            e1.printStackTrace();
+        }
+    }
 
-	protected abstract void execute(EntityManager entityManager);
+    protected void commitTransaction(final UserTransaction ut, Context errorContext) {
+        try {
+            ut.commit();
+        } catch (final SecurityException e) {
+            if (errorContext == null) {
+                errorContext = errorTimer.time();
+            }
+            rollbackTransaction(ut, errorContext);
+        } catch (final IllegalStateException e) {
+            if (errorContext == null) {
+                errorContext = errorTimer.time();
+            }
+            rollbackTransaction(ut, errorContext);
+        } catch (final RollbackException e) {
+            if (errorContext == null) {
+                errorContext = errorTimer.time();
+            }
+            if (e.getCause() instanceof OptimisticLockException) {
+                optimisticLockErrorCounter.inc();
+            }
+            rollbackTransaction(ut, errorContext);
+        } catch (final HeuristicMixedException e) {
+            if (errorContext == null) {
+                errorContext = errorTimer.time();
+            }
+            rollbackTransaction(ut, errorContext);
+        } catch (final HeuristicRollbackException e) {
+            if (errorContext == null) {
+                errorContext = errorTimer.time();
+            }
+            rollbackTransaction(ut, errorContext);
+        } catch (final SystemException e) {
+            if (errorContext == null) {
+                errorContext = errorTimer.time();
+            }
+            rollbackTransaction(ut, errorContext);
+        }
+    }
 
-	protected abstract Timer getTimer() ;
+    protected void beginTransaction(final UserTransaction ut, final EntityManager entityManager, Context errorContext) {
+        try {
+            ut.begin();
+        } catch (final NotSupportedException e) {
+            if (errorContext == null) {
+                errorContext = errorTimer.time();
+            }
+        } catch (final SystemException e) {
+            if (errorContext == null) {
+                errorContext = errorTimer.time();
+            }
+        }
+        entityManager.joinTransaction();
+    }
 
-	protected Random getRandom() {
-		return random;
-	}
+    private void rollbackTransaction(final UserTransaction ut, Context errorContext) {
+        try {
+            ut.rollback();
+        } catch (final IllegalStateException e) {
+            if (errorContext == null) {
+                errorContext = errorTimer.time();
+            }
+        } catch (final SecurityException e) {
+            if (errorContext == null) {
+                errorContext = errorTimer.time();
+            }
+        } catch (final SystemException e) {
+            if (errorContext == null) {
+                errorContext = errorTimer.time();
+            }
+        }
+        errorContext.stop();
+    }
 
-	protected Employee findRandomEmployee(final EntityManager entityManager) {
-		Random random = getRandom();
-		int randomAge1 = random.nextInt(42)+20;
-		int randomAge2 = random.nextInt(42)+20 ;
-		int max = Math.max(randomAge1, randomAge2);
-		int min = Math.min(randomAge1, randomAge2);
-		final StringBuilder builder = new StringBuilder("FROM Employee WHERE name LIKE 'Matti%' AND age > "+min+" AND age < "+max+" ORDER BY name ");
-		if (random.nextInt() % 2 == 0) {
-			builder.append(" ASC");
-		} else {
-			builder.append(" DESC");
-		}
-		final TypedQuery<Employee> query = entityManager.createQuery(builder.toString(),Employee.class);
-		query.setFirstResult(0);
-		query.setMaxResults(1);
-		final List<Employee> employees = query.getResultList();
-		if(employees.isEmpty()){
-			employeeNotFoundCounter.inc();
-			return null;
-		}
-		return employees.get(0);
-	}
+    protected abstract void incrementErrorCounter();
+
+    protected abstract void execute(EntityManager entityManager);
+
+    protected abstract Timer getTimer();
+
+    protected Random getRandom() {
+        return random;
+    }
+
+    protected Employee findRandomEmployee(final EntityManager entityManager) {
+        final Random random = getRandom();
+        final int randomAge1 = random.nextInt(42) + 20;
+        final int randomAge2 = random.nextInt(42) + 20;
+        final int max = Math.max(randomAge1, randomAge2);
+        final int min = Math.min(randomAge1, randomAge2);
+        final StringBuilder builder = new StringBuilder("FROM Employee WHERE name LIKE 'Matti%' AND age > " + min + " AND age < " + max + " ORDER BY name ");
+        if (random.nextInt() % 2 == 0) {
+            builder.append(" ASC");
+        } else {
+            builder.append(" DESC");
+        }
+        final TypedQuery<Employee> query = entityManager.createQuery(builder.toString(), Employee.class);
+        query.setFirstResult(0);
+        query.setMaxResults(1);
+        final List<Employee> employees = query.getResultList();
+        if (employees.isEmpty()) {
+            employeeNotFoundCounter.inc();
+            return null;
+        }
+        return employees.get(0);
+    }
 
 }

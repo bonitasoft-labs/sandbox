@@ -3,12 +3,18 @@ package org.bonitasoft.poc.manage;
 import java.util.List;
 import java.util.Random;
 
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
-import javax.persistence.EntityTransaction;
 import javax.persistence.OptimisticLockException;
-import javax.persistence.RollbackException;
 import javax.persistence.TypedQuery;
+import javax.transaction.HeuristicMixedException;
+import javax.transaction.HeuristicRollbackException;
+import javax.transaction.NotSupportedException;
+import javax.transaction.RollbackException;
+import javax.transaction.SystemException;
+import javax.transaction.UserTransaction;
 
 import org.bonitasoft.poc.model.Employee;
 
@@ -35,54 +41,103 @@ public abstract class JPAThread implements Runnable {
 
 	@Override
 	public void run() {
-		boolean status = true;
 		Context context = getTimer().time();
 		Context errorContext = null;
-		final EntityManager entityManager = entityManagerFactory.createEntityManager();
-		final EntityTransaction transaction = entityManager.getTransaction();
+	
+		InitialContext ctx = null;
 		try {
-			transaction.begin();
-			try {
-				execute(entityManager);
-				transaction.commit();
-			} catch (final RollbackException re) {
-				errorContext = errorTimer.time();
-				if(re.getCause() instanceof OptimisticLockException){
-					optimisticLockErrorCounter.inc();
-				}
-				throw re;
-			} catch (final RuntimeException re) {
-				if(errorContext == null){
-					errorContext = errorTimer.time();
-				}
-				re.printStackTrace();
-				transaction.rollback();
-				throw re;
-			}
-		} catch (final RuntimeException e) {
-			incrementErrorCounter();
-			if(errorContext == null){
-				errorContext = errorTimer.time();
-			}
-			status = false;
-			throw e;
-		} finally {
-			entityManager.close();
-			if (!status && errorContext != null) {
-				errorContext.stop();
-			} else {
-				context.stop();
-			}
+			ctx = new InitialContext();
+			UserTransaction ut = (UserTransaction) ctx.lookup("java:comp/UserTransaction");
+			final EntityManager entityManager = entityManagerFactory.createEntityManager();
+			beginTransaction(ut,entityManager,errorContext);
+			execute(entityManager);
+			commitTransaction(ut,errorContext);
+			context.stop();
+		} catch (NamingException e1) {
+			e1.printStackTrace();
 		}
 	}
 
+	protected void commitTransaction(UserTransaction ut, Context errorContext) {
+		try {
+			ut.commit();
+		} catch (SecurityException e) {
+			if(errorContext == null){
+				errorContext = errorTimer.time();
+			}
+			rollbackTransaction(ut, errorContext);
+		} catch (IllegalStateException e) {
+			if(errorContext == null){
+				errorContext = errorTimer.time();
+			}
+			rollbackTransaction(ut, errorContext);
+		} catch (RollbackException e) {
+			if(errorContext == null){
+				errorContext = errorTimer.time();
+			}
+			if(e.getCause() instanceof OptimisticLockException){
+				optimisticLockErrorCounter.inc();
+			}
+			rollbackTransaction(ut, errorContext);
+		} catch (HeuristicMixedException e) {
+			if(errorContext == null){
+				errorContext = errorTimer.time();
+			}
+			rollbackTransaction(ut, errorContext);
+		} catch (HeuristicRollbackException e) {
+			if(errorContext == null){
+				errorContext = errorTimer.time();
+			}
+			rollbackTransaction(ut, errorContext);
+		} catch (SystemException e) {
+			if(errorContext == null){
+				errorContext = errorTimer.time();
+			}
+			rollbackTransaction(ut, errorContext);
+		}
+	}
+
+	protected void beginTransaction(UserTransaction ut, EntityManager entityManager, Context errorContext) {
+		try {
+			ut.begin();
+		} catch (NotSupportedException e) {
+			if(errorContext == null){
+				errorContext = errorTimer.time();
+			}
+		} catch (SystemException e) {
+			if(errorContext == null){
+				errorContext = errorTimer.time();
+			}
+		}
+		entityManager.joinTransaction();
+	}
+
+
+	private void rollbackTransaction(UserTransaction ut,Context errorContext) {
+		try {
+			ut.rollback();
+		} catch (IllegalStateException e) {
+			if(errorContext == null){
+				errorContext = errorTimer.time();
+			}
+		} catch (SecurityException e) {
+			if(errorContext == null){
+				errorContext = errorTimer.time();
+			}
+		} catch (SystemException e) {
+			if(errorContext == null){
+				errorContext = errorTimer.time();
+			}
+		}
+		errorContext.stop();
+	}
 
 	protected abstract void incrementErrorCounter();
 
 	protected abstract void execute(EntityManager entityManager);
 
 	protected abstract Timer getTimer() ;
-	
+
 	protected Random getRandom() {
 		return random;
 	}

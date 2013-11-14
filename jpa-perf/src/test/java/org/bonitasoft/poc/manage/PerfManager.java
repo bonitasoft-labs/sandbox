@@ -31,7 +31,6 @@ import org.bonitasoft.poc.model.Employee;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.springframework.jndi.JndiTemplate;
 
 import bitronix.tm.TransactionManagerServices;
 import bitronix.tm.resource.jdbc.PoolingDataSource;
@@ -82,8 +81,8 @@ public class PerfManager {
 		mappings.put("java:/comp/env/jdbc/PGDS2", ds2);
 		mappings.put("java:comp/UserTransaction", TransactionManagerServices.getTransactionManager());
 
-		final JndiTemplate jndiTemplate = new JndiTemplate();
-		final MemoryJNDISetup jndiSetup = new MemoryJNDISetup(jndiTemplate, mappings);
+		final InitialContext ctx = new InitialContext();
+		final MemoryJNDISetup jndiSetup = new MemoryJNDISetup(ctx, mappings);
 		jndiSetup.init();
 	}
 

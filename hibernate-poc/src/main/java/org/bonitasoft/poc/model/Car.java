@@ -14,6 +14,7 @@
  */
 package org.bonitasoft.poc.model;
 
+import javax.persistence.Cacheable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -26,6 +27,7 @@ import javax.persistence.Version;
  */
 @Entity
 @Table(name = "Car")
+@Cacheable
 public class Car {
 
     @Version
@@ -121,21 +123,6 @@ public class Car {
             return false;
         }
         return true;
-    }
-
-    /**
-     * @return the version
-     */
-    public long getVersion() {
-        return version;
-    }
-
-    /**
-     * @param version
-     *            the version to set
-     */
-    public void setVersion(final long version) {
-        this.version = version;
     }
 
 }

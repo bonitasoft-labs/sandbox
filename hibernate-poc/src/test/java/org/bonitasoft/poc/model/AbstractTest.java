@@ -17,9 +17,11 @@ public abstract class AbstractTest {
 
     @After
     public void tearDown() {
+        System.err.println("=== Cleaning all objects of types " + getEntityTypesToCleanAfterTest());
         for (final Class<?> entityType : getEntityTypesToCleanAfterTest()) {
             deleteEntity(entityType);
         }
+        System.err.println("=== Cleaning done.");
     }
 
     public abstract List<Class<?>> getEntityTypesToCleanAfterTest();

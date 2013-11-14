@@ -60,7 +60,7 @@ public class CarTest extends AbstractTest {
         persistenceUtil.closeTransactionAndEntityManager(entityManager);
         entityManager = persistenceUtil.createEntityManagerAndBeginTransaction();
 
-        final Car foundCar = entityManager.find(Car.class, myCar.getRegistrationNumber());
+        final Car foundCar = getCarById(entityManager, myCar.getRegistrationNumber());
         persistenceUtil.closeTransactionAndEntityManager(entityManager);
         assertNotNull("Car not found", foundCar);
         assertEquals(foundCar, myCar);
@@ -79,40 +79,57 @@ public class CarTest extends AbstractTest {
         persistenceUtil.closeTransactionAndEntityManager(entityManager);
 
         entityManager = persistenceUtil.createEntityManagerAndBeginTransaction();
-        Car foundCar = entityManager.find(Car.class, myCar.getRegistrationNumber());
+        Car foundCar = getCarById(entityManager, myCar.getRegistrationNumber());
         foundCar.setConstructor("Mercedes-Benz");
         persistenceUtil.closeTransactionAndEntityManager(entityManager);
 
         entityManager = persistenceUtil.createEntityManagerAndBeginTransaction();
-        foundCar = entityManager.find(Car.class, myCar.getRegistrationNumber());
+        foundCar = getCarById(entityManager, myCar.getRegistrationNumber());
         persistenceUtil.closeTransactionAndEntityManager(entityManager);
         assertNotNull("Car not found", foundCar);
         assertEquals("Update failed", "Mercedes-Benz", foundCar.getConstructor());
     }
 
     @Test
-    public void updateADetachedCar() {
+    public void updateADetachedCar() throws Exception {
+        String origConstructorValue = "Mercedes";
+        String newConstructorValue = "Mercedes-Benz";
+
         final Car myCar = new Car();
         myCar.setRegistrationNumber("45DV38");
-        myCar.setConstructor("Mercedes");
+        myCar.setConstructor(origConstructorValue);
         myCar.setModel("SLR-500");
         myCar.setNumberOfDoors(3);
 
         EntityManager entityManager = persistenceUtil.createEntityManagerAndBeginTransaction();
         entityManager.persist(myCar);
-        Car foundCar = entityManager.find(Car.class, myCar.getRegistrationNumber());
         persistenceUtil.closeTransactionAndEntityManager(entityManager);
 
         entityManager = persistenceUtil.createEntityManagerAndBeginTransaction();
-        foundCar.setConstructor("Mercedes-Benz");
-        entityManager.merge(foundCar);
+        myCar.setConstructor(newConstructorValue);
+        entityManager.merge(myCar);
+
+        // Let's check another thread does not see the update before it is commited by the current thread:
+        FindEntityById<Car> myRunnable = new FindEntityById<Car>(Car.class, myCar.getRegistrationNumber());
+        Thread thread = new Thread(myRunnable);
+        thread.start();
+        thread.join();
+        assertEquals(origConstructorValue, myRunnable.getEntity().getConstructor());
+
         persistenceUtil.closeTransactionAndEntityManager(entityManager);
 
+        // another thread is now aware of the new car constructor value:
+        myRunnable = new FindEntityById<Car>(Car.class, myCar.getRegistrationNumber());
+        Thread thread2 = new Thread(myRunnable);
+        thread2.start();
+        thread2.join();
+        assertEquals(newConstructorValue, myRunnable.getEntity().getConstructor());
+
         entityManager = persistenceUtil.createEntityManagerAndBeginTransaction();
-        foundCar = entityManager.find(Car.class, myCar.getRegistrationNumber());
+        Car foundCar = getCarById(entityManager, myCar.getRegistrationNumber());
         persistenceUtil.closeTransactionAndEntityManager(entityManager);
         assertNotNull("Car not found", foundCar);
-        assertEquals("Update failed", "Mercedes-Benz", foundCar.getConstructor());
+        assertEquals("Update failed", newConstructorValue, foundCar.getConstructor());
     }
 
     @Test
@@ -128,12 +145,12 @@ public class CarTest extends AbstractTest {
         persistenceUtil.closeTransactionAndEntityManager(entityManager);
 
         entityManager = persistenceUtil.createEntityManagerAndBeginTransaction();
-        Car foundCar = entityManager.find(Car.class, myCar.getRegistrationNumber());
+        Car foundCar = getCarById(entityManager, myCar.getRegistrationNumber());
         entityManager.remove(foundCar);
         persistenceUtil.closeTransactionAndEntityManager(entityManager);
 
         entityManager = persistenceUtil.createEntityManagerAndBeginTransaction();
-        foundCar = entityManager.find(Car.class, myCar.getRegistrationNumber());
+        foundCar = getCarById(entityManager, myCar.getRegistrationNumber());
         persistenceUtil.closeTransactionAndEntityManager(entityManager);
         assertNull(foundCar);
     }
@@ -286,7 +303,7 @@ public class CarTest extends AbstractTest {
         List<Person> resultList = getAllEntities(Person.class, entityManager);
         Person p = resultList.get(0);
         p.setCar(null);
-        final Car foundCar = entityManager.find(Car.class, myCar.getRegistrationNumber());
+        final Car foundCar = getCarById(entityManager, myCar.getRegistrationNumber());
         entityManager.remove(foundCar);
         persistenceUtil.closeTransactionAndEntityManager(entityManager);
 
@@ -322,7 +339,7 @@ public class CarTest extends AbstractTest {
         persistenceUtil.closeTransactionAndEntityManager(entityManager);
 
         entityManager = persistenceUtil.createEntityManagerAndBeginTransaction();
-        final Car foundCar = entityManager.find(Car.class, myCarRegistration);
+        final Car foundCar = getCarById(entityManager, myCar.getRegistrationNumber());
         persistenceUtil.closeTransactionAndEntityManager(entityManager);
         assertNotNull(foundCar);
     }
@@ -479,35 +496,62 @@ public class CarTest extends AbstractTest {
     }
 
     @Test
-    public void cleanCacheAfterDeletingACar() {
-        final Car myCar = new Car();
-        myCar.setRegistrationNumber("316DJV38");
-        myCar.setConstructor("Mercedes");
-        myCar.setModel("SLR-500");
-        myCar.setNumberOfDoors(3);
+    public void accessCarFromL2Cache() throws InterruptedException {
+        final Car myCar = buildRandomCar();
 
         EntityManager entityManager = persistenceUtil.createEntityManagerAndBeginTransaction();
         entityManager.persist(myCar);
         persistenceUtil.closeTransactionAndEntityManager(entityManager);
 
         entityManager = persistenceUtil.createEntityManagerAndBeginTransaction();
-        Query deleteQuery = entityManager.createQuery("DELETE FROM Car WHERE registrationNumber = '" + myCar.getRegistrationNumber() + "'");
+        getCarsByModel(entityManager, myCar.getModel()).get(0);
+        persistenceUtil.closeTransactionAndEntityManager(entityManager);
+
+        System.err
+                .println("=== With L2 cache activated and hibernate.show_sql==true, you should'nt see any Hibernate query looged between this log message...");
+        entityManager = persistenceUtil.createEntityManagerAndBeginTransaction();
+        getCarById(entityManager, myCar.getRegistrationNumber());
+        persistenceUtil.closeTransactionAndEntityManager(entityManager);
+        System.err.println("=== ... and that one.");
+    }
+
+    private Car getCarById(final EntityManager entityManager, final String registrationNumber) {
+        return entityManager.find(Car.class, registrationNumber);
+    }
+
+    private List<Car> getCarsByModel(final EntityManager entityManager, final String model) {
+        final CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+        final CriteriaQuery<Car> criteria = cb.createQuery(Car.class);
+        final Root<Car> cars = criteria.from(Car.class);
+        criteria.where(cb.equal(cars.get("model"), model));
+        final TypedQuery<Car> constructorQuery = entityManager.createQuery(criteria);
+        constructorQuery.setFirstResult(0);
+        constructorQuery.setMaxResults(20);
+        return constructorQuery.getResultList();
+    }
+
+    @Test
+    public void cleanCacheAfterDeletingACar() {
+        final Car myCar = buildRandomCar();
+
+        EntityManager entityManager = persistenceUtil.createEntityManagerAndBeginTransaction();
+        entityManager.persist(myCar);
+        persistenceUtil.closeTransactionAndEntityManager(entityManager);
+
+        entityManager = persistenceUtil.createEntityManagerAndBeginTransaction();
+        Query deleteQuery = entityManager.createNativeQuery("DELETE FROM Car WHERE registrationNumber = '" + myCar.getRegistrationNumber() + "'");
         deleteQuery.executeUpdate();
         persistenceUtil.closeTransactionAndEntityManager(entityManager);
 
         entityManager = persistenceUtil.createEntityManagerAndBeginTransaction();
-        final Car foundCar = entityManager.find(Car.class, myCar.getRegistrationNumber());
+        final Car foundCar = getCarById(entityManager, myCar.getRegistrationNumber());
         persistenceUtil.closeTransactionAndEntityManager(entityManager);
-        assertNull("Car has been found in cache", foundCar);
+        assertNull("No Car should have been found in cache", foundCar);
     }
 
     @Test
     public void cleanCacheAfterDeletingACarInOneTransaction() {
-        final Car myCar = new Car();
-        myCar.setRegistrationNumber("316DJV38");
-        myCar.setConstructor("Mercedes");
-        myCar.setModel("SLR-500");
-        myCar.setNumberOfDoors(3);
+        final Car myCar = buildRandomCar();
 
         EntityManager entityManager = persistenceUtil.createEntityManagerAndBeginTransaction();
         entityManager.persist(myCar);
@@ -516,7 +560,7 @@ public class CarTest extends AbstractTest {
         entityManager = persistenceUtil.createEntityManagerAndBeginTransaction();
         Query deleteQuery = entityManager.createQuery("DELETE FROM Car WHERE registrationNumber = '" + myCar.getRegistrationNumber() + "'");
         deleteQuery.executeUpdate();
-        final Car foundCar = entityManager.find(Car.class, myCar.getRegistrationNumber());
+        final Car foundCar = getCarById(entityManager, myCar.getRegistrationNumber());
         persistenceUtil.closeTransactionAndEntityManager(entityManager);
         assertNull("Car has been found in cache", foundCar);
     }

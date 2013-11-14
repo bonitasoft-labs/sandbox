@@ -47,12 +47,9 @@ public abstract class JPAThread implements Runnable {
     public void run() {
         final Context context = getTimer().time();
         final Context errorContext = null;
-
-        InitialContext ctx = null;
         try {
-            ctx = new InitialContext();
-            final UserTransaction ut = (UserTransaction) ctx.lookup("java:comp/UserTransaction");
-            final EntityManager entityManager = entityManagerFactory.createEntityManager();
+            final UserTransaction ut = getUserTransaction();
+            final EntityManager entityManager = getEntityManager();
             beginTransaction(ut, entityManager, errorContext);
             execute(entityManager);
             commitTransaction(ut, errorContext);
@@ -61,6 +58,16 @@ public abstract class JPAThread implements Runnable {
             e1.printStackTrace();
         }
     }
+
+	protected EntityManager getEntityManager() {
+		return entityManagerFactory.createEntityManager();
+	}
+
+	protected UserTransaction getUserTransaction() throws NamingException {
+		InitialContext ctx = new InitialContext();
+		final UserTransaction ut = (UserTransaction) ctx.lookup("java:comp/UserTransaction");
+		return ut;
+	}
 
     protected void commitTransaction(final UserTransaction ut, Context errorContext) {
         try {

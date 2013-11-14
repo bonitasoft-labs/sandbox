@@ -9,6 +9,7 @@
 		<metrics.version>3.0.1</metrics.version>
 		<bonecp.version>0.8.0.RELEASE</bonecp.version>
 		<bonecp.provider.version>0.8.0-alpha1</bonecp.provider.version>
+		<hibernate.version>4.2.7.Final</hibernate.version>
 	</properties>
 
 	<dependencies>
@@ -20,7 +21,7 @@
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-entitymanager</artifactId>
-			<version>4.2.7.Final</version>
+			<version>${hibernate.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.h2database</groupId>

@@ -1,0 +1,32 @@
+«REM»Template file which can be overridden to generate additional files or code«ENDREM»
+«IMPORT org::eclipse::emf::texo::modelgenerator::modelannotations»
+«IMPORT org::eclipse::emf::texo::generator»
+«IMPORT org::eclipse::emf::ecore»
+
+«EXTENSION  org::eclipse::emf::texo::modelgenerator::templates::util»
+«REM»Called for an EClass, generated code is placed in the entity main class body«ENDREM»
+«DEFINE root(ModelController modelController) FOR EClassModelGenAnnotation-»
+	«LET ((EPackageModelGenAnnotation)modelController.getAnnotation(this.EClass, "http://www.eclipse.org/emf/texo/orm/ormannotations")) AS annotation»
+	«IF annotation.entity != null»
+		«IF annotation.entity.table != null»
+			 create table «IF annotation.entity.table.catalog != null»«annotation.entity.table.catalog».«ENDIF-»«IF annotation.entity.table.schema != null»«annotation.entity.table.schema».«ENDIF»«annotation.entity.table.name»{
+		«ELSE»
+			 create table «annotation.entity.name»{
+		«ENDIF»
+		
+		«FOREACH this.EStructuralFeatureModelGenAnnotations AS featureAnnotation-»
+			«REM»a document root has almost only volatile features, but they need to be generated also«ENDREM»
+			«IF  featureAnnotation != null && (isDocumentRoot(this.EClass) || !featureAnnotation.EStructuralFeature.volatile)-»
+				«LET ((EPackageModelGenAnnotation)modelController.getAnnotation(featureAnnotation.EStructuralFeature, "http://www.eclipse.org/emf/texo/orm/ormannotations")) AS annotation»
+					 «IF annotation.elementCollection != null &&  annotation.elementCollection.column != null»
+					 	«annotation.elementCollection.column.nullable»
+					 «ENDIF»
+				 	 «featureAnnotation.validJavaMemberName» «featureAnnotation.type» ,
+				 «ENDLET»
+			«ENDIF-»
+		«ENDFOREACH-»
+		
+		};
+	«ENDIF»
+	«ENDLET»
+«ENDDEFINE»

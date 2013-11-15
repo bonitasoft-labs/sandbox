@@ -1,0 +1,24 @@
+«REM»Template file which can be overridden to generate additional files or code«ENDREM»
+«IMPORT org::eclipse::emf::texo::modelgenerator::modelannotations»
+«IMPORT org::eclipse::emf::texo::generator»
+«IMPORT org::eclipse::emf::texo::annotations::annotationsmodel»
+«IMPORT org::eclipse::emf::ecore»
+
+«EXTENSION  org::eclipse::emf::texo::modelgenerator::templates::util»
+
+«REM»Called for EPackages, even if you don't want to generate code for EPackages, still keep this empty DEFINE«ENDREM»
+«DEFINE root(ModelController modelController) FOR EPackageModelGenAnnotation-»
+
+«ENDDEFINE»
+
+«REM»Called for EClasses, even if you don't want to generate code for EClasses, still keep this empty DEFINE«ENDREM»
+«DEFINE root(ModelController modelController) FOR EClassModelGenAnnotation-»
+«FILE this.name+ "_ddl.sql"»
+	«EXPAND org::eclipse::emf::texo::modelgenerator::templates::drop_table::root(modelController) FOR this»
+	«EXPAND org::eclipse::emf::texo::modelgenerator::templates::create_table::root(modelController) FOR this»
+«ENDFILE»
+«ENDDEFINE»
+
+«REM»Called for EEnums, even if you don't want to generate code for EEnums, still keep this empty DEFINE«ENDREM»
+«DEFINE root(ModelController modelController) FOR EEnumModelGenAnnotation-»
+«ENDDEFINE»

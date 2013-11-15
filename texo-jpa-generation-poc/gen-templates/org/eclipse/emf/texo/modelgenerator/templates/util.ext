@@ -1,0 +1,19 @@
+import org::eclipse::emf::ecore;
+import org::eclipse::emf::texo::modelgenerator::modelannotations;
+
+String classFileName( EClassifierModelGenAnnotation this ): qualifiedClassName.replaceAll("\\.","/") + ".java";
+String daoClassFileName( EClassModelGenAnnotation this ): daoQualifiedClassName.replaceAll("\\.","/") + ".java";
+String classFileName( EStructuralFeatureModelGenAnnotation this ): featureMapQualifiedClassName.replaceAll("\\.","/") + ".java";
+String packageFileName( EPackageModelGenAnnotation this ): qualifiedClassName.replaceAll("\\.","/") + ".java";
+String ecoreFileName( EPackageModelGenAnnotation this ): (modelClassesPackagePath + "." + name).replaceAll("\\.","/") + ".ecore";
+String modelFactoryFileName( EPackageModelGenAnnotation this ):  (modelClassesPackagePath + "." + simpleModelFactoryClassName).replaceAll("\\.","/") + ".java";
+// String modelPropertyFileName( GenEPackage this ): optionBasePackage.replaceAll("\\.","/") + "/" + name.lowerCase() + "/" + name.lowerCase() + "_en.properties";
+String toLowerCase(String value): JAVA org.eclipse.emf.texo.utils.ModelUtils.toLowerCase(java.lang.String);
+String toUpperCase(String value): JAVA org.eclipse.emf.texo.utils.ModelUtils.toUpperCase(java.lang.String);
+String toFirstLower(String value): JAVA org.eclipse.emf.texo.utils.ModelUtils.lowerCaseFirst(java.lang.String);
+String toFirstUpper(String value): JAVA org.eclipse.emf.texo.utils.ModelUtils.upCaseFirst(java.lang.String);
+boolean isDocumentRoot( EClass eClass ): JAVA org.eclipse.emf.texo.modelgenerator.annotator.GenUtils.isDocumentRoot(org.eclipse.emf.ecore.EClass);
+String format( String value ): JAVA org.eclipse.emf.texo.modelgenerator.annotator.GenUtils.formatIdentifier(java.lang.String);
+boolean isMixed( EStructuralFeature eStructuralFeature ): JAVA org.eclipse.emf.texo.utils.ModelUtils.isMixed(org.eclipse.emf.ecore.EStructuralFeature);
+String getDocumentation(ENamedElement eNamedElement): JAVA org.eclipse.emf.texo.utils.ModelUtils.getDocumentation(org.eclipse.emf.ecore.ENamedElement);
+String cast( String value ): JAVA org.eclipse.emf.texo.modelgenerator.annotator.GenUtils.cast(java.lang.String);

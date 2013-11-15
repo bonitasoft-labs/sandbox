@@ -1,0 +1,17 @@
+«REM»Template file which can be overridden to generate additional files or code«ENDREM»
+«IMPORT org::eclipse::emf::texo::modelgenerator::modelannotations»
+«IMPORT org::eclipse::emf::texo::generator»
+«IMPORT org::eclipse::emf::ecore»
+
+«REM»Called for an EClass, generated code is placed in the entity main class body«ENDREM»
+«DEFINE root(ModelController modelController) FOR EClassModelGenAnnotation-»
+	«LET ((EPackageModelGenAnnotation)modelController.getAnnotation(this.EClass, "http://www.eclipse.org/emf/texo/orm/ormannotations")) AS annotation»
+	«IF annotation.entity != null»
+		«IF annotation.entity.table != null»
+			 drop table if exists «IF annotation.entity.table.catalog != null»«annotation.entity.table.catalog».«ENDIF-»«IF annotation.entity.table.schema != null»«annotation.entity.table.schema».«ENDIF»«annotation.entity.table.name» cascade;
+		«ELSE»
+			 drop table if exists «annotation.entity.name» cascade;
+		«ENDIF»
+	«ENDIF»
+	«ENDLET»
+«ENDDEFINE»

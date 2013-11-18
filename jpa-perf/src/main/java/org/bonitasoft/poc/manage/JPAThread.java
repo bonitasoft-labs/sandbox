@@ -9,11 +9,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.OptimisticLockException;
 import javax.persistence.TypedQuery;
-import javax.transaction.HeuristicMixedException;
-import javax.transaction.HeuristicRollbackException;
-import javax.transaction.NotSupportedException;
 import javax.transaction.RollbackException;
-import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
 
 import org.bonitasoft.poc.model.Employee;
@@ -46,100 +42,61 @@ public abstract class JPAThread implements Runnable {
     @Override
     public void run() {
         final Context context = getTimer().time();
-        final Context errorContext = null;
+        Context errorContext = null;
         try {
-            final UserTransaction ut = getUserTransaction();
-            final EntityManager entityManager = getEntityManager();
-            beginTransaction(ut, entityManager, errorContext);
-            execute(entityManager);
-            commitTransaction(ut, errorContext);
+            final InitialContext ctx = new InitialContext();
+            final UserTransaction ut = (UserTransaction) ctx.lookup("java:comp/UserTransaction");
+            final EntityManager entityManager = entityManagerFactory.createEntityManager();
+            errorContext = beginTransaction(ut, entityManager);
+            if (errorContext == null) {
+                execute(entityManager);
+                if (errorContext == null) {
+                    errorContext = commitTransaction(ut);
+                }
+            }
             context.stop();
-        } catch (final NamingException e1) {
-            e1.printStackTrace();
+        } catch (final NamingException ne) {
+            ne.printStackTrace();
+        } finally {
+            if (errorContext != null) {
+                errorContext.stop();
+            }
         }
     }
 
-	protected EntityManager getEntityManager() {
-		return entityManagerFactory.createEntityManager();
-	}
-
-	protected UserTransaction getUserTransaction() throws NamingException {
-		InitialContext ctx = new InitialContext();
-		final UserTransaction ut = (UserTransaction) ctx.lookup("java:comp/UserTransaction");
-		return ut;
-	}
-
-    protected void commitTransaction(final UserTransaction ut, Context errorContext) {
+    protected Context commitTransaction(final UserTransaction ut) {
         try {
             ut.commit();
-        } catch (final SecurityException e) {
-            if (errorContext == null) {
-                errorContext = errorTimer.time();
-            }
-            rollbackTransaction(ut, errorContext);
-        } catch (final IllegalStateException e) {
-            if (errorContext == null) {
-                errorContext = errorTimer.time();
-            }
-            rollbackTransaction(ut, errorContext);
+            return null;
         } catch (final RollbackException e) {
-            if (errorContext == null) {
-                errorContext = errorTimer.time();
-            }
             if (e.getCause() instanceof OptimisticLockException) {
                 optimisticLockErrorCounter.inc();
             }
-            rollbackTransaction(ut, errorContext);
-        } catch (final HeuristicMixedException e) {
-            if (errorContext == null) {
-                errorContext = errorTimer.time();
-            }
-            rollbackTransaction(ut, errorContext);
-        } catch (final HeuristicRollbackException e) {
-            if (errorContext == null) {
-                errorContext = errorTimer.time();
-            }
-            rollbackTransaction(ut, errorContext);
-        } catch (final SystemException e) {
-            if (errorContext == null) {
-                errorContext = errorTimer.time();
-            }
-            rollbackTransaction(ut, errorContext);
+            rollbackTransaction(ut);
+            return errorTimer.time();
+        } catch (final Exception e) {
+            rollbackTransaction(ut);
+            return errorTimer.time();
         }
     }
 
-    protected void beginTransaction(final UserTransaction ut, final EntityManager entityManager, Context errorContext) {
+    protected Context beginTransaction(final UserTransaction ut, final EntityManager entityManager) {
         try {
             ut.begin();
-        } catch (final NotSupportedException e) {
-            if (errorContext == null) {
-                errorContext = errorTimer.time();
-            }
-        } catch (final SystemException e) {
-            if (errorContext == null) {
-                errorContext = errorTimer.time();
-            }
+            entityManager.joinTransaction();
+            return null;
+        } catch (final Exception e) {
+            return errorTimer.time();
         }
-        entityManager.joinTransaction();
     }
 
-    private void rollbackTransaction(final UserTransaction ut, Context errorContext) {
+    private Context rollbackTransaction(final UserTransaction ut) {
         try {
             ut.rollback();
-        } catch (final IllegalStateException e) {
-            if (errorContext == null) {
-                errorContext = errorTimer.time();
-            }
-        } catch (final SecurityException e) {
-            if (errorContext == null) {
-                errorContext = errorTimer.time();
-            }
-        } catch (final SystemException e) {
-            if (errorContext == null) {
-                errorContext = errorTimer.time();
-            }
+            return null;
+        } catch (final Exception e) {
+            return errorTimer.time();
         }
-        errorContext.stop();
     }
 
     protected abstract void incrementErrorCounter();

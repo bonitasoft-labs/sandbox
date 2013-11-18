@@ -2,6 +2,8 @@ package org.bonitasoft.poc.manage;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
+import groovy.lang.Binding;
+import groovy.lang.GroovyShell;
 
 import java.sql.SQLException;
 import java.util.Date;
@@ -30,6 +32,8 @@ import org.junit.Test;
 
 import bitronix.tm.TransactionManagerServices;
 import bitronix.tm.resource.jdbc.PoolingDataSource;
+
+import com.codahale.metrics.MetricRegistry;
 
 public class DistributedTransactionTest {
 
@@ -175,5 +179,49 @@ public class DistributedTransactionTest {
         final InitialContext ctx = new InitialContext();
         return (UserTransaction) ctx.lookup("java:comp/UserTransaction");
     }
+    
+	@Test
+	public void testInsertWithGroovy() throws Exception{
+		final MetricRegistry metrics = new MetricRegistry();
+		final EntityManagerFactory entityManagerFactoryDS1 = Persistence.createEntityManagerFactory("PostgresPersistenceUnit1");
+
+		//Insert an employee in Database
+		final InsertEmployeeThread insertEmployeeThread = new InsertEmployeeThread(entityManagerFactoryDS1, metrics);
+		insertEmployeeThread.run();
+
+		//Retrieve a JTA UserTransaction
+		UserTransaction ut = getUserTransaction();
+		ut.begin();
+		EntityManager em = entityManagerFactoryDS1.createEntityManager();
+		em.joinTransaction();
+		
+		//Create Query to retrieve employee
+		TypedQuery<Employee> query = em.createQuery("FROM Employee",Employee.class);
+		Employee e = query.getResultList().get(0);
+		long id = e.getId();
+	
+
+		//Use groovy to update employee
+		Map<String, Object> variables = new HashMap<String, Object>(); 
+		variables.put("myEmployee", e);
+		Binding binding = new Binding(variables);
+		GroovyShell groovyShell = new GroovyShell(Thread.currentThread().getContextClassLoader(),binding);
+		System.out.println("PerfManager.testInsertWithGroovy() - before groovy evaluate surname = "+e.getSurname());
+		groovyShell.evaluate("myEmployee.surname = \"The dominator\"");
+		System.out.println("PerfManager.testInsertWithGroovy() - after groovy evaluate surname = "+e.getSurname());
+		
+		//Commit transaction
+		em.close();
+		ut.commit();
+
+		//Check that employee has been updated
+		ut = getUserTransaction();
+		ut.begin();
+		em = entityManagerFactoryDS1.createEntityManager();
+		em.joinTransaction();
+		assertEquals("The dominator",em.find(Employee.class, id).getSurname());
+		em.close();
+		ut.commit();
+	}
 
 }

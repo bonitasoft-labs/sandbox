@@ -13,7 +13,7 @@ import javax.persistence.Version;
  * 
  * @generated
  */
-@Entity(name = "Car")
+@Entity(name = "poc_Car")
 @Table(name = "Car")
 public class Car {
 

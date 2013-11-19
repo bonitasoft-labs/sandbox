@@ -6,6 +6,18 @@ Bundle-Version: 1.0.0.qualifier
 Bundle-Activator: org.bonitasoft.poc.texo.Activator
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
- javax.persistence;bundle-version="2.0.3"
+ javax.persistence;bundle-version="2.0.3",
+ org.eclipse.emf.texo.annotations.model;bundle-version="0.1.0",
+ org.eclipse.emf.common,
+ org.junit;bundle-version="4.8.2",
+ org.eclipse.emf.ecore;bundle-version="2.7.0",
+ org.eclipse.emf.ecore.xmi;bundle-version="2.7.0",
+ org.eclipse.emf.texo.orm;bundle-version="0.1.0",
+ org.bonitasoft.studio.fest-assert;bundle-version="1.4.0",
+ org.eclipse.emf.texo.modelgenerator,
+ org.eclipse.emf.texo.generator;bundle-version="0.1.0",
+ org.eclipse.core.resources;bundle-version="3.7.101",
+ org.eclipse.jdt.core,
+ org.eclipse.jdt.launching
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy

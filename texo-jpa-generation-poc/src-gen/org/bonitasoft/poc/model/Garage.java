@@ -7,6 +7,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinTable;
 import javax.persistence.OneToMany;
 
 /**
@@ -15,7 +16,7 @@ import javax.persistence.OneToMany;
  * 
  * @generated
  */
-@Entity(name = "Garage")
+@Entity(name = "poc_Garage")
 public class Garage {
 
 	/**
@@ -41,6 +42,7 @@ public class Garage {
 	 * @generated
 	 */
 	@OneToMany(cascade = { CascadeType.ALL })
+	@JoinTable()
 	private List<Car> cars = new ArrayList<Car>();
 
 	/**
@@ -116,10 +118,11 @@ public class Garage {
 	 */
 	public boolean addToCars(Car carsValue) {
 		if (!cars.contains(carsValue)) {
-			boolean result = cars.add(carsValue);
-			return result;
+			cars.add(carsValue);
+			return true;
+		} else {
+			return false;
 		}
-		return false;
 	}
 
 	/**
@@ -134,10 +137,11 @@ public class Garage {
 	 */
 	public boolean removeFromCars(Car carsValue) {
 		if (cars.contains(carsValue)) {
-			boolean result = cars.remove(carsValue);
-			return result;
+			cars.remove(carsValue);
+			return true;
+		} else {
+			return false;
 		}
-		return false;
 	}
 
 	/**

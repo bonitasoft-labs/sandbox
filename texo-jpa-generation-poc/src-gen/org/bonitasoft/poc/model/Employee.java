@@ -16,7 +16,7 @@ import javax.persistence.ManyToMany;
  * 
  * @generated
  */
-@Entity(name = "Employee")
+@Entity(name = "poc_Employee")
 public class Employee {
 
 	/**
@@ -120,10 +120,11 @@ public class Employee {
 	 */
 	public boolean addToProjects(Project projectsValue) {
 		if (!projects.contains(projectsValue)) {
-			boolean result = projects.add(projectsValue);
-			return result;
+			projects.add(projectsValue);
+			return true;
+		} else {
+			return false;
 		}
-		return false;
 	}
 
 	/**
@@ -138,10 +139,11 @@ public class Employee {
 	 */
 	public boolean removeFromProjects(Project projectsValue) {
 		if (projects.contains(projectsValue)) {
-			boolean result = projects.remove(projectsValue);
-			return result;
+			projects.remove(projectsValue);
+			return true;
+		} else {
+			return false;
 		}
-		return false;
 	}
 
 	/**

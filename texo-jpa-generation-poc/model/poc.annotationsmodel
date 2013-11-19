@@ -3,7 +3,6 @@
   <annotatedEPackages>
     <ePackage href="poc.ecore#/"/>
     <ePackageAnnotations xsi:type="modelannotations:EPackageModelGenAnnotation" description="" documentation="" addRuntimeModelBehavior="false" packagePath="" modelClassesPackagePath="" simpleClassName="" simpleModelFactoryClassName="" javaFileHeader="" generateSafeManyAccess="false" rootClassExtends="" rootInterfaceExtends="" featureMapClassExtends="" daoClassesPackagePath=""/>
-    <ePackageAnnotations xsi:type="ormannotations:EPackageORMAnnotation" description="" generateFullDbSchemaNames="false" columnNamePrefix="" maximumSqlNameLength="255" lowerCasedNames="false" upperCasedNames="false" enforceUniqueNames="false" useJoinTablesForContainment="false" useJoinTablesForNonContainment="false" generateJavaAnnotations="false" addOrderColumnToListMappings="false" renameSQLReservedNames="true" uniqueEntityNames="false" setDelimitedIdentifierTagInORM="false"/>
     <annotatedEClassifiers xsi:type="annotationsmodel:AnnotatedEClass">
       <eClass href="poc.ecore#//Car"/>
       <eClassAnnotations xsi:type="modelannotations:EClassModelGenAnnotation"/>

@@ -16,7 +16,7 @@ import javax.persistence.OneToOne;
  * 
  * @generated
  */
-@Entity(name = "Person")
+@Entity(name = "poc_Person")
 public class Person {
 
 	/**

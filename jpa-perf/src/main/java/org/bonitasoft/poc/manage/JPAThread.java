@@ -50,13 +50,11 @@ public abstract class JPAThread implements Runnable {
             errorContext = beginTransaction(ut, entityManager);
             if (errorContext == null) {
                 execute(entityManager);
-                if (errorContext == null) {
-                    errorContext = commitTransaction(ut);
-                }
+                errorContext = commitTransaction(ut);
             }
             context.stop();
         } catch (final NamingException ne) {
-            ne.printStackTrace();
+
         } finally {
             if (errorContext != null) {
                 errorContext.stop();
@@ -72,11 +70,9 @@ public abstract class JPAThread implements Runnable {
             if (e.getCause() instanceof OptimisticLockException) {
                 optimisticLockErrorCounter.inc();
             }
-            rollbackTransaction(ut);
-            return errorTimer.time();
+            return rollbackTransaction(ut);
         } catch (final Exception e) {
-            rollbackTransaction(ut);
-            return errorTimer.time();
+            return rollbackTransaction(ut);
         }
     }
 
@@ -86,17 +82,19 @@ public abstract class JPAThread implements Runnable {
             entityManager.joinTransaction();
             return null;
         } catch (final Exception e) {
+            incrementErrorCounter();
             return errorTimer.time();
         }
     }
 
     private Context rollbackTransaction(final UserTransaction ut) {
+        incrementErrorCounter();
         try {
             ut.rollback();
-            return null;
         } catch (final Exception e) {
-            return errorTimer.time();
+
         }
+        return errorTimer.time();
     }
 
     protected abstract void incrementErrorCounter();

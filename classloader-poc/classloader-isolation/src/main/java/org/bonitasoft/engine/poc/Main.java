@@ -27,7 +27,7 @@ public class Main {
     /**
      * Usage:
      * mvn -o compile exec:java -Dexec.mainClass=org.bonitasoft.engine.poc.Main -Dexec.args=
-     * "file:///home/emmanuel/workspace/sandbox/classloader-pojo2/target/classloader-pojo2-0.0.1-SNAPSHOT.jar file:///home/emmanuel/workspace/sandbox/classloader-pojo1/target/classloader-pojo1-0.0.1-SNAPSHOT.jar"
+     * "file:///home/emmanuel/workspace/sandbox/classloader-pojo1/target/classloader-pojo1-0.0.1-SNAPSHOT.jar file:///home/emmanuel/workspace/sandbox/classloader-pojo2/target/classloader-pojo2-0.0.1-SNAPSHOT.jar"
      * 
      * @param args
      * @throws MalformedURLException
@@ -56,12 +56,11 @@ public class Main {
         ExecutorService executorService = Executors.newFixedThreadPool(50);
         final int NB_THREAD_COUPLES = 150;
         for (int i = 0; i < NB_THREAD_COUPLES; i++) {
-            // Thread thread1 = new Thread(new PlayWithGojo(args[0]));
             Thread thread1 = new Thread(new PlayWithHiberGojo(args[0],
-                    "import org.bonitasoft.engine.poc.pojo.LeaveRequest; LeaveRequest lr = new LeaveRequest(); lr.leaveType = 'RTT'; return lr;"));
+                    "import org.bonitasoft.engine.poc.pojo.LeaveRequest; LeaveRequest lr = new LeaveRequest(); lr.numberOfDays = 45; return lr;"));
             executorService.execute(thread1);
             Thread thread2 = new Thread(new PlayWithHiberGojo(args[1],
-                    "import org.bonitasoft.engine.poc.pojo.LeaveRequest; LeaveRequest lr = new LeaveRequest(); lr.numberOfDays = 45; return lr;"));
+                    "import org.bonitasoft.engine.poc.pojo.LeaveRequest; LeaveRequest lr = new LeaveRequest(); lr.leaveType = 'RTT'; return lr;"));
             executorService.execute(thread2);
             // System.out.println("ClassLoader du thread 1: " + thread1.getContextClassLoader());
             thread1.setUncaughtExceptionHandler(exceHandler);

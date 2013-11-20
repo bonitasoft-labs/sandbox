@@ -79,6 +79,7 @@ public class PlayWithHiberGojo implements Runnable {
             throw e;
         } finally {
             session.close();
+            sessionFactory.close();
         }
     }
 }

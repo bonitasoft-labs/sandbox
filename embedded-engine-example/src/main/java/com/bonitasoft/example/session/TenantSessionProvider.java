@@ -11,29 +11,33 @@
  * program; if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth
  * Floor, Boston, MA 02110-1301, USA.
  **/
-package organization;
+package com.bonitasoft.example.session;
 
-import org.bonitasoft.engine.api.IdentityAPI;
+import org.bonitasoft.engine.api.LoginAPI;
 import org.bonitasoft.engine.api.TenantAPIAccessor;
 import org.bonitasoft.engine.exception.BonitaException;
-import org.bonitasoft.engine.identity.User;
 import org.bonitasoft.engine.session.APISession;
 
-public class OrganizationManager {
 
-    public User createUser(String username, String password, APISession session) throws BonitaException {
-        User user = getIdentityAPI(session).createUser(username, password);
-        System.out.println("Created user '" + username + "'.");
-        return user;
+public class TenantSessionProvider {
+    
+    private APISession session = null;
+
+    public APISession getNewSession(String username, String password) throws BonitaException {
+        cleanCurrentSession();
+        session = getLoginAPI().login(username, password);
+        System.out.println("User '" + session.getUserName() + "' has logged in!");
+        return session;
     }
 
-    private IdentityAPI getIdentityAPI(APISession session) throws BonitaException {
-        return TenantAPIAccessor.getIdentityAPI(session);
+    private LoginAPI getLoginAPI() throws BonitaException {
+        return TenantAPIAccessor.getLoginAPI();
     }
 
-    public void deleteUser(User user, APISession session) throws BonitaException {
-        getIdentityAPI(session).deleteUser(user.getId());;
-        System.out.println("Deleted user '" + user.getUserName() + "'.");
+    public void cleanCurrentSession() throws BonitaException {
+        if (session != null) {
+            getLoginAPI().logout(session);
+            System.out.println("User '" + session.getUserName() + "' has logged out!");
+        }
     }
-
 }

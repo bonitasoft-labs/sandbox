@@ -8,7 +8,7 @@
 	<version>1.0.0-SNAPSHOT</version>
 	
 	<properties>
-		<bonita.engine.version>6.1.0</bonita.engine.version>
+		<bonita.engine.version>6.1.2</bonita.engine.version>
 	</properties>
 	
 	<dependencies>

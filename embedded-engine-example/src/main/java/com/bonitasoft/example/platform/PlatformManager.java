@@ -15,26 +15,54 @@ package com.bonitasoft.example.platform;
 
 import org.bonitasoft.engine.api.PlatformAPI;
 import org.bonitasoft.engine.api.PlatformAPIAccessor;
+import org.bonitasoft.engine.api.PlatformLoginAPI;
 import org.bonitasoft.engine.exception.BonitaException;
 import org.bonitasoft.engine.session.PlatformSession;
 
-
 public class PlatformManager {
 
-    
-    public void makePlatformReadyToUsePlatform(PlatformSession platformSession) throws BonitaException {
-            getPlatformAPI(platformSession).createAndInitializePlatform();
-            getPlatformAPI(platformSession).startNode();
+
+    private PlatformSession session = null;
+
+    public PlatformManager() {
     }
-    
+
+    public void create() throws BonitaException {
+        System.out.println("Creating and initializing the platform ...");
+        getPlatformAPI(session).createAndInitializePlatform();
+        System.out.println("Platform created and initialized!");
+
+        System.out.println("Starting node ...");
+        getPlatformAPI(session).startNode();
+        System.out.println("Node started!");
+    }
+
     private PlatformAPI getPlatformAPI(PlatformSession platformSession) throws BonitaException {
         return PlatformAPIAccessor.getPlatformAPI(platformSession);
     }
 
-    public void destroyPlaform(PlatformSession platformSession) throws BonitaException {
-            getPlatformAPI(platformSession).stopNode();
-            getPlatformAPI(platformSession).cleanAndDeletePlaftorm();;
+    public void destroy() throws BonitaException {
+        System.out.println("Stopping node ...");
+        getPlatformAPI(session).stopNode();
+        System.out.println("Node stopped!");
+        
+        System.out.println("Cleaning and deleting the platform ...");
+        getPlatformAPI(session).cleanAndDeletePlaftorm();;
+        System.out.println("Platform cleaned and deleted!");
     }
-    
+
+    public void login(String platformUsername, String password) throws BonitaException {
+        session = getPlaformLoginAPI().login(platformUsername, password);
+    }
+
+    public void logout() throws BonitaException {
+        if (session != null) {
+            getPlaformLoginAPI().logout(session);
+        }
+    }
+
+    private PlatformLoginAPI getPlaformLoginAPI() throws BonitaException {
+        return PlatformAPIAccessor.getPlatformLoginAPI();
+    }
 
 }

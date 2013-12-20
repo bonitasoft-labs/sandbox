@@ -1,7 +1,11 @@
 package com.bonitasoft.example.process;
 
+import java.util.List;
+
 import org.bonitasoft.engine.api.ProcessAPI;
 import org.bonitasoft.engine.api.TenantAPIAccessor;
+import org.bonitasoft.engine.bpm.flownode.ActivityInstanceCriterion;
+import org.bonitasoft.engine.bpm.flownode.HumanTaskInstance;
 import org.bonitasoft.engine.bpm.process.DesignProcessDefinition;
 import org.bonitasoft.engine.bpm.process.InvalidProcessDefinitionException;
 import org.bonitasoft.engine.bpm.process.ProcessDefinition;
@@ -16,30 +20,61 @@ public class ProcessManager {
 
     private static final String START_NAME = "Start";
 
-    private static final String USER_STEP_NAME = "My User Step";
+    private static final String FIRST_USER_STEP_NAME = "My first step";
+
+    private static final String SECOND_USER_STEP_NAME = "My second step";
 
     private static final String AUTO_STEP_NAME = "My Automatic Step";
 
     private static final String END_NAME = "End";
 
-    public ProcessDefinition buildAndDeployProcess(APISession session) throws BonitaException {
-            DesignProcessDefinition designProcessDefinition = buildProcessDefinition();
-            ProcessDefinition processDefinition = getProcessAPI(session).deploy(designProcessDefinition);
-            getProcessAPI(session).addUserToActor(ACTOR_NAME, processDefinition, session.getUserId());
-            getProcessAPI(session).enableProcess(processDefinition.getId());
-            return processDefinition;
+    private static int MAX_ELEMENTS = 100;
+
+    public ProcessDefinition deployProcess(APISession session) throws BonitaException {
+        System.out.println("Deploying process ... ");
+        DesignProcessDefinition designProcessDefinition = buildProcessDefinition();
+        ProcessDefinition processDefinition = getProcessAPI(session).deploy(designProcessDefinition);
+        System.out.println("Process deployed!");
+
+        System.out.println("Mapping actors ... ");
+        getProcessAPI(session).addUserToActor(ACTOR_NAME, processDefinition, session.getUserId());
+        System.out.println("Actors mapped!");
+
+        System.out.println("Enabling process ... ");
+        getProcessAPI(session).enableProcess(processDefinition.getId());
+        System.out.println("Process enabled!");
+        return processDefinition;
     }
 
     public ProcessInstance startProcess(ProcessDefinition processDefinition, APISession session) throws BonitaException {
-            return getProcessAPI(session).startProcess(processDefinition.getId());
+        System.out.println("Instantiating process ... ");
+        ProcessInstance processInstance = getProcessAPI(session).startProcess(processDefinition.getId());
+        System.out.println("Process instantiated! Id: " + processInstance.getId());
+        return processInstance;
     }
 
-    public void deleteProcessInstance(ProcessInstance processInstance, APISession session) throws BonitaException {
-            getProcessAPI(session).deleteProcessInstance(processInstance.getId());
+    public void deleteArchivedProcessInstance(ProcessDefinition processDefinition, APISession session) throws BonitaException, InterruptedException {
+        long nbOfDeletedProcess = 0;
+        do {
+            nbOfDeletedProcess = getProcessAPI(session).deleteArchivedProcessInstances(processDefinition.getId(), 0, MAX_ELEMENTS);
+        } while (nbOfDeletedProcess == MAX_ELEMENTS);
     }
 
-    public void disableAndDeletProcess(ProcessDefinition processDefinition, APISession session) throws BonitaException {
+    public void deleteOpenProcessInstance(ProcessDefinition processDefinition, APISession session) throws BonitaException, InterruptedException {
+        long nbOfDeletedProcess = 0;
+        do {
+            nbOfDeletedProcess = getProcessAPI(session).deleteProcessInstances(processDefinition.getId(), 0, MAX_ELEMENTS);
+        } while (nbOfDeletedProcess == MAX_ELEMENTS);
+    }
+
+    public void disableAndDeleteProcess(ProcessDefinition processDefinition, APISession session) throws BonitaException {
         getProcessAPI(session).disableAndDeleteProcessDefinition(processDefinition.getId());
+    }
+
+    public void cleanProcesses(ProcessDefinition processDefinition, APISession session) throws BonitaException, InterruptedException {
+        deleteOpenProcessInstance(processDefinition, session);
+        deleteArchivedProcessInstance(processDefinition, session);
+        disableAndDeleteProcess(processDefinition, session);
     }
 
     private DesignProcessDefinition buildProcessDefinition() throws InvalidProcessDefinitionException {
@@ -47,17 +82,39 @@ public class ProcessManager {
         pdb.addActor(ACTOR_NAME, true);
         pdb.addStartEvent(START_NAME);
         pdb.addAutomaticTask(AUTO_STEP_NAME);
-        pdb.addUserTask(USER_STEP_NAME, ACTOR_NAME);
+        pdb.addUserTask(FIRST_USER_STEP_NAME, ACTOR_NAME);
+        pdb.addUserTask(SECOND_USER_STEP_NAME, ACTOR_NAME);
         pdb.addEndEvent(END_NAME);
         pdb.addTransition(START_NAME, AUTO_STEP_NAME);
-        pdb.addTransition(AUTO_STEP_NAME, USER_STEP_NAME);
-        pdb.addTransition(USER_STEP_NAME, END_NAME);
+        pdb.addTransition(AUTO_STEP_NAME, FIRST_USER_STEP_NAME);
+        pdb.addTransition(FIRST_USER_STEP_NAME, SECOND_USER_STEP_NAME);
+        pdb.addTransition(SECOND_USER_STEP_NAME, END_NAME);
 
         return pdb.done();
     }
-    
-    ProcessAPI getProcessAPI(APISession session) throws BonitaException {
+
+    private ProcessAPI getProcessAPI(APISession session) throws BonitaException {
         return TenantAPIAccessor.getProcessAPI(session);
+    }
+
+    public void executeATask(APISession session) throws BonitaException {
+        ProcessAPI processAPI = getProcessAPI(session);
+        List<HumanTaskInstance> pendingTasks = processAPI.getPendingHumanTaskInstances(session.getUserId(), 0, 1,
+                ActivityInstanceCriterion.LAST_UPDATE_ASC);
+        if (!pendingTasks.isEmpty()) {
+            HumanTaskInstance taskToExecute = pendingTasks.get(0);
+            // assign the task
+            processAPI.assignUserTask(taskToExecute.getId(), session.getUserId());
+            System.out.println("Task '" + taskToExecute.getName() + "' of process instance '" + taskToExecute.getRootContainerId() + "' assigned to '"
+                    + session.getUserName() + ".");
+
+            // execute task
+            processAPI.executeFlowNode(taskToExecute.getId());
+            System.out.println("Task '" + taskToExecute.getName() + "' of process instance '" + taskToExecute.getRootContainerId() + "' executed by '"
+                    + session.getUserName() + ".");
+        } else {
+            System.out.println("No pending tasks for user '" + session.getUserName() + "'.");
+        }
     }
 
 }

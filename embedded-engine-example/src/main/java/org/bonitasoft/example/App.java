@@ -67,14 +67,6 @@ public class App {
         System.out.println("Completed sucessfully!!!");
     }
 
-    public static PlatformSession doPlatformLogin(String platformUsername, String password) throws BonitaException {
-        return getPlaformLoginAPI().login(platformUsername, password);
-    }
-
-    public static void doPlatformLogout(PlatformSession session) throws BonitaException {
-        getPlaformLoginAPI().logout(session);
-    }
-
     private static void createPlatform() throws BonitaException {
         PlatformSession session = doPlatformLogin(PLATFORM_ADMIN, PLATFORM_PASSWORD);
         try {
@@ -199,6 +191,14 @@ public class App {
         BufferedReader buffer = new BufferedReader(new InputStreamReader(System.in));
         choice = buffer.readLine();
         return choice;
+    }
+
+    public static PlatformSession doPlatformLogin(String platformUsername, String password) throws BonitaException {
+        return getPlaformLoginAPI().login(platformUsername, password);
+    }
+
+    public static void doPlatformLogout(PlatformSession session) throws BonitaException {
+        getPlaformLoginAPI().logout(session);
     }
 
     public static APISession doTenantLogin(String username, String password) throws BonitaException {

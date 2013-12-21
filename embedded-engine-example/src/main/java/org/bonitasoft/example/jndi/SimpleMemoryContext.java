@@ -1,4 +1,4 @@
-package com.bonitasoft.example.jndi;
+package org.bonitasoft.example.jndi;
 
 import java.util.Hashtable;
 import java.util.Map;

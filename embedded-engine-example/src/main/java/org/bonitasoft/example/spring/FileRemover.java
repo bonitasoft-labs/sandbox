@@ -1,4 +1,4 @@
-package com.bonitasoft.example.spring;
+package org.bonitasoft.example.spring;
 
 import java.io.File;
 import java.util.List;

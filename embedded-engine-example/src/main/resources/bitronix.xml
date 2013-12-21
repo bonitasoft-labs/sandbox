@@ -14,7 +14,7 @@
         <constructor-arg value="target/bonita-bt2.tlog" /> 
     </bean>
 
-    <bean id="removeBtmFiles" class="com.bonitasoft.example.spring.FileRemover" depends-on="btm1, btm2">
+    <bean id="removeBtmFiles" class="org.bonitasoft.example.spring.FileRemover" depends-on="btm1, btm2">
         <constructor-arg>
             <util:list>
                 <ref bean="btm1" />

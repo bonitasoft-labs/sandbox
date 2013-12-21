@@ -11,7 +11,7 @@
  * program; if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth
  * Floor, Boston, MA 02110-1301, USA.
  **/
-package com.bonitasoft.example;
+package org.bonitasoft.example;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -28,10 +28,9 @@ import org.bonitasoft.engine.exception.BonitaException;
 import org.bonitasoft.engine.identity.User;
 import org.bonitasoft.engine.session.APISession;
 import org.bonitasoft.engine.session.PlatformSession;
+import org.bonitasoft.example.process.ProcessManager;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
-
-import com.bonitasoft.example.process.ProcessManager;
 
 public class App {
 

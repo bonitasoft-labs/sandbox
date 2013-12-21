@@ -1,4 +1,4 @@
-package com.bonitasoft.example.process;
+package org.bonitasoft.example.process;
 
 import java.util.List;
 

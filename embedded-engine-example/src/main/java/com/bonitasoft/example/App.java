@@ -107,7 +107,7 @@ public class App {
     }
 
     private static ProcessDefinition deployProcess() throws BonitaException {
-        // log in with the real user previously created 
+        // log in with the real user previously created
         APISession session = doTenantLogin(USER_NAME, PWD);
         try {
             return processManager.deployProcess(session);
@@ -118,25 +118,38 @@ public class App {
     }
 
     private static void instantiateProcessesAndExecuteTasks(ProcessDefinition processDefinition) throws IOException, BonitaException {
+        String message = getMenutTextContent();
+        String choice = null;
+        do {
+            choice = readLine(message);
+            if ("1".equals(choice)) {
+                startProcess(processDefinition);
+            } else if ("2".equals(choice)) {
+                executeATask();
+            } else if (!"3".equals(choice)) {
+                System.out.println("Invalid choice!");
+            }
+        } while (!"3".equals(choice));
+    }
+
+    private static void startProcess(ProcessDefinition processDefinition) throws BonitaException {
         APISession session = doTenantLogin(USER_NAME, PWD);
         try {
-            String message = getMenutTextContent();
-            String choice = null;
-            do {
-                choice = readLine(message);
-                if ("1".equals(choice)) {
-                    processManager.startProcess(processDefinition, session);
-                } else if ("2".equals(choice)) {
-                    processManager.executeATask(session);
-                } else if (!"3".equals(choice)) {
-                    System.out.println("Invalid choice!");
-                }
-            } while (!"3".equals(choice));
+            processManager.startProcess(processDefinition, session);
         } finally {
             doTenantLogout(session);
         }
     }
 
+    private static void executeATask() throws BonitaException {
+        APISession session = doTenantLogin(USER_NAME, PWD);
+        try {
+            processManager.executeATask(session);
+        } finally {
+            doTenantLogout(session);
+        }
+    }
+    
     private static String getMenutTextContent() {
         StringBuilder stb = new StringBuilder("\nChoose the action to be executed:\n");
         stb.append("1 - start a process\n");

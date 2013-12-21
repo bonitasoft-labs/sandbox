@@ -16,19 +16,27 @@ package org.bonitasoft.example;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.List;
 
 import org.bonitasoft.engine.api.IdentityAPI;
 import org.bonitasoft.engine.api.LoginAPI;
 import org.bonitasoft.engine.api.PlatformAPI;
 import org.bonitasoft.engine.api.PlatformAPIAccessor;
 import org.bonitasoft.engine.api.PlatformLoginAPI;
+import org.bonitasoft.engine.api.ProcessAPI;
+import org.bonitasoft.engine.api.ProcessRuntimeAPI;
 import org.bonitasoft.engine.api.TenantAPIAccessor;
+import org.bonitasoft.engine.bpm.flownode.ActivityInstanceCriterion;
+import org.bonitasoft.engine.bpm.flownode.HumanTaskInstance;
+import org.bonitasoft.engine.bpm.process.DesignProcessDefinition;
+import org.bonitasoft.engine.bpm.process.InvalidProcessDefinitionException;
 import org.bonitasoft.engine.bpm.process.ProcessDefinition;
+import org.bonitasoft.engine.bpm.process.ProcessInstance;
+import org.bonitasoft.engine.bpm.process.impl.ProcessDefinitionBuilder;
 import org.bonitasoft.engine.exception.BonitaException;
 import org.bonitasoft.engine.identity.User;
 import org.bonitasoft.engine.session.APISession;
 import org.bonitasoft.engine.session.PlatformSession;
-import org.bonitasoft.example.process.ProcessManager;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -45,10 +53,22 @@ public class App {
     private static final String USER_NAME = "walter.bates";
 
     private static final String PWD = "bpm";
+    
+    private static final String ACTOR_NAME = "MyActor";
+
+    private static final String START_NAME = "Start";
+
+    private static final String FIRST_USER_STEP_NAME = "My first step";
+
+    private static final String SECOND_USER_STEP_NAME = "My second step";
+
+    private static final String AUTO_STEP_NAME = "My Automatic Step";
+
+    private static final String END_NAME = "End";
+
+    private static int MAX_ELEMENTS = 100;
 
     private static ConfigurableApplicationContext springContext;
-
-    private static ProcessManager processManager = new ProcessManager();
 
     public static void main(String[] args) throws Exception {
         // TODO: generate bonita home automatically at each run
@@ -101,11 +121,44 @@ public class App {
         // log in with the real user previously created
         APISession session = doTenantLogin(USER_NAME, PWD);
         try {
-            return processManager.deployProcess(session);
+            System.out.println("Deploying process ... ");
+            DesignProcessDefinition designProcessDefinition = buildProcessDefinition();
+            ProcessDefinition processDefinition = getProcessAPI(session).deploy(designProcessDefinition);
+            System.out.println("Process deployed!");
+            
+            System.out.println("Mapping actors ... ");
+            getProcessAPI(session).addUserToActor(ACTOR_NAME, processDefinition, session.getUserId());
+            System.out.println("Actors mapped!");
+            
+            System.out.println("Enabling process ... ");
+            getProcessAPI(session).enableProcess(processDefinition.getId());
+            System.out.println("Process enabled!");
+            return processDefinition;
 
         } finally {
             doTenantLogout(session);
         }
+    }
+    
+    /**
+     * Build a simple process: Start -> My Automatic Step -> My first step -> My second step -> End
+     * @return the built process
+     * @throws InvalidProcessDefinitionException
+     */
+    private static DesignProcessDefinition buildProcessDefinition() throws InvalidProcessDefinitionException {
+        ProcessDefinitionBuilder pdb = new ProcessDefinitionBuilder().createNewInstance("My first process", "1.0");
+        pdb.addActor(ACTOR_NAME, true);
+        pdb.addStartEvent(START_NAME);
+        pdb.addAutomaticTask(AUTO_STEP_NAME);
+        pdb.addUserTask(FIRST_USER_STEP_NAME, ACTOR_NAME);
+        pdb.addUserTask(SECOND_USER_STEP_NAME, ACTOR_NAME);
+        pdb.addEndEvent(END_NAME);
+        pdb.addTransition(START_NAME, AUTO_STEP_NAME);
+        pdb.addTransition(AUTO_STEP_NAME, FIRST_USER_STEP_NAME);
+        pdb.addTransition(FIRST_USER_STEP_NAME, SECOND_USER_STEP_NAME);
+        pdb.addTransition(SECOND_USER_STEP_NAME, END_NAME);
+
+        return pdb.done();
     }
 
     private static void instantiateProcessesAndExecuteTasks(ProcessDefinition processDefinition) throws IOException, BonitaException {
@@ -122,24 +175,6 @@ public class App {
             }
         } while (!"3".equals(choice));
     }
-
-    private static void startProcess(ProcessDefinition processDefinition) throws BonitaException {
-        APISession session = doTenantLogin(USER_NAME, PWD);
-        try {
-            processManager.startProcess(processDefinition, session);
-        } finally {
-            doTenantLogout(session);
-        }
-    }
-
-    private static void executeATask() throws BonitaException {
-        APISession session = doTenantLogin(USER_NAME, PWD);
-        try {
-            processManager.executeATask(session);
-        } finally {
-            doTenantLogout(session);
-        }
-    }
     
     private static String getMenutTextContent() {
         StringBuilder stb = new StringBuilder("\nChoose the action to be executed:\n");
@@ -151,14 +186,84 @@ public class App {
         return message;
     }
 
-    private static void undeployProcess(ProcessDefinition processDefinition) throws BonitaException, InterruptedException {
+    private static void startProcess(ProcessDefinition processDefinition) throws BonitaException {
         APISession session = doTenantLogin(USER_NAME, PWD);
         try {
-            processManager.undeployProcess(processDefinition, session);
+            System.out.println("Instantiating process ... ");
+            ProcessInstance processInstance = getProcessAPI(session).startProcess(processDefinition.getId());
+            System.out.println("Process instantiated! Id: " + processInstance.getId());
         } finally {
             doTenantLogout(session);
         }
     }
+
+    private static void executeATask() throws BonitaException {
+        APISession session = doTenantLogin(USER_NAME, PWD);
+        try {
+            ProcessAPI processAPI = getProcessAPI(session);
+            // get the list of pending tasks (limited to one element) for the logged user.
+            List<HumanTaskInstance> pendingTasks = processAPI.getPendingHumanTaskInstances(session.getUserId(), 0, 1, ActivityInstanceCriterion.LAST_UPDATE_ASC);
+            if (!pendingTasks.isEmpty()) {
+                executeTask(session, pendingTasks.get(0));
+            } else {
+                System.out.println("No pending tasks for user '" + session.getUserName() + "'.");
+            }
+        } finally {
+            doTenantLogout(session);
+        }
+    }
+
+    private static void executeTask(APISession session, HumanTaskInstance taskToExecute) throws BonitaException {
+        ProcessRuntimeAPI processAPI = getProcessAPI(session);
+        // assign the task
+        processAPI .assignUserTask(taskToExecute.getId(), session.getUserId());
+        System.out.println("Task '" + taskToExecute.getName() + "' of process instance '" + taskToExecute.getRootContainerId() + "' assigned to '"
+                + session.getUserName() + ".");
+         
+        // execute the task
+        processAPI.executeFlowNode(taskToExecute.getId());
+        System.out.println("Task '" + taskToExecute.getName() + "' of process instance '" + taskToExecute.getRootContainerId() + "' executed by '"
+                + session.getUserName() + ".");
+    }
+
+    private static void undeployProcess(ProcessDefinition processDefinition) throws BonitaException, InterruptedException {
+        APISession session = doTenantLogin(USER_NAME, PWD);
+        try {
+            System.out.println("Undeplyoing process...");
+            //before deleting a process is necessary to delete all its instances (opened or archived)
+            deleteOpenProcessInstance(processDefinition, session);
+            deleteArchivedProcessInstance(processDefinition, session);
+            
+            disableAndDeleteProcess(processDefinition, session);
+            System.out.println("Process undeployed!");
+        } finally {
+            doTenantLogout(session);
+        }
+    }
+    
+    public static void deleteArchivedProcessInstance(ProcessDefinition processDefinition, APISession session) throws BonitaException, InterruptedException {
+        //delete archived process instances by block of MAX_ELEMENTS
+        long nbOfDeletedProcess = 0;
+        do {
+            nbOfDeletedProcess = getProcessAPI(session).deleteArchivedProcessInstances(processDefinition.getId(), 0, MAX_ELEMENTS);
+        } while (nbOfDeletedProcess == MAX_ELEMENTS);
+        System.out.println("Deleted archived processs instances.");
+    }
+
+    public static void deleteOpenProcessInstance(ProcessDefinition processDefinition, APISession session) throws BonitaException, InterruptedException {
+        //delete opened process instances by block of MAX_ELEMENTS
+        long nbOfDeletedProcess = 0;
+        do {
+            nbOfDeletedProcess = getProcessAPI(session).deleteProcessInstances(processDefinition.getId(), 0, MAX_ELEMENTS);
+        } while (nbOfDeletedProcess == MAX_ELEMENTS);
+        System.out.println("Deleted opened processs instances.");
+    }
+
+    public static void disableAndDeleteProcess(ProcessDefinition processDefinition, APISession session) throws BonitaException {
+        getProcessAPI(session).disableAndDeleteProcessDefinition(processDefinition.getId());
+        System.out.println("Process disabled.");
+    }
+
 
     private static void deleteUser(User user) throws BonitaException {
         // In order to delete the only real user, lets log in with technical user
@@ -226,6 +331,10 @@ public class App {
 
     private static IdentityAPI getIdentityAPI(APISession session) throws BonitaException {
         return TenantAPIAccessor.getIdentityAPI(session);
+    }
+    
+    private static ProcessAPI getProcessAPI(APISession session) throws BonitaException {
+        return TenantAPIAccessor.getProcessAPI(session);
     }
 
     private static void deployDataSource() {

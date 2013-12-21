@@ -9,6 +9,7 @@
 	
 	<properties>
 		<bonita.engine.version>6.1.2</bonita.engine.version>
+<!-- 	<bonita.engine.version>6.2.0</bonita.engine.version> -->
 	</properties>
 	
 	<dependencies>

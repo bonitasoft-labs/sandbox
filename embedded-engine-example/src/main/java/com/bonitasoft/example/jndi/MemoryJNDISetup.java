@@ -1,4 +1,4 @@
-package org.bonitasoft.engine.local;
+package com.bonitasoft.example.jndi;
 
 import java.util.Map;
 
@@ -9,9 +9,8 @@ import org.springframework.jndi.JndiTemplate;
 public class MemoryJNDISetup {
 
     private final JndiTemplate jndiTemplate;
-
     private final Map<String, Object> jndiMapping;
-
+    
     public MemoryJNDISetup(final JndiTemplate jndiTemplate, final Map<String, Object> jndiMapping) {
         super();
         this.jndiTemplate = jndiTemplate;

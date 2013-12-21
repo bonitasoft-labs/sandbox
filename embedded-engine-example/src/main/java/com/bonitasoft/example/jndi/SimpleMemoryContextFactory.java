@@ -1,4 +1,4 @@
-package org.bonitasoft.engine.local;
+package com.bonitasoft.example.jndi;
 
 import java.util.Hashtable;
 

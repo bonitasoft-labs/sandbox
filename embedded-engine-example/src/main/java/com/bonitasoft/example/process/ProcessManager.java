@@ -58,6 +58,7 @@ public class ProcessManager {
         do {
             nbOfDeletedProcess = getProcessAPI(session).deleteArchivedProcessInstances(processDefinition.getId(), 0, MAX_ELEMENTS);
         } while (nbOfDeletedProcess == MAX_ELEMENTS);
+        System.out.println("Deleted archived processs instances.");
     }
 
     public void deleteOpenProcessInstance(ProcessDefinition processDefinition, APISession session) throws BonitaException, InterruptedException {
@@ -65,18 +66,29 @@ public class ProcessManager {
         do {
             nbOfDeletedProcess = getProcessAPI(session).deleteProcessInstances(processDefinition.getId(), 0, MAX_ELEMENTS);
         } while (nbOfDeletedProcess == MAX_ELEMENTS);
+        System.out.println("Deleted opened processs instances.");
     }
 
     public void disableAndDeleteProcess(ProcessDefinition processDefinition, APISession session) throws BonitaException {
         getProcessAPI(session).disableAndDeleteProcessDefinition(processDefinition.getId());
+        System.out.println("Process disabled.");
     }
 
-    public void cleanProcesses(ProcessDefinition processDefinition, APISession session) throws BonitaException, InterruptedException {
+    public void undeployProcess(ProcessDefinition processDefinition, APISession session) throws BonitaException, InterruptedException {
+        System.out.println("Undeplyoing process...");
+        //before deleting a process is necessary to delete all its instances (opened or archived)
         deleteOpenProcessInstance(processDefinition, session);
         deleteArchivedProcessInstance(processDefinition, session);
+        
         disableAndDeleteProcess(processDefinition, session);
+        System.out.println("Process undeployed!");
     }
 
+    /**
+     * Build a simple process: Start -> My Automatic Step -> My first step -> My second step -> End
+     * @return the built process
+     * @throws InvalidProcessDefinitionException
+     */
     private DesignProcessDefinition buildProcessDefinition() throws InvalidProcessDefinitionException {
         ProcessDefinitionBuilder pdb = new ProcessDefinitionBuilder().createNewInstance("My first process", "1.0");
         pdb.addActor(ACTOR_NAME, true);
@@ -99,8 +111,8 @@ public class ProcessManager {
 
     public void executeATask(APISession session) throws BonitaException {
         ProcessAPI processAPI = getProcessAPI(session);
-        List<HumanTaskInstance> pendingTasks = processAPI.getPendingHumanTaskInstances(session.getUserId(), 0, 1,
-                ActivityInstanceCriterion.LAST_UPDATE_ASC);
+        // get the list of pending tasks (limited to one element) for the logged user.
+        List<HumanTaskInstance> pendingTasks = processAPI.getPendingHumanTaskInstances(session.getUserId(), 0, 1, ActivityInstanceCriterion.LAST_UPDATE_ASC);
         if (!pendingTasks.isEmpty()) {
             HumanTaskInstance taskToExecute = pendingTasks.get(0);
             // assign the task
@@ -108,7 +120,7 @@ public class ProcessManager {
             System.out.println("Task '" + taskToExecute.getName() + "' of process instance '" + taskToExecute.getRootContainerId() + "' assigned to '"
                     + session.getUserName() + ".");
 
-            // execute task
+            // execute the task
             processAPI.executeFlowNode(taskToExecute.getId());
             System.out.println("Task '" + taskToExecute.getName() + "' of process instance '" + taskToExecute.getRootContainerId() + "' executed by '"
                     + session.getUserName() + ".");

@@ -18,6 +18,8 @@ import javax.persistence.Cacheable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Version;
 
@@ -28,6 +30,7 @@ import javax.persistence.Version;
 @Entity
 @Table(name = "Car")
 @Cacheable
+@NamedQueries(@NamedQuery(name = "getCarByConstructor", query = "SELECT c From Car c WHERE c.constructor = :constructor"))
 public class Car {
 
     @Version

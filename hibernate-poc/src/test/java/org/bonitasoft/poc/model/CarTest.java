@@ -186,6 +186,88 @@ public class CarTest extends AbstractTest {
         persistenceUtil.closeTransactionAndEntityManager(entityManager);
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void composition_delete_scenation_with_garage_and_cars() {
+        EntityManager entityManager = persistenceUtil.createEntityManagerAndBeginTransaction();
+        Garage garage = new Garage();
+        garage.setName("Michaud");
+        for (int i = 0; i < 10; i++) {
+            final Car myCar = new Car();
+            myCar.setRegistrationNumber(UUID.randomUUID().toString());
+            if (i % 3 == 0) {
+                myCar.setConstructor("Mercedes");
+            } else {
+                myCar.setConstructor("Porsche");
+            }
+            myCar.setModel("SLR-500");
+            myCar.setNumberOfDoors(3);
+            garage.addToCars(myCar);
+
+        }
+        garage = entityManager.merge(garage);
+        persistenceUtil.closeTransactionAndEntityManager(entityManager);
+
+        entityManager = persistenceUtil.createEntityManagerAndBeginTransaction();
+        TypedQuery<Car> namedQuery = entityManager.createNamedQuery("getCarByConstructor", Car.class);
+        namedQuery.setParameter("constructor", "Mercedes");
+        List<Car> resultList = namedQuery.getResultList();
+
+        assertEquals("Invalid number of Mercedes", 4, resultList.size());
+        Car car = resultList.get(0);
+        entityManager.remove(car);
+        entityManager.merge(garage);
+        persistenceUtil.closeTransactionAndEntityManager(entityManager);
+    }
+
+    @Test
+    public void composition_modify_scenation_with_garage_and_cars() {
+        EntityManager entityManager = persistenceUtil.createEntityManagerAndBeginTransaction();
+        Garage garage = new Garage();
+        garage.setName("Michaud");
+        for (int i = 0; i < 10; i++) {
+            final Car myCar = new Car();
+            myCar.setRegistrationNumber(UUID.randomUUID().toString());
+            if (i % 3 == 0) {
+                myCar.setConstructor("Mercedes");
+            } else {
+                myCar.setConstructor("Porsche");
+            }
+            myCar.setModel("SLR-500");
+            myCar.setNumberOfDoors(3);
+            garage.addToCars(myCar);
+
+        }
+        garage = entityManager.merge(garage);
+        persistenceUtil.closeTransactionAndEntityManager(entityManager);
+
+        entityManager = persistenceUtil.createEntityManagerAndBeginTransaction();
+        TypedQuery<Car> namedQuery = entityManager.createNamedQuery("getCarByConstructor", Car.class);
+        namedQuery.setParameter("constructor", "Mercedes");
+        List<Car> resultList = namedQuery.getResultList();
+
+        assertEquals("Invalid number of Mercedes", 4, resultList.size());
+        Car car = resultList.get(0);
+        String registrationNumber = car.getRegistrationNumber();
+        car.setNumberOfDoors(35);
+        entityManager.merge(car);
+        persistenceUtil.closeTransactionAndEntityManager(entityManager);
+
+        entityManager = persistenceUtil.createEntityManagerAndBeginTransaction();
+        TypedQuery<Garage> garageQuery = entityManager.createNamedQuery("getGarageByName", Garage.class);
+        garageQuery.setParameter("name", "Michaud");
+        Garage g = garageQuery.getSingleResult();
+        Car modifiedCar = null;
+        for (Car c : g.getCars()) {
+            if (c.getRegistrationNumber().equals(registrationNumber)) {
+                modifiedCar = c;
+            }
+        }
+        assertNotNull(modifiedCar);
+        assertEquals(35, modifiedCar.getNumberOfDoors());
+
+        persistenceUtil.closeTransactionAndEntityManager(entityManager);
+    }
+
     @Test(expected = PersistenceException.class)
     public void notNullConstraint() {
         final Car myCar = new Car();

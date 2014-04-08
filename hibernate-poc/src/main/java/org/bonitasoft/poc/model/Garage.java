@@ -5,14 +5,14 @@
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 2.0 of the License, or
  * (at your option) any later version.
- *
+ * 
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package org.bonitasoft.poc.model;
 
@@ -23,50 +23,53 @@ import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 
 /**
  * @author Romain Bioteau
- *
+ * 
  */
 @Entity
+@NamedQueries(@NamedQuery(name = "getGarageByName", query = "SELECT g FROM Garage g WHERE g.name = :name"))
 public class Garage {
 
-	@Id
-	@GeneratedValue
-	private Long id;
-	
-	private String name;
-	
-	@OneToMany(cascade=CascadeType.ALL)
-	private List<Car> cars = new ArrayList<Car>();
+    @Id
+    @GeneratedValue
+    private Long id;
 
-	public Long getId() {
-		return id;
-	}
+    private String name;
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+    @OneToMany(cascade = CascadeType.ALL)
+    private List<Car> cars = new ArrayList<Car>();
 
-	public String getName() {
-		return name;
-	}
+    public Long getId() {
+        return id;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-	public List<Car> getCars() {
-		return cars;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public void setCars(List<Car> cars) {
-		this.cars = cars;
-	}
-	
-	public void addToCars(Car car){
-		this.cars.add(car);
-	}
-	
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public List<Car> getCars() {
+        return cars;
+    }
+
+    public void setCars(List<Car> cars) {
+        this.cars = cars;
+    }
+
+    public void addToCars(Car car) {
+        this.cars.add(car);
+    }
+
 }

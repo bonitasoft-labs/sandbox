@@ -12,6 +12,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 
 @Entity
 public class Father {
@@ -20,10 +21,15 @@ public class Father {
     @GeneratedValue
     private Long id;
 
+    // uni-directional multiple composition
     @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(nullable = false) 
+    @JoinColumn(nullable = false, name= "father_id") 
     private List<Child> children = new ArrayList<Child>();
-
+    
+    // uni-directional nullable single composition
+    @OneToOne(orphanRemoval = true)
+    private Wife wife;
+    
     private String name;
 
     public Father() {

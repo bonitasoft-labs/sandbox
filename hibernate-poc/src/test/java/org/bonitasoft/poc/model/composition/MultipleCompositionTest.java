@@ -2,6 +2,7 @@ package org.bonitasoft.poc.model.composition;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.bonitasoft.poc.model.composition.util.FatherBuilder.aFather;
+import static org.junit.Assert.*;
 
 import java.util.List;
 
@@ -84,7 +85,7 @@ public class MultipleCompositionTest {
     }
 
     @Test
-    @Ignore("Unbelivable - in fact we can't remove directly a child")
+//    @Ignore("Unbelivable - in fact we can't remove directly a child")
     public void deleting_a_child_must_remove_it_from_its_parent() throws Exception {
         Father father = fatherRepository.save(aFather().withChild("Manon").withChild("Marcel").build());
         
@@ -92,5 +93,16 @@ public class MultipleCompositionTest {
         
         Father fetchedFather = fatherRepository.get(father.getId());
         assertThat(fetchedFather.getChildrenNames()).containsOnly("Marcel");
+    }
+    
+    @Test
+    public void we_can_update_a_child_without_updating_father() throws Exception {
+        Father father = fatherRepository.save(aFather().withChild("Manon").withChild("Marcel").build());
+        Child manon = childRepository.get(1L);
+
+        manon.setName("anotherName");
+
+        Father fetchedFather = fatherRepository.get(father.getId());
+        assertThat(fetchedFather.getChildrenNames()).contains("anotherName", "Marcel");
     }
 }

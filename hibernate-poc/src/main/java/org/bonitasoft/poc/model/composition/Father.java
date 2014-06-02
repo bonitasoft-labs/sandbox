@@ -22,14 +22,14 @@ public class Father {
     private Long id;
 
     // uni-directional multiple composition
-    @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(nullable = false, name= "father_id") 
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(nullable = false, name= "father_id")
     private List<Child> children = new ArrayList<Child>();
-    
+
     // uni-directional nullable single composition
     @OneToOne(orphanRemoval = true)
     private Wife wife;
-    
+
     private String name;
 
     public Father() {
@@ -67,4 +67,10 @@ public class Father {
     public List<String> getChildrenNames() {
         return extract(children, on(Child.class).getName());
     }
+
+    @Override
+    public String toString() {
+        return "Father [id=" + id + ", children=" + children + ", wife=" + wife + ", name=" + name + "]";
+    }
+
 }

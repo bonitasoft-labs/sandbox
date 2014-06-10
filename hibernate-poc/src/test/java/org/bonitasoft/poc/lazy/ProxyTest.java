@@ -12,7 +12,7 @@ import javax.persistence.EntityManager;
 
 import org.assertj.core.api.Assertions;
 import org.bonitasoft.poc.lazy.impl.AddressImpl;
-import org.bonitasoft.poc.lazy.impl.EmployeeImpl;
+import org.bonitasoft.poc.lazy.impl.LazyEmployeeImpl;
 import org.bonitasoft.poc.lazy.repository.AddressRepository;
 import org.bonitasoft.poc.lazy.repository.EmployeeRepository;
 import org.bonitasoft.poc.model.composition.util.ChildRepository;
@@ -61,9 +61,9 @@ public class ProxyTest {
     @Test
     @Ignore("TO BE DONE")
     public void should_return_setted_attribute_when_setted_before_first_load() throws Exception {
-        Employee employee = createEmployeeWithAddress("Lyon");
-        Employee proxy = (Employee) Proxy. newProxyInstance(
-                Employee.class.getClassLoader(), new Class[] { Employee.class },
+        LazyEmployee employee = createEmployeeWithAddress("Lyon");
+        LazyEmployee proxy = (LazyEmployee) Proxy. newProxyInstance(
+                LazyEmployee.class.getClassLoader(), new Class[] { LazyEmployee.class },
                 new Handler(employee, entityManager));
         
         proxy.setAddress(buildAdress("Grenoble"));
@@ -74,25 +74,25 @@ public class ProxyTest {
     
     @Test
     public void should_save_a_proxy_object() throws Exception {
-        Employee employee = createEmployeeWithAddress("Lyon");
-        Employee proxy = (Employee) Proxy. newProxyInstance(
-                Employee.class.getClassLoader(), new Class[] { Employee.class },
+        LazyEmployee employee = createEmployeeWithAddress("Lyon");
+        LazyEmployee proxy = (LazyEmployee) Proxy. newProxyInstance(
+                LazyEmployee.class.getClassLoader(), new Class[] { LazyEmployee.class },
                 new Handler(employee, entityManager));
         
-        Employee e = getEmployee(new EmployeeImpl());
+        LazyEmployee e = getEmployee(new LazyEmployeeImpl());
         
         
         proxy.setAddress(buildAdress("Grenoble"));
         
-        Employee employee3 = getEmployee(proxy);
+        LazyEmployee employee3 = getEmployee(proxy);
         entityManager.merge(employee3);
         
-        Employee employee2 = employeeRepository.get(1L);
+        LazyEmployee employee2 = employeeRepository.get(1L);
         assertThat(employee2.getAddress().getCity()).isEqualTo("Grenoble");
         
     }
     
-    private Employee getEmployee(Employee e) {
+    private LazyEmployee getEmployee(LazyEmployee e) {
         try {
             InvocationHandler invocationHandler = Proxy.getInvocationHandler(e);
             return ((Handler) invocationHandler).getEmployee();
@@ -103,9 +103,9 @@ public class ProxyTest {
     
     @Test
     public void should_return_setted_attribute_when_setted_after_first_load() throws Exception {
-        Employee employee = createEmployeeWithAddress("Lyon");
-        Employee proxy = (Employee) Proxy. newProxyInstance(
-                Employee.class.getClassLoader(), new Class[] { Employee.class },
+        LazyEmployee employee = createEmployeeWithAddress("Lyon");
+        LazyEmployee proxy = (LazyEmployee) Proxy. newProxyInstance(
+                LazyEmployee.class.getClassLoader(), new Class[] { LazyEmployee.class },
                 new Handler(employee, entityManager));
         
         proxy.getAddress();
@@ -118,14 +118,14 @@ public class ProxyTest {
     @Test
     public void should_return_saved_attribute_with_lazy_loading() throws Exception {
         entityManager = spy(entityManager);
-        Employee employee = createEmployeeWithAddress("Lyon");
+        LazyEmployee employee = createEmployeeWithAddress("Lyon");
         
         
         employee = employeeRepository.get(1L);
         entityManager.detach(employee);
         
-        Employee proxy = (Employee) Proxy. newProxyInstance(
-                Employee.class.getClassLoader(), new Class[] { Employee.class },
+        LazyEmployee proxy = (LazyEmployee) Proxy. newProxyInstance(
+                LazyEmployee.class.getClassLoader(), new Class[] { LazyEmployee.class },
                 new Handler(employee, entityManager));
         
         Address address = proxy.getAddress();
@@ -135,15 +135,15 @@ public class ProxyTest {
         
     }
 
-    private Employee createEmployeeWithAddress(String city) {
+    private LazyEmployee createEmployeeWithAddress(String city) {
         AddressImpl address = new AddressImpl();
         address.setCity(city);
         
-        EmployeeImpl emp = new EmployeeImpl();
+        LazyEmployeeImpl emp = new LazyEmployeeImpl();
         emp.setName("Colin");
         emp.setAddress(address);
         
-        Employee employee = employeeRepository.save(emp);
+        LazyEmployee employee = employeeRepository.save(emp);
         return employee;
     }
 

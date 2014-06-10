@@ -2,8 +2,8 @@ package org.bonitasoft.poc.lazy.repository;
 
 import javax.persistence.EntityManager;
 
-import org.bonitasoft.poc.lazy.Employee;
-import org.bonitasoft.poc.lazy.impl.EmployeeImpl;
+import org.bonitasoft.poc.lazy.LazyEmployee;
+import org.bonitasoft.poc.lazy.impl.LazyEmployeeImpl;
 
 
 public class EmployeeRepository {
@@ -14,17 +14,17 @@ public class EmployeeRepository {
         this.entityManager = entityManager;
     }
 
-    public Employee save(Employee employee) {
-        Employee merge = entityManager.merge(employee);
+    public LazyEmployee save(LazyEmployee employee) {
+        LazyEmployee merge = entityManager.merge(employee);
         entityManager.detach(merge);
         return merge;
     }
 
-    public Employee get(Long id) {
-        return entityManager.find(EmployeeImpl.class, id);
+    public LazyEmployee get(Long id) {
+        return entityManager.find(LazyEmployeeImpl.class, id);
     }
 
-    public void remove(Employee employee) {
+    public void remove(LazyEmployee employee) {
         entityManager.remove(employee);
     }
 

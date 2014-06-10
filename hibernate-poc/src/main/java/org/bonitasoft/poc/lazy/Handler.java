@@ -9,13 +9,13 @@ import javax.persistence.EntityManager;
 
 public class Handler implements InvocationHandler {
 
-    private Employee employee;
+    private LazyEmployee employee;
 
     // do not need map anymore
     private Map<Method, Object> loaded;
     private EntityManager entityManager;
 
-    public Handler(Employee pojo, EntityManager entityManager) {
+    public Handler(LazyEmployee pojo, EntityManager entityManager) {
         this.employee = pojo;
         this.entityManager = entityManager;
         loaded = new HashMap<Method, Object>();
@@ -24,7 +24,7 @@ public class Handler implements InvocationHandler {
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         if (method.isAnnotationPresent(Lazy.class) && !isAlreadyLoaded(method)) {
-            Object address = entityManager.createQuery("SELECT e.address FROM EmployeeImpl e WHERE e.id =" + employee.getId()).getSingleResult();
+            Object address = entityManager.createQuery("SELECT e.address FROM LazyEmployee e WHERE e.id =" + employee.getId()).getSingleResult();
             loaded.put(method, address);
             employee.setAddress((Address) address);
             return address;
@@ -36,7 +36,7 @@ public class Handler implements InvocationHandler {
         return loaded.containsKey(method);
     }
 
-    public Employee getEmployee() {
+    public LazyEmployee getEmployee() {
         return employee;
     }
 }

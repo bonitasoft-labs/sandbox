@@ -7,14 +7,12 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
 
 import org.bonitasoft.poc.lazy.Address;
-import org.bonitasoft.poc.lazy.Employee;
-import org.bonitasoft.poc.lazy.Lazy;
+import org.bonitasoft.poc.lazy.LazyEmployee;
 
-@Entity
-public class EmployeeImpl implements Employee {
+@Entity(name = "LazyEmployee")
+public class LazyEmployeeImpl implements LazyEmployee {
 
     @Id
     @GeneratedValue

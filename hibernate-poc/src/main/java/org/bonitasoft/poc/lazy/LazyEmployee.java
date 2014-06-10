@@ -1,6 +1,6 @@
 package org.bonitasoft.poc.lazy;
 
-public interface Employee {
+public interface LazyEmployee {
     long getId();
     void setId(long id);
     

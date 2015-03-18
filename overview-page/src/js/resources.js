@@ -124,6 +124,10 @@
     'professionalDataAPI': 'identity/professionalcontactdata',
     'profileAPI': 'portal/profile',
     'roleAPI': 'identity/role',
+    'archivedTaskAPI': 'bpm/archivedHumanTask',
     'userAPI': 'identity/user'
+    
   });
 })();
+
+

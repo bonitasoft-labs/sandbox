@@ -9,36 +9,34 @@
     'org.bonitasoft.bonitable',
     'org.bonitasoft.services.topurl',
     'gettext',
-    'xeditable',
-    'case.overview'
+    'angular-timeline'
     ]);
 
-  app.controller('MainCtrl', ['$scope', function ($scope) {
-    
+  app.controller('MainCtrl', ['$scope','$window', 'archivedTaskAPI', '$location', function ($scope, $window, archivedTaskAPI, $location) {
+    var listDoneTasks = function(){
+      archivedTaskAPI.search({
+        p:0,
+        c:50,
+        d:['executedBy'],
+        f:['caseId='+$location.path().split('/')[2]]
+      }).$promise.then(function mapArchivedTasks(data){
+        $scope.doneTasks = data;
+      });
+    };
+    listDoneTasks();
   }])
   .filter('dateInMillis', function() {
     return function(dateString) {
       return Date.parse(dateString);
     };
   })
-  .config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $urlRouterProvider) {
-    $stateProvider.state('processMoreDetails', {
-      url: '/admin/case/overview/:caseId',
-      templateUrl: 'templates/caseOverview.html',
-      controller: 'CaseOverviewCtrl',
-      controllerAs : 'caseCtrl',
-      resolve: { 
-        processId: ['$stateParams', 'manageTopUrl',
-          function($stateParams, manageTopUrl){
-            manageTopUrl.addOrReplaceParam('_processId', $stateParams.processId || '');
-            return $stateParams.processId+'';
-          }
-        ]
-      }
-      
+  /*.config(['$locationProvider',function($locationProvider) {
+    $locationProvider.html5Mode({
+      enabled: true,
+      requireBase: false
     });
-  }
-  ]);
+  }]);*/
+;
 
 
 })();

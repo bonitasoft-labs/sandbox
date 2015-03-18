@@ -110,15 +110,29 @@ var replace = require('gulp-replace');
 gulp.task('repath', ['usemin'], function () {
   return gulp.src('target/dist/index.html')
     .pipe(plumber())
-    .pipe(replace(/(src=["|']resources\/([^"']*\.js)["|'])/g, 'src="pageResource?page=' + customPageName + '&location=$2"'))
-    .pipe(replace(/(href=["|']resources\/([^"']*\.css)["|'])/g, 'href="pageResource?page=' + customPageName + '&location=$2"'))
+    .pipe(replace(/(src=["|']resources\/([^"']*\.js)["|'])/g, 'src="pageResource?page=' + customPageName + '&amp;location=$2"'))
+    .pipe(replace(/(href=["|']resources\/([^"']*\.css)["|'])/g, 'href="pageResource?page=' + customPageName + '&amp;location=$2"'))
     .pipe(gulp.dest('target/dist'));
+});
+
+var replace2 = require('gulp-replace');
+gulp.task('repath2', ['usemin'], function () {
+  return gulp.src('target/dist/resources/css/styles*.css')
+    .pipe(plumber())
+    .pipe(replace2(/url\(\'..\/fonts\//g, 'url(\'pageResource?page=' + customPageName + '&location=fonts/'))
+    .pipe(gulp.dest('target/dist/resources/css'));
 });
 
 gulp.task('assets', function () {
   return gulp.src('src/page.properties')
     .pipe(gulp.dest('target/dist'));
 });
+
+gulp.task('fonts', function () {
+  return gulp.src('src/fonts/*')
+    .pipe(gulp.dest('target/dist/resources/fonts'));
+});
+
 
 /**
  * JsHint
@@ -181,7 +195,7 @@ gulp.task('tdd', function (done) {
   }, done);
 });
 
-gulp.task('zip', ['assets', 'repath'], function (done) {
+gulp.task('zip', ['assets', 'fonts', 'repath', 'repath2'], function (done) {
   return gulp.src('target/dist/**/*')
     .pipe(zip(customPageName + '.zip'))
     .pipe(gulp.dest('target'));

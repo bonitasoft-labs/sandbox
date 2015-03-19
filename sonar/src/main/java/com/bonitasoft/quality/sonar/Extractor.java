@@ -129,16 +129,16 @@ public class Extractor {
     private void ensureFileExistsWithHeaders(String projectKey, String[] headers) {
 
         File file = new File(outputFolder, projectKey + CSV_FILE_EXTENSION);
-        try (BufferedWriter out = new BufferedWriter(new FileWriter(file))){
-            if(!file.exists()) {
-                for (String header: headers) {
-                    out.write(header);
-                    out.write(",");
-                }
+        if(!file.exists()) {
+            try (BufferedWriter out = new BufferedWriter(new FileWriter(file))){
+                    for (String header: headers) {
+                        out.write(header);
+                        out.write(",");
+                    }
                 out.write("\n");
+            } catch (IOException e) {
+                System.err.println(e.getMessage());
             }
-        } catch (IOException e) {
-            System.err.println(e.getMessage());
         }
     }
 

@@ -13,6 +13,20 @@ nav > ul li ul{
   margin: 0 0 0 1em;
 }
 
-nav > ul li ul a:hover{
+nav > ul li a:hover{
+  	text-decoration: none;
+}
+
+nav > ul li a{
   
+	display: block;
+	padding: 4px 20px;
+	font-size: 13px;
+	font-weight: 500;
+	color: #767676;
+	text-decoration: none;
+}
+
+.actions {
+	padding: 20px 0 10px 0;
 }

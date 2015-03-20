@@ -17,89 +17,69 @@
   <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.0/css/bootstrap-toggle.min.css" rel="stylesheet">
   <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.0/js/bootstrap-toggle.min.js"></script>
   <!-- endbuild -->
-  <script>
-   $(function() { $('.enabled-button').bootstrapToggle({ on: 'Enabled', off: 'Disabled' }); })
-   </script>
 </head>
 <body>
   <div class="container">
     <div class="row">
-      <img src="img/top.png" height="87" width="858" alt=""></div>
+      <img src="img/top.jpg" height="87" width="858" alt=""></div>
     <div class="row">
-      <div class="col-md-2 col-xs-2">
+      <div class="col-md-2">
         <nav>
           <ul class="">
             <li>
               <a href="index.html">Information</a>
             </li>
-            <li>Actors Mapping</li>
             <li>
-              Configuration
+              <a href="params.html">Configuration</a>
               <ul class="">
-                <li>
-                  <a href="params.html">Params</a>
-                </li>
-                <li>Connectors</li>
-                <li>Forms</li>
-                <li>Scripts</li>
+                <li><a href="#">Actors Mapping</a></li>
+                <li><a href="params.html">Params</a></li>
+                <li><a href="#">Connectors</a></li>
               </ul>
             </li>
+            <li><a href="#">Forms</a></li>
+            <li><a href="#">Scripts</a></li>
           </ul>
         </nav>
       </div>
-      <div class="col-md-10 col-xs-10">
+      <div class="col-md-10">
         <div class="row">
-          <h2 class="col-md-9 col-xs-9">New customer support ticket (1.0.5)</h2>
-          <div class="col-md-3 col-xs-3">
+          <h2 class="col-md-9">New customer support ticket (1.0.5)</h2>
+          <div class="col-md-3 actions">
             <!-- Split button -->
-            <div class="btn-group">
-              <button type="button" class="btn btn-success">Start</button>
-              <button type="button" class="btn  btn-success dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-                <span class="caret"></span>
-                <span class="sr-only">Toggle Dropdown</span>
-              </button>
-              <ul class="dropdown-menu" role="menu">
-                <li>
-                  <a href="#">Start for</a>
-                </li>
-              </ul>
-            </div>
+            <button type="button" class="btn btn-success">Start For</button>
+            
+            <input checked type="checkbox" class="enabled-button"  data-toggle="toggle" data-on="Enabled" data-off="Disabled"> 
           </div>
         </div>
-        <h3>General</h3>
-        <ul class="nav nav-pills" role="tablist">
-          <li role="presentation">
-            <a class="btn">
+        <h3>Information</h3>
+        <ul class="nav nav-pills text-left">
+          <li class="col-md-4 " role="presentation">
+            <a href="">
               Version
               <span class="label label-info">1.0</span>
             </a>
           </li>
-          <li role="presentation">
-            <a class="btn">
+          <li  class="col-md-4"  role="presentation">
+            <a href="">
               Configuration state
               <span class="label label-info">RESOLVED</span>
             </a>
           </li>
-          <li role="presentation">
-            <a class="btn">
+          <li  class="col-md-4" role="presentation">
+            <a href="">
               Last updated on
               <span class="label label-info">03/18/2015 4:02 PM</span>
             </a>
           </li>
-          <li role="presentation">
-            <a class="btn">
-              Activation state
-              <input checked data-toggle="toggle" type="checkbox" class="enabled-button">
-            </a>
-          </li>
-          <li role="presentation">
-            <a class="btn">
+          <li  class="col-md-4" role="presentation">
+            <a href="">
               Installed on
               <span class="label label-info">03/18/2015 4:02 PM</span>
             </a>
           </li>
-          <li role="presentation">
-            <a class="btn">
+          <li  class="col-md-4" role="presentation">
+            <a href="">
               Installed by
               <span class="label label-info">System</span>
             </a>
@@ -108,17 +88,20 @@
         <h3>Description</h3>
         <p>
           This is the process to demonstrate the power of the Bonita V7
-        </p>
-        <h3>Process Manager</h3>
-
         <h3>Monitoring status</h3>
-        <p>
-          <label>failed cases</label>
-          <span></span>
-        </p>
-        <p>
-          <label>in progress cases</label>
-        </p>
+        <table class="table table-hover table-striped">
+          <thead>
+            <tr>
+              <th>Case With Failures</th>
+              <th>Healthy Cases</th>
+              <th>Open Cases</th>
+              <th>Actions</th>
+
+              </tr>
+              </thead>
+              <tbody><tr><td style="text-align: right">1</td><td style="text-align: right">0</td><td style="text-align: right">1</td><td class="text-center"><a id="processVisu-btn-4702399130019823020" class="glyphicon glyphicon-paperclip clickable" bonita-href="{'token': 'monitoring' + monitoringCtrl.pageProfileToken, '_id': process.id}"></a></span><!-- end ngIf: monitoringCtrl.isProcessVisuAvailable(process) --> <span tooltip="View case list" tooltip-animation="false" class="ng-scope"><a id="caseList-btn-4702399130019823020" class="glyphicon glyphicon-list clickable" bonita-href="{'token': 'caselisting' + monitoringCtrl.pageProfileToken, '_processId': process.id}"></a><!-- link to case list filtered on the process --></span></td></tr></tbody></table>
+        <h3>Process Manager</h3>
+        
       </div>
     </div>
 
@@ -130,6 +113,8 @@
   <!-- <script src="../node_modules/bootstrap/dist/js/bootstrap.js"></script>
 -->
 <!-- endbuild -->
+ <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.0/js/bootstrap-toggle.min.js"></script>
+  <!-- endbuild -->
 </body>
 
 </html>

@@ -1,0 +1,10 @@
+html, body {
+  font-family: 'Signika-Semibold', helvetica, sans-serif;
+  height: 100%;
+}
+
+.container-fluid {
+    background-color: #D9E5E5;
+    border-radius: 5px;
+    min-height: 60px;
+}

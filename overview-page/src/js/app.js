@@ -18,7 +18,7 @@
         p:0,
         c:50,
         d:['executedBy'],
-        f:['caseId='+$location.path().split('/')[2]]
+        f:['caseId='+$location.path().split('/')[5]]
       }).$promise.then(function mapArchivedTasks(data){
         $scope.doneTasks = data;
       });
@@ -30,12 +30,12 @@
       return Date.parse(dateString);
     };
   })
-  /*.config(['$locationProvider',function($locationProvider) {
+  .config(['$locationProvider',function($locationProvider) {
     $locationProvider.html5Mode({
       enabled: true,
       requireBase: false
     });
-  }]);*/
+  }]);
 ;
 
 

@@ -1,0 +1,132 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>App</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- build:css resources/css/styles.css-->
+    <link rel="stylesheet" href="../node_modules/bootstrap/dist/css/bootstrap.css">
+    <link rel="stylesheet" href="../node_modules/angular-growl-v2/build/angular-growl.min.css">
+    <link rel="stylesheet" href="../node_modules/angular-xeditable/dist/css/xeditable.css">
+
+    <link rel="stylesheet" href="css/styles.css">
+    <!-- endbuild -->
+</head>
+
+<body ng-app="formMappingList">
+    <div class="container" ng-controller="FormMappingListCtrl">
+        <p style="color: red; text-align:center; font-weight: bold">
+            Warning: this is a preview of the feature form mapping. The user interface is not the final version.
+        </p>
+        <div growl></div>
+        <h1>
+            Form mapping
+            <span ng-if="selectedProcess">: {{selectedProcess.displayName}}</span>
+            <!-- 30 char max + version --> </h1>
+        <form>
+            <label>Choose your process here:</label>
+            <select ng-model="selectedProcess" ng-options="opt as opt.name for opt in processesResults"></select>
+        </form>
+        <div ng-if="selectedProcess">
+            <h2>Process start form</h2>
+            <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-3">
+                    <label>Form value:</label>
+                    <span
+                    ng-if="startMappingResult[0].target !== 'URL'" editable-text="startMappingResult[0].form"
+                    e-typeahead="customPage for customPage in customPagesResult | filter:$viewValue | limitTo:8"
+                    onaftersave="updateMapping(startMappingResult[0])">{{ startMappingResult[0].form || 'empty'}}</span>
+
+                    <span
+                    ng-if="startMappingResult[0].target === 'URL'"
+                    editable-text="startMappingResult[0].form"
+                    onaftersave="updateMapping(startMappingResult[0])">{{ startMappingResult[0].form || 'empty'}}</span>
+                </div>
+                <div class="col-md-3">
+                    <label>Target:</label>
+                    <a editable-select="startMappingResult[0].target" e-title="Which type?" onaftersave="updateMapping(startMappingResult[0])" e-ng-options="s.value as s.text for s in statuses">{{ startMappingResult[0].target}}</a>
+                </div>
+                <div class="col-md-3">
+                    <label>Last update date:</label>
+                    <span>{{startMappingResult[0].lastUpdateDate|date:'short'}}</span>
+                </div>
+                <div class="col-md-3" ng-if="startMappingResult[0].form">
+                    <a href="/bonita/portal/form/process/{{selectedProcess.name}}/{{selectedProcess.version}}/" class="btn btn-primary">Goto Page</a>
+                </div>
+            </div>
+            </div>
+            <h2>Task form(s)</h2>
+            <div class="container-fluid">
+            <table bonitable bo-repeatable class="table table-striped table-hover table-responsive">
+                <thead>
+                    <tr data-headers>
+                        <th>Task display name</th>
+                        <th>Form value</th>
+                        <th>Target</th>
+                        <th>Last Update Date</th>
+                        <!-- <th>Last Update by</th> -->
+                    </tr>
+                </thead>
+                <tbody class="tasksTable">
+                    <tr ng-repeat="mapping in taskMappingResults">
+                        <td>{{mapping.task}}</td>
+                        <td>
+                            <a ng-if="mapping.target === 'INTERNAL'" editable-text="mapping.form" e-typeahead="customPage for customPage in customPagesResult | filter:$viewValue | limitTo:8" onaftersave="updateMapping(mapping)">{{mapping.form||'empty'}}</a>
+                            <a ng-if="mapping.target === 'LEGACY'" editable-text="mapping.form" e-typeahead="customPage for customPage in customPagesResult | filter:$viewValue | limitTo:8" onaftersave="updateMapping(mapping)">{{mapping.form||'empty'}}</a>
+                            <a ng-if="mapping.target === 'URL'"  editable-text="mapping.form" onaftersave="updateMapping(mapping)">{{mapping.form||'empty'}}</a>
+                        </td>
+                        <td>
+                            <a editable-select="mapping.target" e-title="Which type?" onaftersave="updateMapping(mapping)" e-ng-options="s.value as s.text for s in statuses">{{ mapping.target}}</a>
+                        </td>
+                        <td>{{mapping.lastUpdateDate|date:'short'}}</td>
+                    </tr>
+                </tbody>
+            </table>
+            </div>
+            <h2>Case overview form</h2>
+            <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-3">
+                    <label>Form value:</label>
+                    <span
+                    ng-if="overviewMappingResult[0].target !== 'URL'" editable-text="overviewMappingResult[0].form"
+                    e-typeahead="customPage for customPage in customPagesResult | filter:$viewValue | limitTo:8"
+                    onaftersave="updateMapping(overviewMappingResult[0])">{{ overviewMappingResult[0].form || 'empty'}}</span>
+
+                    <span
+                    ng-if="overviewMappingResult[0].target == 'URL'"
+                    editable-text="overviewMappingResult[0].form"
+                    onaftersave="updateMapping(overviewMappingResult[0])">{{ overviewMappingResult[0].form || 'empty'}}</span>
+                </div>
+                <div class="col-md-3">
+                    <label>Target:</label>
+                    <a editable-select="overviewMappingResult[0].target" e-title="Which type?" onaftersave="updateMapping(overviewMappingResult[0])" e-ng-options="s.value as s.text for s in statuses">{{ overviewMappingResult[0].target}}</a>
+
+                </div>
+                <div class="col-md-3">
+                    <label>Last update date:</label>
+                    <span>{{overviewMappingResult[0].lastUpdateDate|date:'short'}}</span>
+                </div>
+            </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+<!-- build:js resources/js/app.js -->
+<script src="../node_modules/angular/angular.js"></script>
+<script src="../node_modules/angular-bootstrap/dist/ui-bootstrap.js"></script>
+<script src="../node_modules/angular-resource/angular-resource.min.js"></script>
+<script src="../node_modules/angular-ui-router/release/angular-ui-router.js"></script>
+<script src="../node_modules/angular-xeditable/dist/js/xeditable.min.js"></script>
+<script src="../node_modules/bonita-js-components/dist/bonita-lib-tpl.js"></script>
+<script src="../node_modules/angular-growl-v2/build/angular-growl.min.js"></script>
+<script src="../target/work/templates.js"></script>
+<script src="js/resources.js"></script>
+<script src="js/app.js"></script>
+<!-- endbuild -->
+</body>
+
+</html>

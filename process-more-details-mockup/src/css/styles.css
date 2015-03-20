@@ -1,0 +1,32 @@
+ul{
+  list-style: none;
+}
+nav > ul{
+  margin: 2em 0 0 0;
+  padding: 0 1em 0 0;
+  font-weight: bold;
+  border-right: gray 1px solid;
+}
+nav > ul li ul{
+  font-weight: normal;
+  padding: 0 0 0 0;
+  margin: 0 0 0 1em;
+}
+
+nav > ul li a:hover{
+  	text-decoration: none;
+}
+
+nav > ul li a{
+  
+	display: block;
+	padding: 4px 20px;
+	font-size: 13px;
+	font-weight: 500;
+	color: #767676;
+	text-decoration: none;
+}
+
+.actions {
+	padding: 20px 0 10px 0;
+}

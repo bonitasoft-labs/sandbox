@@ -110,17 +110,9 @@ var replace = require('gulp-replace');
 gulp.task('repath', ['usemin'], function () {
   return gulp.src('target/dist/index.html')
     .pipe(plumber())
-    .pipe(replace(/(src=["|']resources\/([^"']*\.js)["|'])/g, 'src="pageResource?page=' + customPageName + '&amp;location=$2"'))
-    .pipe(replace(/(href=["|']resources\/([^"']*\.css)["|'])/g, 'href="pageResource?page=' + customPageName + '&amp;location=$2"'))
+    .pipe(replace(/(src=["|']resources\/([^"']*\.js)["|'])/g, 'src="$2"'))
+    .pipe(replace(/(href=["|']resources\/([^"']*\.css)["|'])/g, 'href="$2"'))
     .pipe(gulp.dest('target/dist'));
-});
-
-var replace2 = require('gulp-replace');
-gulp.task('repath2', ['usemin'], function () {
-  return gulp.src('target/dist/resources/css/styles*.css')
-    .pipe(plumber())
-    .pipe(replace2(/url\(\'..\/fonts\//g, 'url(\'pageResource?page=' + customPageName + '&location=fonts/'))
-    .pipe(gulp.dest('target/dist/resources/css'));
 });
 
 gulp.task('assets', function () {
@@ -195,7 +187,7 @@ gulp.task('tdd', function (done) {
   }, done);
 });
 
-gulp.task('zip', ['assets', 'fonts', 'repath', 'repath2'], function (done) {
+gulp.task('zip', ['assets', 'fonts', 'repath'], function (done) {
   return gulp.src('target/dist/**/*')
     .pipe(zip(customPageName + '.zip'))
     .pipe(gulp.dest('target'));

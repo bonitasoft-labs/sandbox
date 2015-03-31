@@ -7,7 +7,7 @@
    * Define the resources accessible from the Bonita API
    */
 
-  var API_PATH = '../API/';
+  var API_PATH = '../../../../API/';
 
   /**
    * @internal
@@ -126,7 +126,7 @@
     'roleAPI': 'identity/role',
     'archivedTaskAPI': 'bpm/archivedHumanTask',
     'userAPI': 'identity/user'
-    
+
   });
 })();
 

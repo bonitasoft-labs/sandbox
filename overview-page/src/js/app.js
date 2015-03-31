@@ -18,7 +18,9 @@
         p:0,
         c:50,
         d:['executedBy'],
-        f:['caseId='+$location.path().split('/')[5]]
+        f:['caseId='+$location.path().split('/')[5]],
+        //f:['caseId='+$location.search().id],
+        o:['reached_state_date DESC']
       }).$promise.then(function mapArchivedTasks(data){
         $scope.doneTasks = data;
       });
@@ -36,7 +38,6 @@
       requireBase: false
     });
   }]);
-;
 
 
 })();

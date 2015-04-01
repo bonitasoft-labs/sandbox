@@ -131,7 +131,7 @@ gulp.task('fonts', function () {
  * Validate js script
  */
 gulp.task('jshint', function () {
-  return gulp.src('src/**/*.js')
+  return gulp.src(['src/**/*.js', '!src/**/dev-only.js'])
     .pipe(plumber())
     .pipe(jshint())
     .pipe(jshint.reporter('jshint-stylish'));
@@ -173,7 +173,7 @@ gulp.task('watch', ['server'], function () {
 gulp.task('open', ['server'], function () {
   return gulp.src('src/index.html')
     .pipe(launch('', {
-      url: 'http://localhost:' + opt.port + '/bonita/' + folderName + '/index.html'
+      url: 'http://localhost:' + opt.port + '/bonita/' + folderName + '/index.html?id=2'
     }));
 });
 

@@ -7,7 +7,7 @@
    * Define the resources accessible from the Bonita API
    */
 
-  var API_PATH = '../../../../API/';
+  var API_PATH = '/bonita/API/';
 
   /**
    * @internal

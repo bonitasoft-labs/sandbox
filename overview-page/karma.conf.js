@@ -21,6 +21,8 @@ module.exports = function(config) {
       'node_modules/angular/angular.js',
       'node_modules/angular-mocks/angular-mocks.js',
       'node_modules/angular-bootstrap/dist/ui-bootstrap.js',
+      'node_modules/angular-resource/angular-resource.js',
+      'node_modules/angular-timeline/src/angular-timeline.js',
       'src/**/*.js',
       'test/unit/**/*Spec.js',
       // include fixtures html  in karma webserver, available at /base/dev/fixtures
@@ -47,7 +49,7 @@ module.exports = function(config) {
 
 
     // web server port
-    port: 9880,
+    port: 9876,
 
 
     // enable / disable colors in the output (reporters and logs)

@@ -1,7 +1,12 @@
 (function () {
   'use strict';
+
+  angular.module('caseOverview').requires.push('devMode'); // Make main module depends on the mocked APIs
+
   /* Make the module depends on a Mock Backend to simulate API calls. */
   var app = angular.module('devMode', ['ngMockE2E']);
+
+
 
   // define mock answers coming from the backend
   app.run(function($httpBackend) {

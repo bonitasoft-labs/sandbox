@@ -1,16 +1,9 @@
 (function () {
   'use strict';
-  angular.module('devMode', []); // This module is overloaded at dev time to contribute development facilities.
   var app = angular.module('caseOverview', [
-    'devMode',
     'ui.bootstrap',
-    'ui.router',
-    'angular-growl',
     'ngResource',
     'org.bonita.common.resources',
-    'org.bonitasoft.bonitable',
-    'org.bonitasoft.services.topurl',
-    'gettext',
     'angular-timeline'
     ]);
 

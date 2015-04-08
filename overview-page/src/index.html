@@ -18,27 +18,43 @@
 
 <body ng-app="caseOverview">
   <div class="container" ng-controller="MainCtrl">
-    <timeline ng-repeat="task in doneTasks.data">
-      <timeline-node side="{{$even ?'left':'right'}}">
-        <timeline-badge class="info"> <i class="glyphicon glyphicon-check"></i>
-        </timeline-badge>
-        <timeline-panel>
-          <timeline-heading>
-            <timeline-title>
-              {{task.displayName}} ({{task.executedBy.firstname+' '+task.executedBy.lastname}})
-            </timeline-title>
-            <p>
-              <small class="text-muted"> <i class="glyphicon glyphicon-time"></i>
-                {{task.reached_state_date| date:'medium'}}
-              </small>
-            </p>
-          </timeline-heading>
-          <timeline-content>
-            <p>{{task.displayDescription}}</p>
-          </timeline-content>
-        </timeline-panel>
-      </timeline-node>
-    </timeline>
+    <div class="row">
+      <div class="col-lg-6">
+        <timeline ng-repeat="task in doneTasks.data">
+        <timeline-node side="{{$even ?'left':'right'}}">
+          <timeline-badge class="info"> <i class="glyphicon glyphicon-check"></i>
+          </timeline-badge>
+          <timeline-panel>
+            <timeline-heading>
+              <timeline-title>
+                {{task.displayName}} ({{task.executedBy.firstname+' '+task.executedBy.lastname}})
+              </timeline-title>
+              <p>
+                <small class="text-muted"> <i class="glyphicon glyphicon-time"></i>
+                  {{task.reached_state_date| date:'medium'}}
+                </small>
+              </p>
+            </timeline-heading>
+            <timeline-content>
+              <p>{{task.displayDescription}}</p>
+            </timeline-content>
+          </timeline-panel>
+        </timeline-node>
+      </timeline>
+      </div>
+      <div class="col-lg-6">
+        <div class="row" ng-repeat="(dataType, dataValues) in businessData">
+          <div class="badge">List of {{ dataType }} :</div>
+          <ul class="list-group">
+            <li class="list-group-item" ng-repeat="data in dataValues">
+              <div ng-repeat="(key, value) in data">
+                <div class="">{{key}}:</div><div>{{value}}</div>
+              </div>
+            </li>
+          </ul>
+      </div>
+    </div>
+
   </div>
 </body>
 
@@ -50,6 +66,8 @@
   <script src="../target/work/templates.js"></script>
   <script src="js/resources.js"></script>
   <script src="js/app.js"></script>
+  <script src="js/contextService.js"></script>
+  <script src="js/businessDataService.js"></script>
   <!-- endbuild -->
 
   <!-- build:remove -->

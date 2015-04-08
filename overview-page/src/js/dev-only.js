@@ -21,12 +21,150 @@
     //--------------------- List Archived Human Tasks  -------------------------
     //-----------------------------------------------------------------------------------
     // http://localhost:8080/API/bpm/archivedHumanTask?c=50&d=executedBy&f=caseId%3Dindex&o=reached_state_date+DESC&p=0
-    //[{"displayDescription":"","executedBySubstitute":"26","processId":"8902137890939378455","parentCaseId":"1024","state":"completed","rootContainerId":"1024","type":"USER_TASK","assigned_id":"26","id":"80105","sourceObjectId":"20085","executedBy":{"last_connection":"2015-04-01 14:54:27.483","created_by_user_id":"-1","creation_date":"2015-03-30 17:20:16.052","id":"26","icon":"/default/icon_user.png","enabled":"true","title":"Mr","manager_id":"25","job_title":"Human resources benefits","userName":"walter.bates","lastname":"Bates","firstname":"Walter","password":"","last_update_date":"2015-03-30 17:20:16.052"},"caseId":"1024","priority":"normal","actorId":"115","description":"","name":"Ticket review","reached_state_date":"2015-03-31 14:35:54.918","rootCaseId":"1024","archivedDate":"2015-03-31 14:35:54.936","displayName":"Ticket review","dueDate":"2015-03-31 15:34:18.937","last_update_date":"2015-03-31 14:35:54.918"}]
+    //[{'displayDescription':'','executedBySubstitute':'26','processId':'8902137890939378455','parentCaseId':'1024','state':'completed','rootContainerId':'1024','type':'USER_TASK','assigned_id':'26','id':'80105','sourceObjectId':'20085','executedBy':{'last_connection':'2015-04-01 14:54:27.483','created_by_user_id':'-1','creation_date':'2015-03-30 17:20:16.052','id':'26','icon':'/default/icon_user.png','enabled':'true','title':'Mr','manager_id':'25','job_title':'Human resources benefits','userName':'walter.bates','lastname':'Bates','firstname':'Walter','password':'','last_update_date':'2015-03-30 17:20:16.052'},'caseId':'1024','priority':'normal','actorId':'115','description':'','name':'Ticket review','reached_state_date':'2015-03-31 14:35:54.918','rootCaseId':'1024','archivedDate':'2015-03-31 14:35:54.936','displayName':'Ticket review','dueDate':'2015-03-31 15:34:18.937','last_update_date':'2015-03-31 14:35:54.918'}]
 
     $httpBackend.whenGET('/bonita/API/bpm/archivedHumanTask?c=50&d=executedBy&f=caseId%3D2&o=reached_state_date+DESC&p=0').respond(function() {
       console.log('Getting mock response for archivedHumanTask.');
       return [200, archivedHumanTask, {}];
     });
+
+    $httpBackend.whenGET('/bonita/API/bpm/case/' + 2 + '/context').respond(function() {
+      console.log('Getting mock response for context.');
+      return [200, caseContext, {}];
+    });
+
+    $httpBackend.whenGET('/bonita/API/bdm/BusinessData/com.acme.object.Ticket/7').respond(function() {
+      console.log('Getting mock response for business Data: Ticket 7.');
+      return [200, Ticket7, {}];
+    });
+
+    $httpBackend.whenGET('/bonita/API/bdm/BusinessData/com.acme.object.Ticket/8').respond(function() {
+      console.log('Getting mock response for business Data: Ticket 8.');
+      return [200, Ticket8, {}];
+    });
+
+    $httpBackend.whenGET('/bonita/API/bdm/BusinessData/com.company.model.Client/2').respond(function() {
+      console.log('Getting mock response for business Data: Client 2.');
+      return [200, Client2, {}];
+    });
+
+    $httpBackend.whenGET('/bonita/API/bdm/BusinessData/com.acme.object.Ticket?q=findByIds&f=ids=100,101,102').respond(function() {
+      console.log('Getting mock response for business Data: Tickets.');
+      return [200, tickets, {}];
+    });
+
+    var ticket100 = {
+      'persistenceId': 100,
+      'persistenceVersion': 0,
+      'clientName': 'Avizanov',
+      'description': 'Download page of your website does not propose Russian language.',
+      'links': [
+        {
+          'rel': 'account',
+          'href': '/API/bdm/businessData/com.company.model.Ticket/100/account'
+        }
+      ]
+    };
+
+    var ticket101 = {
+      'persistenceId': 101,
+      'persistenceVersion': 0,
+      'clientName': 'Avizanov',
+      'description': 'Storing cyrillic characters in database makes impossible to search for task names in the portal.',
+      'links': [
+        {
+          'rel': 'account',
+          'href': '/API/bdm/businessData/com.company.model.Ticket/101/account'
+        }
+      ]
+    };
+
+    var ticket102 = {
+      'persistenceId': 102,
+      'persistenceVersion': 0,
+      'clientName': 'Avizanov',
+      'description': 'How can we translate the product in Russian?',
+      'links': [
+        {
+          'rel': 'account',
+          'href': '/API/bdm/businessData/com.company.model.Ticket/102/account'
+        }
+      ]
+    };
+
+    var tickets = [ticket100,ticket101,ticket102];
+
+    var Client2 =
+    {
+      persistenceId: 2,
+      persistenceVersion: 0,
+      clientName: 'Affectiva',
+      description: 'n/a',
+      links: [
+        {
+          rel: 'industry',
+          href: '/API/bdm/businessData/com.company.model.Client/2/industry'
+        }
+      ]
+    }
+
+    var Ticket7 =
+    {
+      'persistenceId': 2,
+      'persistenceVersion': 0,
+      'clientName': 'Acme',
+      'description': 'When selecting menu XYZ, I get a popup window saying that there is a NullPointerException...',
+      'links': [
+        {
+          'rel': 'account',
+          'href': '/API/bdm/businessData/com.company.model.Ticket/2/account'
+        }
+      ]
+    };
+
+    var Ticket8 =
+    {
+      'persistenceId': 5,
+      'persistenceVersion': 0,
+      'clientName': 'Acme',
+      'description': 'Unable to start software on Androïd.',
+      'links': [
+        {
+          'rel': 'account',
+          'href': '/API/bdm/businessData/com.company.model.Ticket/5/account'
+        }
+      ]
+    };
+
+    var caseContext =
+    {
+      processDefinitionId: '1',
+      processInstanceId: '2',
+      processInstanceInitiatorId: '1',
+      lastClosedTicket: {
+        type : 'com.acme.object.Ticket',
+        value : 7,
+        link : 'API/bdm/BusinessData/com.acme.object.Ticket/7'
+      },
+      lastOpenTicket: {
+        type : 'com.acme.object.Ticket',
+        value : 8,
+        link : 'API/bdm/BusinessData/com.acme.object.Ticket/8'
+      },
+      client: {
+        type: 'com.company.model.Client',
+        value: 2,
+        link : 'API/bdm/BusinessData/com.company.model.Client/2'
+      }
+      ,
+      multipleBusinessData: {
+        type : 'com.acme.object.Ticket',
+        value : [ 100, 101, 102 ],
+        link : 'API/bdm/BusinessData/com.acme.object.Ticket?q=findByIds&f=ids=100,101,102'
+      }
+
+    }
+
 
 
     var archivedHumanTask = [

@@ -25,12 +25,18 @@ describe('Case Overview test', function () {
     expect(contextSrvc.fetchCaseContext).toBeTruthy();
   });
 
-  it('should return a context with 3 values', function () {
+  it('should return a context', function () {
 
-    var context = {key1: 'val1'};
+    var context = {
+      processDefinitionId: '1',
+      processInstanceId: '2',
+      processInstanceInitiatorId: '1',
+      businessData1: 'storageId1',
+      businessData2: 'storageId2'
+    };
     var response;
 
-    $httpBackend.expect('GET', '/bonita/API/bdm/businessDataReference?f=caseId=2&p=0&c=100')
+    $httpBackend.expect('GET', '/bonita/API/bpm/case/' + 2 + '/context')
       .respond(context);
     contextSrvc.fetchCaseContext(2).then(function (fetchedData) {
       response = fetchedData.data;

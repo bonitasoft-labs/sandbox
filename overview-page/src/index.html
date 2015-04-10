@@ -20,8 +20,25 @@
   <div class="container" ng-controller="MainCtrl">
     <div class="row">
       <div class="col-lg-6">
-        <timeline ng-repeat="task in doneTasks.data">
-        <timeline-node side="{{$even ?'left':'right'}}">
+        <div class="row" ng-repeat="(dataType, dataValues) in businessData">
+          <div class="badge">List of {{ dataType }} :</div>
+          <table class="table table-striped table-hover table-responsive">
+            <thead>
+            <tr>
+              <th class="text-center" ng-class="{hidden: isInternalField(propertyName)}" ng-repeat="(propertyName, propertyValue) in dataValues[0]">{{propertyName}}</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="data in dataValues">
+              <td class="text-left" ng-class="{hidden: isInternalField(propertyName)}" ng-repeat="(propertyName, propertyValue) in data">{{propertyValue}}</td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <timeline>
+        <timeline-node  ng-repeat="task in doneTasks.data" side="{{$even ?'left':'right'}}">
           <timeline-badge class="info"> <i class="glyphicon glyphicon-check"></i>
           </timeline-badge>
           <timeline-panel>
@@ -40,20 +57,27 @@
             </timeline-content>
           </timeline-panel>
         </timeline-node>
+          <timeline-footer>
+
+            <timeline-panel>
+              <timeline-heading>
+                <timeline-title>
+                  Case started by: {{case.started_by.firstname}} {{case.started_by.lastname}}
+                </timeline-title>
+                <p>
+                  <small class="text-muted"> <i class="glyphicon glyphicon-time"></i>
+                    {{case.start | date:'medium'}}
+                  </small>
+                </p>
+              </timeline-heading>
+              <timeline-content>
+                <p>{{case.processDefinitionId.displayDescription}}</p>
+              </timeline-content>
+            </timeline-panel>
+          </timeline-footer>
       </timeline>
       </div>
-      <div class="col-lg-6">
-        <div class="row" ng-repeat="(dataType, dataValues) in businessData">
-          <div class="badge">List of {{ dataType }} :</div>
-          <ul class="list-group">
-            <li class="list-group-item" ng-repeat="data in dataValues">
-              <div ng-repeat="(key, value) in data">
-                <div class="">{{key}}:</div><div>{{value}}</div>
-              </div>
-            </li>
-          </ul>
-      </div>
-    </div>
+
 
   </div>
 </body>

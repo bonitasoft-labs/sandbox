@@ -21,9 +21,9 @@
     //--------------------- List Archived Human Tasks  -------------------------
     //-----------------------------------------------------------------------------------
     // http://localhost:8080/API/bpm/archivedHumanTask?c=50&d=executedBy&f=caseId%3Dindex&o=reached_state_date+DESC&p=0
-    //[{'displayDescription':'','executedBySubstitute':'26','processId':'8902137890939378455','parentCaseId':'1024','state':'completed','rootContainerId':'1024','type':'USER_TASK','assigned_id':'26','id':'80105','sourceObjectId':'20085','executedBy':{'last_connection':'2015-04-01 14:54:27.483','created_by_user_id':'-1','creation_date':'2015-03-30 17:20:16.052','id':'26','icon':'/default/icon_user.png','enabled':'true','title':'Mr','manager_id':'25','job_title':'Human resources benefits','userName':'walter.bates','lastname':'Bates','firstname':'Walter','password':'','last_update_date':'2015-03-30 17:20:16.052'},'caseId':'1024','priority':'normal','actorId':'115','description':'','name':'Ticket review','reached_state_date':'2015-03-31 14:35:54.918','rootCaseId':'1024','archivedDate':'2015-03-31 14:35:54.936','displayName':'Ticket review','dueDate':'2015-03-31 15:34:18.937','last_update_date':'2015-03-31 14:35:54.918'}]
+    //[{'displayDescription:'','executedBySubstitute:'26','processId:'8902137890939378455','parentCaseId:'1024','state:'completed','rootContainerId:'1024','type:'USER_TASK','assigned_id:'26','id:'80105','sourceObjectId:'20085','executedBy':{'last_connection:'2015-04-01 14:54:27.483','created_by_user_id:'-1','creation_date:'2015-03-30 17:20:16.052','id:'26','icon:'/default/icon_user.png','enabled:'true','title:'Mr','manager_id:'25','job_title:'Human resources benefits','userName:'walter.bates','lastname:'Bates','firstname:'Walter','password:'','last_update_date:'2015-03-30 17:20:16.052'},'caseId:'1024','priority:'normal','actorId:'115','description:'','name:'Ticket review','reached_state_date:'2015-03-31 14:35:54.918','rootCaseId:'1024','archivedDate:'2015-03-31 14:35:54.936','displayName:'Ticket review','dueDate:'2015-03-31 15:34:18.937','last_update_date:'2015-03-31 14:35:54.918'}]
 
-    $httpBackend.whenGET('/bonita/API/bpm/archivedHumanTask?c=50&d=executedBy&f=caseId%3D2&o=reached_state_date+DESC&p=0').respond(function() {
+    $httpBackend.whenGET('/bonita/API/bpm/archivedHumanTask?c=50&d=executedBy&f=caseId%3D'+2+'&o=reached_state_date+DESC&p=0').respond(function() {
       console.log('Getting mock response for archivedHumanTask.');
       return [200, archivedHumanTask, {}];
     });
@@ -53,41 +53,163 @@
       return [200, tickets, {}];
     });
 
+    $httpBackend.whenGET('/bonita/API/bpm/case/2').respond(function() {
+      console.log('Getting mock response for case: Case2.');
+      return [200, case2, {}];
+    });
+
+    $httpBackend.whenGET('/bonita/API/bpm/case/4').respond(function() {
+      console.log('Getting 404 mock response for case 4.');
+      return [404, {}, {}];
+    });
+
+    $httpBackend.whenGET('/bonita/API/bpm/archivedCase/4').respond(function() {
+      console.log('Getting mock response for archived case: Case4.');
+      return [200, archivedCased4, {}];
+    });
+
+    var archivedCased4 = {
+      id: '4',
+      end_date: '2014-10-22 10:57:00.299',
+      startedBySubstitute: '4',
+      sourceObjectId: '3',
+      start: '2014-10-22 10:56:53.415',
+      state: 'completed',
+      rootCaseId: '3',
+      started_by: {
+        last_connection: '',
+        created_by_user_id: '-1',
+        creation_date: '2014-11-27 17:53:46.509',
+        id: '3',
+        icon: '/default/icon_user.png',
+        enabled: 'true',
+        title: 'Mrs',
+        manager_id: '1',
+        job_title: 'Human resource manager',
+        userName: 'helen.kelly',
+        lastname: 'Kelly',
+        firstname: 'Helen',
+        password: '',
+        last_update_date: '2014-11-27 17:53:46.509'
+      },
+      archivedDate: '2014-10-22 10:57:00.299',
+      processDefinitionId: '6054482369194211518',
+      last_update_date: '2014-10-22 10:57:00.299',
+      searchIndex1Label:'case9SearchIndex1Label',
+      searchIndex2Label:'case9SearchIndex2Label',
+      searchIndex3Label:'case9SearchIndex3Label',
+      searchIndex4Label:'case9SearchIndex4Label',
+      searchIndex5Label:'case9SearchIndex5Label',
+      searchIndex1Value:'case9SearchIndex1Value',
+      searchIndex2Value:'case9SearchIndex2Value',
+      searchIndex3Value:'case9SearchIndex3Value',
+      searchIndex4Value:'case9SearchIndex4Value',
+      searchIndex5Value:'case9SearchIndex5Value'
+    };
+
+    var case2 = {
+        id: '1',
+        end_date: '',
+        failedFlowNodes: '9',
+        startedBySubstitute: {
+          last_connection: '2014-12-01 10:46:03.750',
+          created_by_user_id: '-1',
+          creation_date: '2014-11-27 17:53:46.516',
+          id: '4',
+          icon: '/default/icon_user.png',
+          enabled: 'true',
+          title: 'Mr',
+          manager_id: '3',
+          job_title: 'Human resources benefits',
+          userName: 'walter.bates',
+          lastname: 'Bates',
+          firstname: 'Walter',
+          password: '',
+          last_update_date: '2014-11-27 17:53:46.516'
+        },
+        start: '2014-11-27 17:55:00.906',
+        activeFlowNodes: '9',
+        state: 'started',
+        rootCaseId: '1',
+        started_by:{
+          last_connection: '',
+          created_by_user_id: '-1',
+          creation_date: '2014-11-27 17:53:46.509',
+          id: '3',
+          icon: '/default/icon_user.png',
+          enabled: 'true',
+          title: 'Mrs',
+          manager_id: '1',
+          job_title: 'Human resource manager',
+          userName: 'helen.kelly',
+          lastname: 'Kelly',
+          firstname: 'Helen',
+          password: '',
+          last_update_date: '2014-11-27 17:53:46.509'
+        },
+      processDefinitionId: {
+        id: '5777042023671752656',
+          icon: '',
+          displayDescription: '',
+          deploymentDate: '2014-11-27 17:54:37.774',
+          description: '',
+          activationState: 'ENABLED',
+          name: 'Pool2',
+          deployedBy: '4',
+          displayName: 'Pool 2',
+          actorinitiatorid: '1',
+          last_update_date: '2014-11-27 17:54:43.621',
+          configurationState: 'RESOLVED',
+          version: '2.0'
+      },
+    last_update_date: '2014-11-27 17:55:00.906',
+    searchIndex1Label:'mySearchIndex1Label',
+    searchIndex2Label:'mySearchIndex2Label',
+    searchIndex3Label:'mySearchIndex3Label',
+    searchIndex4Label:'mySearchIndex4Label',
+    searchIndex5Label:'mySearchIndex5Label',
+    searchIndex1Value:'mySearchIndex1Value',
+    searchIndex2Value:'mySearchIndex2Value',
+    searchIndex3Value:'mySearchIndex3Value',
+    searchIndex4Value:'mySearchIndex4Value',
+    searchIndex5Value:'mySearchIndex5Value'
+    };
+
     var ticket100 = {
-      'persistenceId': 100,
-      'persistenceVersion': 0,
-      'clientName': 'Avizanov',
-      'description': 'Download page of your website does not propose Russian language.',
-      'links': [
+      persistenceId: 100,
+      persistenceVersion: 0,
+      accountName: 'Avizanov',
+      issue: 'Download page of your website does not propose Russian language.',
+      links: [
         {
-          'rel': 'account',
-          'href': '/API/bdm/businessData/com.company.model.Ticket/100/account'
+          rel: 'account',
+          href: '/API/bdm/businessData/com.company.model.Ticket/100/account'
         }
       ]
     };
 
     var ticket101 = {
-      'persistenceId': 101,
-      'persistenceVersion': 0,
-      'clientName': 'Avizanov',
-      'description': 'Storing cyrillic characters in database makes impossible to search for task names in the portal.',
-      'links': [
+      persistenceId: 101,
+      persistenceVersion: 0,
+      accountName: 'Avizanov',
+      issue: 'Storing cyrillic characters in database makes impossible to search for task names in the portal.',
+      links: [
         {
-          'rel': 'account',
-          'href': '/API/bdm/businessData/com.company.model.Ticket/101/account'
+          rel: 'account',
+          href: '/API/bdm/businessData/com.company.model.Ticket/101/account'
         }
       ]
     };
 
     var ticket102 = {
-      'persistenceId': 102,
-      'persistenceVersion': 0,
-      'clientName': 'Avizanov',
-      'description': 'How can we translate the product in Russian?',
-      'links': [
+      persistenceId: 102,
+      persistenceVersion: 0,
+      accountName: 'Avizanov',
+      issue: 'How can we translate the product in Russian?',
+      links: [
         {
-          'rel': 'account',
-          'href': '/API/bdm/businessData/com.company.model.Ticket/102/account'
+          rel: 'account',
+          href: '/API/bdm/businessData/com.company.model.Ticket/102/account'
         }
       ]
     };
@@ -110,28 +232,28 @@
 
     var Ticket7 =
     {
-      'persistenceId': 2,
-      'persistenceVersion': 0,
-      'clientName': 'Acme',
-      'description': 'When selecting menu XYZ, I get a popup window saying that there is a NullPointerException...',
-      'links': [
+      persistenceId: 2,
+      persistenceVersion: 0,
+      accountName: 'Acme',
+      issue: 'When selecting menu XYZ, I get a popup window saying that there is a NullPointerException...',
+      links: [
         {
-          'rel': 'account',
-          'href': '/API/bdm/businessData/com.company.model.Ticket/2/account'
+          rel: 'account',
+          href: '/API/bdm/businessData/com.company.model.Ticket/2/account'
         }
       ]
     };
 
     var Ticket8 =
     {
-      'persistenceId': 5,
-      'persistenceVersion': 0,
-      'clientName': 'Acme',
-      'description': 'Unable to start software on Androïd.',
-      'links': [
+      persistenceId: 5,
+      persistenceVersion: 0,
+      accountName: 'Acme',
+      issue: 'Unable to start software on Androïd.',
+      links: [
         {
-          'rel': 'account',
-          'href': '/API/bdm/businessData/com.company.model.Ticket/5/account'
+          rel: 'account',
+          href: '/API/bdm/businessData/com.company.model.Ticket/5/account'
         }
       ]
     };

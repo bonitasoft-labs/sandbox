@@ -7,7 +7,7 @@
     'angular-timeline'
     ]);
 
-  app.controller('MainCtrl', ['$scope','$window', 'archivedTaskAPI', '$location', 'contextSrvc', 'dataSrvc', function ($scope, $window, archivedTaskAPI, $location, contextSrvc, dataSrvc) {
+  app.controller('MainCtrl', ['$scope','$window', 'archivedTaskAPI', '$location', 'contextSrvc', 'dataSrvc', 'caseAPI', 'archivedCaseAPI', function ($scope, $window, archivedTaskAPI, $location, contextSrvc, dataSrvc, caseAPI, archivedCaseAPI) {
     var listDoneTasks = function(){
       archivedTaskAPI.search({
         p:0,
@@ -19,6 +19,17 @@
       }).$promise.then(function mapArchivedTasks(data){
           $scope.doneTasks = data;
         });
+    };
+
+    $scope.case = {};
+    var fetchCase = function(){
+      caseAPI.get({id:$location.search().id}, function(result){
+        $scope.case = result;
+      }, function(){
+        archivedCaseAPI.get({id:$location.search().id}, function(result){
+          $scope.case = result;
+        });
+      });
     };
 
 
@@ -62,6 +73,12 @@
       });
     };
 
+
+    $scope.isInternalField = function(propertyName) {
+     return (propertyName === 'persistenceId') || (propertyName === 'persistenceVersion')|| (propertyName === 'links');
+    };
+
+    fetchCase();
     listDoneTasks();
     fetchContext();
   }])

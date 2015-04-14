@@ -25,25 +25,37 @@
       return [200, contractStep2, {}];
     });
 
+    $httpBackend.whenPOST('/bonita/API/bpm/userTask/'+2+'/execution').respond(function() {
+      console.log('Getting mock response for execution of Step 2');
+      return [204, {}, {}];
+    });
+
+
     var contractStep2 = {
-      "constraints":[
+      constraints:[
         {
-          "name":"ticket_comment",
-          "expression":"ticket_comment!=null && !ticket_comment.toString().isEmpty()",
-          "explanation":"input ticket_comment is mandatory",
-          "inputNames":[
-            "ticket_comment"
+          name:'ticket_comment',
+          expression:'ticket_comment!=null && !ticket_comment.toString().isEmpty()',
+          explanation:'input ticket_comment is mandatory',
+          inputNames:[
+            'ticket_comment'
           ],
-          "constraintType":"MANDATORY"
+          constraintType:'MANDATORY'
         }
       ],
-      "complexInputs":[     ],
-      "simpleInputs":[
+      complexInputs:[     ],
+      simpleInputs:[
         {
-          "description":null,
-          "name":"ticket_comment",
-          "multiple":false,
-          "type":"TEXT"
+          description:null,
+          name:'ticket_comment',
+          multiple:false,
+          type:'TEXT'
+        },
+        {
+          description:'Steps to execute to reproduce the issue within the product.',
+          name:'ticket_step_to_reproduce',
+          multiple:false,
+          type:'TEXT'
         }
       ]
     } ;

@@ -11,10 +11,23 @@
     var taskId = $location.search().id;
 
     $scope.contract = {};
+    $scope.dataToSend = {};
+
+    $scope.getInputName = function() {
+      return 'dataToSend.attribute1';
+    };
+
 
     contractSrvc.fetchContract(taskId).then(function(result){
       $scope.contract = result.data;
     });
+
+
+    $scope.postData = function() {
+      contractSrvc.executeTask(taskId, $scope.dataToSend).then(function(result){
+        console.log(result);
+      });
+    };
 
   }])
   .config(['$locationProvider',function($locationProvider) {

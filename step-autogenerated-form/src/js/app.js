@@ -6,7 +6,7 @@
     'org.bonita.common.resources'
     ]);
 
-  app.controller('MainCtrl', ['$scope','$location', 'contractSrvc', function ($scope, $location, contractSrvc) {
+  app.controller('MainCtrl', ['$scope','$location', 'contractSrvc','$window', function ($scope, $location, contractSrvc, $window) {
 
     var taskId = $location.search().id;
 
@@ -25,7 +25,8 @@
 
     $scope.postData = function() {
       contractSrvc.executeTask(taskId, $scope.dataToSend).then(function(result){
-        console.log(result);
+        console.log($window.top.location.href);
+        $window.top.location.href = "/bonita"
       });
     };
 

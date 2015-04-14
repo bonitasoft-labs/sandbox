@@ -7,80 +7,29 @@
     'angular-timeline'
     ]);
 
-  app.controller('MainCtrl', ['$scope','$window', 'archivedTaskAPI', '$location', 'contextSrvc', 'dataSrvc', 'caseAPI', 'archivedCaseAPI', function ($scope, $window, archivedTaskAPI, $location, contextSrvc, dataSrvc, caseAPI, archivedCaseAPI) {
-    var listDoneTasks = function(){
-      archivedTaskAPI.search({
-        p:0,
-        c:50,
-        d:['executedBy'],
-        //f:['caseId='+$location.path().split('/')[5]],
-        f:['caseId='+$location.search().id],
-        o:['reached_state_date DESC']
-      }).$promise.then(function mapArchivedTasks(data){
-          $scope.doneTasks = data;
-        });
-    };
+  app.controller('MainCtrl', ['$scope','$window', 'archivedTaskAPI', '$location', 'overviewSrvc', function ($scope, $window, archivedTaskAPI, $location, overviewSrvc) {
 
     $scope.case = {};
-    var fetchCase = function(){
-      caseAPI.get({id:$location.search().id}, function(result){
-        $scope.case = result;
-      }, function(){
-        archivedCaseAPI.get({id:$location.search().id}, function(result){
-          $scope.case = result;
-        });
-      });
-    };
 
+    $scope.businessData;
 
-    var fetchContext = function(){
-      contextSrvc.fetchCaseContext($location.search().id).then(function(result){
-        var contextData;
-        for (contextData in result.data) {
-          fetchValue(result.data[contextData]);
-        }
-      });
-    };
-
-    $scope.businessData = {};
-    var fetchValue = function(valueToFetch){
-      // Implement fetching of data based on 2 strategies to illustrate the 2 possible capabilities. Using the link is
-      // the most generic approach and should be preferred in most of the cases.
-      // Using the type and value are most likely to be used to call a custom query on the API.
-      if(angular.isObject(valueToFetch) && !angular.isArray(valueToFetch.value)){
-        fetchDataFromTypeAndStorageId(valueToFetch);
-      } else if(angular.isObject(valueToFetch) && angular.isArray(valueToFetch.value)) {
-        fetchDataFromLink(valueToFetch);
-      }
-    };
-
-    var fetchDataFromTypeAndStorageId = function(valueToFetch) {
-      dataSrvc.getData(valueToFetch.type, valueToFetch.value).then(function(result){
-        if(!angular.isDefined($scope.businessData[valueToFetch.type])) {
-          $scope.businessData[valueToFetch.type] = [];
-        }
-        $scope.businessData[valueToFetch.type].push(result.data);
-      });
-    };
-
-    var fetchDataFromLink = function(valueToFetch) {
-      // Follow link to fetch multiple values
-      dataSrvc.queryData(valueToFetch.link).then(function(result){
-        if(!angular.isDefined($scope.businessData[valueToFetch.type])) {
-          $scope.businessData[valueToFetch.type] = [];
-        }
-        $scope.businessData[valueToFetch.type] = $scope.businessData[valueToFetch.type].concat(result.data);
-      });
-    };
 
 
     $scope.isInternalField = function(propertyName) {
      return (propertyName === 'persistenceId') || (propertyName === 'persistenceVersion')|| (propertyName === 'links');
     };
 
-    fetchCase();
-    listDoneTasks();
-    fetchContext();
+    var caseId = $location.search().id;
+
+    overviewSrvc.fetchCase(caseId).then(function(result){
+      $scope.case = result;
+    });
+    overviewSrvc.listDoneTasks(caseId).then(function mapArchivedTasks(data){
+      $scope.doneTasks = data;
+    });
+    overviewSrvc.fetchContext(caseId).then(function(data){
+      $scope.businessData = data;
+    });
   }])
   .config(['$locationProvider',function($locationProvider) {
     $locationProvider.html5Mode({

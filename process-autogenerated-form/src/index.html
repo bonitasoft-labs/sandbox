@@ -30,11 +30,12 @@
       <form>
 
         <div class="form-group" ng-repeat="input in contract.simpleInputs">
-          <label for="{{input.name}}">{{input.name}} - {{input.description}}</label>
+          <label for="{{input.name}}">{{input.name}} - <i>{{input.description===null?'&lt;no description defined in contract for this input&gt;':input.description}}</i></label>
           <input type="text" class="form-control" id="{{input.name}}" ng-model="dataToSend[input.name]" placeholder="Expecting a {{ input.type }} value.">
         </div>
+        <div class="alert alert-danger" ng-if="message">{{ message }}</div>
+        <div style="margin:auto; width:100px"><button type="submit" class="btn btn-primary btn-block" ng-click="postData()">Start</button></div>
 
-        <div style="margin:auto; width:100px"><button type="submit" class="btn btn-primary btn-block" ng-click="postData()">Start</button>
       </form>
     </div>
 

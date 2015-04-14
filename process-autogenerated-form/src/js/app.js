@@ -13,6 +13,7 @@
     $scope.contract = {};
     $scope.dataToSend = {};
     $scope.process = {};
+    $scope.message = undefined;
 
         $scope.getInputName = function() {
       return 'dataToSend.attribute1';
@@ -29,10 +30,13 @@
     });
 
     $scope.postData = function() {
+      $scope.message = undefined;
       contractSrvc.startProcess(processId, $scope.dataToSend).then(function(result){
         console.log($window.top.location.href);
         $window.top.location.href = "/bonita";
-      });
+      }, function(reason){
+        $scope.message = reason.data.explanations;
+    });
     };
 
 

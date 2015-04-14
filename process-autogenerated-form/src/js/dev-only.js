@@ -79,8 +79,23 @@
       return [204, {}, {}];
     });
 
+    $httpBackend.whenPOST('/bonita/API/bpm/process/'+4+'/instantiation').respond(function() {
+      console.log('Getting mock ERROR response for Process 4 instantiation');
+      return [400, process4InstantiationFailed, {}];
+    });
+
+    var process4InstantiationFailed = {
+      "exception":"class org.bonitasoft.engine.bpm.contract.ContractViolationException",
+      "message":"USERNAME=william.jobs | Contract is not valid: ",
+      "explanations":[
+        "Expected input [ticket_account] is missing",
+        "Expected input [ticket_description] is missing",
+        "Expected input [ticket_subject] is missing"
+      ]
+    };
+
     var process2 = {id:'5142703331505681458',icon:'/default/process.png',displayDescription:'',deploymentDate:'2015-04-14 15:53:34.489',description:'',activationState:'ENABLED',name:'Register new Support Ticket',deployedBy:'4',displayName:'Register new Support Ticket',actorinitiatorid:'2',last_update_date:'2015-04-14 15:53:34.648',configurationState:'RESOLVED',version:'1.0'};
-    
+
     var contractProcess2 = {
       constraints:[
         {

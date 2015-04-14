@@ -6,14 +6,15 @@
     'org.bonita.common.resources'
     ]);
 
-  app.controller('MainCtrl', ['$scope','$location', 'contractSrvc','$window', function ($scope, $location, contractSrvc, $window) {
+  app.controller('MainCtrl', ['$scope','$location', 'contractSrvc','$window', 'processAPI', function ($scope, $location, contractSrvc, $window, processAPI) {
 
     var processId = $location.search().id;
 
     $scope.contract = {};
     $scope.dataToSend = {};
+    $scope.process = {};
 
-    $scope.getInputName = function() {
+        $scope.getInputName = function() {
       return 'dataToSend.attribute1';
     };
 
@@ -22,6 +23,10 @@
       $scope.contract = result.data;
     });
 
+    processAPI.get({id:processId}, function(result){
+
+      $scope.process = result;
+    });
 
     $scope.postData = function() {
       contractSrvc.startProcess(processId, $scope.dataToSend).then(function(result){
@@ -29,6 +34,7 @@
         $window.top.location.href = "/bonita";
       });
     };
+
 
   }])
   .config(['$locationProvider',function($locationProvider) {

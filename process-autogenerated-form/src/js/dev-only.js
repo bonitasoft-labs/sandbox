@@ -64,6 +64,11 @@
     //-----------------------------------------------------------------
     //--------------------- Process contract  -------------------------
     //-----------------------------------------------------------------
+    $httpBackend.whenGET('/bonita/API/bpm/process/'+2).respond(function() {
+      console.log('Getting mock response for Process 2.');
+      return [200, process2, {}];
+    });
+
     $httpBackend.whenGET('/bonita/API/bpm/process/'+2+'/contract').respond(function() {
       console.log('Getting mock response for Process 2 Contract.');
       return [200, contractProcess2, {}];
@@ -74,6 +79,8 @@
       return [204, {}, {}];
     });
 
+    var process2 = {id:'5142703331505681458',icon:'/default/process.png',displayDescription:'',deploymentDate:'2015-04-14 15:53:34.489',description:'',activationState:'ENABLED',name:'Register new Support Ticket',deployedBy:'4',displayName:'Register new Support Ticket',actorinitiatorid:'2',last_update_date:'2015-04-14 15:53:34.648',configurationState:'RESOLVED',version:'1.0'};
+    
     var contractProcess2 = {
       constraints:[
         {
@@ -107,13 +114,13 @@
       complexInputs:[     ],
       simpleInputs:[
         {
-          description:null,
+          description:'Customer Account Name',
           name:'ticket_account',
           multiple:false,
           type:'TEXT'
         },
         {
-          description:null,
+          description:'Description of your issue',
           name:'ticket_description',
           multiple:false,
           type:'TEXT'

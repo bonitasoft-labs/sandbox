@@ -30,6 +30,21 @@
       return [204, {}, {}];
     });
 
+    $httpBackend.whenPOST('/bonita/API/bpm/userTask/'+4+'/execution').respond(function() {
+      console.log('Getting mock ERROR response for execution of Step 4');
+      return [400, step4ExecutionFailed, {}];
+    });
+
+    var step4ExecutionFailed = {
+      "exception":"class org.bonitasoft.engine.bpm.contract.ContractViolationException",
+      "message":"USERNAME=william.jobs | Contract is not valid: ",
+      "explanations":[
+        "Expected input [ticket_account] is missing",
+        "Expected input [ticket_description] is missing",
+        "Expected input [ticket_subject] is missing"
+      ]
+    };
+
 
     var contractStep2 = {
       constraints:[

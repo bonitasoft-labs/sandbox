@@ -13,6 +13,7 @@
     $scope.contract = {};
     $scope.dataToSend = {};
     $scope.task = {};
+    $scope.message = undefined;
 
 
     $scope.getInputName = function() {
@@ -30,9 +31,12 @@
 
 
     $scope.postData = function() {
+      $scope.message = undefined;
       contractSrvc.executeTask(taskId, $scope.dataToSend).then(function(result){
         console.log($window.top.location.href);
-        $window.top.location.href = "/bonita"
+        $window.top.location.href = "/bonita";
+      }, function(reason){
+        $scope.message = reason.data.explanations;
       });
     };
 

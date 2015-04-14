@@ -6,12 +6,14 @@
     'org.bonita.common.resources'
     ]);
 
-  app.controller('MainCtrl', ['$scope','$location', 'contractSrvc','$window', function ($scope, $location, contractSrvc, $window) {
+  app.controller('MainCtrl', ['$scope','$location', 'contractSrvc','$window', 'humanTaskAPI', function ($scope, $location, contractSrvc, $window, humanTaskAPI) {
 
     var taskId = $location.search().id;
 
     $scope.contract = {};
     $scope.dataToSend = {};
+    $scope.task = {};
+
 
     $scope.getInputName = function() {
       return 'dataToSend.attribute1';
@@ -20,6 +22,10 @@
 
     contractSrvc.fetchContract(taskId).then(function(result){
       $scope.contract = result.data;
+    });
+
+    humanTaskAPI.get({id:taskId}, function(result){
+      $scope.task = result;
     });
 
 

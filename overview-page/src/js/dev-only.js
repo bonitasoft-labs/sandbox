@@ -33,22 +33,22 @@
       return [200, caseContext, {}];
     });
 
-    $httpBackend.whenGET('/bonita/API/bdm/BusinessData/com.acme.object.Ticket/7').respond(function() {
+    $httpBackend.whenGET('/bonita/API/bdm/businessData/com.acme.object.Ticket/7').respond(function() {
       console.log('Getting mock response for business Data: Ticket 7.');
       return [200, Ticket7, {}];
     });
 
-    $httpBackend.whenGET('/bonita/API/bdm/BusinessData/com.acme.object.Ticket/8').respond(function() {
+    $httpBackend.whenGET('/bonita/API/bdm/businessData/com.acme.object.Ticket/8').respond(function() {
       console.log('Getting mock response for business Data: Ticket 8.');
       return [200, Ticket8, {}];
     });
 
-    $httpBackend.whenGET('/bonita/API/bdm/BusinessData/com.company.model.Client/2').respond(function() {
+    $httpBackend.whenGET('/bonita/API/bdm/businessData/com.company.model.Client/2').respond(function() {
       console.log('Getting mock response for business Data: Client 2.');
       return [200, Client2, {}];
     });
 
-    $httpBackend.whenGET('/bonita/API/bdm/BusinessData/com.acme.object.Ticket?q=findByIds&f=ids=100,101,102').respond(function() {
+    $httpBackend.whenGET('/bonita/API/bdm/businessData/com.acme.object.Ticket?q=findByIds&f=ids=100,101,102').respond(function() {
       console.log('Getting mock response for business Data: Tickets.');
       return [200, tickets, {}];
     });
@@ -266,23 +266,23 @@
       lastClosedTicket: {
         type : 'com.acme.object.Ticket',
         value : 7,
-        link : 'API/bdm/BusinessData/com.acme.object.Ticket/7'
+        link : 'API/bdm/businessData/com.acme.object.Ticket/7'
       },
       lastOpenTicket: {
         type : 'com.acme.object.Ticket',
         value : 8,
-        link : 'API/bdm/BusinessData/com.acme.object.Ticket/8'
+        link : 'API/bdm/businessData/com.acme.object.Ticket/8'
       },
       client: {
         type: 'com.company.model.Client',
         value: 2,
-        link : 'API/bdm/BusinessData/com.company.model.Client/2'
+        link : 'API/bdm/businessData/com.company.model.Client/2'
       }
       ,
       multipleBusinessData: {
         type : 'com.acme.object.Ticket',
         value : [ 100, 101, 102 ],
-        link : 'API/bdm/BusinessData/com.acme.object.Ticket?q=findByIds&f=ids=100,101,102'
+        link : 'API/bdm/businessData/com.acme.object.Ticket?q=findByIds&f=ids=100,101,102'
       }
 
     }

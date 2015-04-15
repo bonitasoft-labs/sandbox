@@ -6,7 +6,7 @@
       getData: function (resourceType, storageId) {
         // fetch data from server
         return $http({
-          url: '/bonita/API/bdm/BusinessData/' + resourceType + '/' + storageId,
+          url: '/bonita/API/bdm/businessData/' + resourceType + '/' + storageId,
           method: 'GET'
         });
       },

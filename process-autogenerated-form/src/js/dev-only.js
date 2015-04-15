@@ -49,7 +49,7 @@
           description:null,
           name:'ticket_comment',
           multiple:false,
-          type:'TEXT'
+          type:'BOOLEAN'
         },
         {
           description:'Steps to execute to reproduce the issue within the product.',
@@ -156,13 +156,13 @@
           description:'Customer Account Name',
           name:'ticket_account',
           multiple:false,
-          type:'TEXT'
+          type:'BOOLEAN'
         },
         {
           description:'Description of your issue',
           name:'ticket_description',
           multiple:false,
-          type:'TEXT'
+          type:'INTEGER'
         },
         {
           description:null,

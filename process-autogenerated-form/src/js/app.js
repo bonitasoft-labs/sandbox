@@ -12,6 +12,7 @@
 
     $scope.contract = {};
     $scope.dataToSend = {};
+    $scope.autofill = {};
     $scope.process = {};
     $scope.message = undefined;
 
@@ -39,6 +40,22 @@
     });
     };
 
+    $scope.fillData = function() {
+
+      for (var prop in $scope.autofill) {
+        $scope.dataToSend[prop] = $scope.autofill[prop];
+      }
+    }
+
+
+
+    var defaultValues = {BOOLEAN : true, INTEGER:0};
+    $scope.generateValue = function(input) {
+      if(input.type==='TEXT') {
+        return input.name;
+      }
+      return defaultValues[input.type];
+    }
 
   }])
   .config(['$locationProvider',function($locationProvider) {

@@ -35,7 +35,8 @@
         console.log($window.top.location.href);
         $window.top.location.href = "/bonita";
       }, function(reason){
-        $scope.message = reason.data.explanations;
+        console.log(reason.data.explanations);
+        $scope.message = reason.data.explanations?reason.data.explanations:reason.data.message;
     });
     };
 

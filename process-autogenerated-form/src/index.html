@@ -34,7 +34,7 @@
           ::dataToSend[input.name] = null;
           }}
 
-          <label for="{{input.name}}">{{input.name}} - <i>{{input.description===null?'&lt;no description defined in contract for this input&gt;':input.description}}</i></label>
+          <label for="{{input.name}}">{{input.name}}</label> - <i>{{input.description===null?'&lt;no description defined in contract for this input&gt;':input.description}}</i>
           <input type="text" class="form-control" id="{{input.name}}" ng-model="dataToSend[input.name]" placeholder="{{input.multiple?'Expecting a JSON collection of ' + input.type +' values, e.g. [\'a\' , \'list\', \'of values\']':'Expecting a ' + input.type + ' value.'}}">
         </div>
 
@@ -42,11 +42,11 @@
           {{
           ::dataToSend[input.name] = null;
           }}
-          <label for="{{input.name}}">{{input.name}} - <i>{{input.description===null?'&lt;no description defined in contract for this input&gt;':input.description}}</i></label>
+          <label for="{{input.name}}">{{input.name}}</label> - <i>{{input.description===null?'&lt;no description defined in contract for this input&gt;':input.description}}</i>
           <input type="text" class="form-control" id="{{input.name}}" ng-model="dataToSend[input.name]" placeholder="{{input.multiple?'Expecting a JSON collection of ' + input.type +' values, e.g. [{\'property\':\'value\'}, {...}]':'Expecting a JSON value, e.g. {\'property\':\'value\'}'}}">
         </div>
 
-        <div class="alert alert-danger" ng-if="message">{{ message }}</div>
+        <pre class="alert alert-danger" ng-if="message">{{ message }}</pre>
         <div style="margin:auto; width:100px"><button type="submit" class="btn btn-primary btn-block" ng-click="postData()">Start</button></div>
 
       </form>

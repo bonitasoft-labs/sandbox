@@ -126,7 +126,22 @@
           constraintType:'MANDATORY'
         }
       ],
-      complexInputs:[     ],
+      complexInputs:[
+        {
+          "description":null,
+          "name":"complex",
+          "multiple":false,
+          "simpleInputs":[
+            {
+              "description":null,
+              "name":"test2",
+              "multiple":false,
+              "type":"TEXT"
+            }
+          ],
+          "complexInputs":[           ]
+        }
+      ],
       simpleInputs:[
         {
           description:'Customer Account Name',

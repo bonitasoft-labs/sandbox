@@ -35,6 +35,15 @@
       return [400, step4ExecutionFailed, {}];
     });
 
+    $httpBackend.whenPOST('/bonita/API/bpm/userTask/'+5+'/execution').respond(function() {
+      console.log('Getting mock ERROR response for execution of Step 5');
+      return [500, step5ExecutionFailed, {}];
+    });
+
+    var step5ExecutionFailed = {
+      "exception":"class org.bonitasoft.engine.bpm.process.ProcessExecutionException","message":"USERNAME=walter.bates | org.bonitasoft.engine.core.process.instance.api.exceptions.SProcessInstanceCreationException: PROCESS_DEFINITION_ID=7374665373110548746 | PROCESS_NAME=GettingStartedPool | PROCESS_VERSION=1.0 | org.bonitasoft.engine.expression.exception.SExpressionEvaluationException: Groovy script throws an exception of type class java.lang.NumberFormatException with message = For input string: \"bjh\"\nExpression : SExpressionImpl [name=initBD, content=import com.company.model.TravelRequest;\n\nfinal TravelRequest tr = new TravelRequest();\ntr.setApprovalNumber(Long.valueOf(approvalNumber));\n//tr.setDepartureDate(new Date());\ntr.setDestination(destination);\ntr.setHotelNeeded(Boolean.valueOf(hotelNeeded));\ntr.setNumberOfNights(Integer.valueOf(numberOfNights));\ntr.setPreApproved(Boolean.valueOf(preApproved));\ntr.setReasonForTravel(reasonForTravel);\nreturn tr;, returnType=com.company.model.TravelRequest, dependencies=[SExpressionImpl [name=reasonForTravel, content=reasonForTravel, returnType=java.lang.String, dependencies=[], expressionKind=ExpressionKind [interpreter=NONE, type=TYPE_CONTRACT_INPUT]], SExpressionImpl [name=numberOfNights, content=numberOfNights, returnType=java.lang.String, dependencies=[], expressionKind=ExpressionKind [interpreter=NONE, type=TYPE_CONTRACT_INPUT]], SExpressionImpl [name=destination, content=destination, returnType=java.lang.String, dependencies=[], expressionKind=ExpressionKind [interpreter=NONE, type=TYPE_CONTRACT_INPUT]], SExpressionImpl [name=preApproved, content=preApproved, returnType=java.lang.String, dependencies=[], expressionKind=ExpressionKind [interpreter=NONE, type=TYPE_CONTRACT_INPUT]], SExpressionImpl [name=hotelNeeded, content=hotelNeeded, returnType=java.lang.String, dependencies=[], expressionKind=ExpressionKind [interpreter=NONE, type=TYPE_CONTRACT_INPUT]]], expressionKind=ExpressionKind [interpreter=GROOVY, type=TYPE_READ_ONLY_SCRIPT]]"
+    };
+
     var step4ExecutionFailed = {
       "exception":"class org.bonitasoft.engine.bpm.contract.ContractViolationException",
       "message":"USERNAME=william.jobs | Contract is not valid: ",

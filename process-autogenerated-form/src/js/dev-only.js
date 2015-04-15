@@ -130,7 +130,7 @@
         {
           "description":null,
           "name":"complex",
-          "multiple":false,
+          "multiple":true,
           "simpleInputs":[
             {
               "description":null,
@@ -158,7 +158,7 @@
         {
           description:null,
           name:'ticket_subject',
-          multiple:false,
+          multiple:true,
           type:'TEXT'
         }
       ]

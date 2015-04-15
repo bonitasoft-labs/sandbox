@@ -5,6 +5,6 @@ describe('custom page', function() {
   });
 
   it('should have a title', function() {
-    expect(browser.getTitle()).toEqual('App');
+    expect(browser.getTitle()).toEqual('Ticket review');
   });
 });

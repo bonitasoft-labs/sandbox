@@ -62,7 +62,7 @@
         {
           "description":null,
           "name":"complex",
-          "multiple":false,
+          "multiple":true,
           "simpleInputs":[
             {
               "description":null,
@@ -84,7 +84,7 @@
         {
           description:'Steps to execute to reproduce the issue within the product.',
           name:'ticket_step_to_reproduce',
-          multiple:false,
+          multiple:true,
           type:'TEXT'
         }
       ]

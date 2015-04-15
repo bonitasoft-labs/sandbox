@@ -1,23 +1,25 @@
 <!doctype html>
-<html>
+<html ng-app="caseOverview" ng-controller="MainCtrl">
 
 <head>
   <meta charset="utf-8">
-  <title>App</title>
+  <title>{{case.processDefinitionId.displayName}}</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <!-- build:css resources/css/styles.css-->
   <link rel="stylesheet" href="../node_modules/bootstrap/dist/css/bootstrap.css">
-  <!--  <link rel="stylesheet" href="../node_modules/angular-growl-v2/build/angular-growl.min.css">
-  <link rel="stylesheet" href="../node_modules/angular-xeditable/dist/css/xeditable.css">
-  <link rel="stylesheet" href="../node_modules/isteven-angular-multiselect/isteven-multi-select.css">
-  -->
   <link rel="stylesheet" href="../node_modules/angular-timeline/src/angular-timeline.css">
   <link rel="stylesheet" href="css/styles.css">
   <!-- endbuild -->
 </head>
 
-<body ng-app="caseOverview">
-  <div class="container" ng-controller="MainCtrl">
+<body >
+
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-12">
+        <div class="alert alert-warning"><b>Attention</b>: this is a temporary form generated automatically for testing. Before you put your process into production, create and map the necessary forms.</div>
+      </div>
+    </div>
     <div class="row">
       <div class="col-lg-6">
         <div class="row" ng-repeat="(dataType, dataValues) in businessData">

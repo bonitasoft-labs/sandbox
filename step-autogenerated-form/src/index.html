@@ -25,12 +25,17 @@
     </div>
   </div>
   <div class="row">
+    <div class="col-lg-12 text-center">
+      <div style="float: right; width:100px"><button class="btn btn-danger btn-block" ng-click="fillData()" title="Fill in each form inputs with fake data.">Autofill</button></div>
+    </div>
+  </div>
+  <div class="row">
     <form>
       <div class="form-group" ng-repeat="input in contract.simpleInputs">
         {{
           ::dataToSend[input.name] = null;
         }}
-
+        <div class="hidden">{{::autofill[input.name] = generateValue(input) }}</div>
         <label for="{{input.name}}">{{input.name}}</label> - <i>{{input.description===null?'&lt;no description defined in contract for this input&gt;':input.description}}</i>
         <input type="text" class="form-control" id="{{input.name}}" ng-model="dataToSend[input.name]" placeholder="{{input.multiple?'Expecting a JSON collection of ' + input.type +' values, e.g. [\'a\' , \'list\', \'of values\']':'Expecting a ' + input.type + ' value.'}}">
       </div>

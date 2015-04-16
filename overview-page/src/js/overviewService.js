@@ -75,10 +75,10 @@
 
       fetchCase: function(caseId){
         var deferred = $q.defer();
-        caseAPI.get({id:caseId}, function(result){
+        caseAPI.get({id:caseId, d:'started_by'}, function(result){
           deferred.resolve(result);
         }, function(){
-          archivedCaseAPI.get({id:caseId}, function(result){
+          archivedCaseAPI.get({id:caseId, d:'started_by'}, function(result){
             deferred.resolve(result);
           }, function(){
             deferred.reject('Case not found!');

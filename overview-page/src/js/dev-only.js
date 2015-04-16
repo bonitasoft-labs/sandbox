@@ -28,6 +28,11 @@
       return [200, archivedHumanTask, {}];
     });
 
+    $httpBackend.whenGET('/bonita/API/bpm/archivedHumanTask?c=50&d=executedBy&f=caseId%3D'+4+'&o=reached_state_date+DESC&p=0').respond(function() {
+      console.log('Getting mock response for archivedHumanTask.');
+      return [200, noArchivedHumanTask, {}];
+    });
+
     $httpBackend.whenGET('/bonita/API/bpm/case/' + 2 + '/context').respond(function() {
       console.log('Getting mock response for context.');
       return [200, caseContext, {}];
@@ -53,17 +58,17 @@
       return [200, tickets, {}];
     });
 
-    $httpBackend.whenGET('/bonita/API/bpm/case/2').respond(function() {
+    $httpBackend.whenGET('/bonita/API/bpm/case/2?d=started_by').respond(function() {
       console.log('Getting mock response for case: Case2.');
       return [200, case2, {}];
     });
 
-    $httpBackend.whenGET('/bonita/API/bpm/case/4').respond(function() {
+    $httpBackend.whenGET('/bonita/API/bpm/case/4?d=started_by').respond(function() {
       console.log('Getting 404 mock response for case 4.');
       return [404, {}, {}];
     });
 
-    $httpBackend.whenGET('/bonita/API/bpm/archivedCase/4').respond(function() {
+    $httpBackend.whenGET('/bonita/API/bpm/archivedCase/4?d=started_by').respond(function() {
       console.log('Getting mock response for archived case: Case4.');
       return [200, archivedCased4, {}];
     });
@@ -1512,6 +1517,7 @@
 
     ];
 
+    var noArchivedHumanTask = [];
   });
 
   //-----------------------------------------------------------------------------------

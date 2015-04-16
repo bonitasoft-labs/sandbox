@@ -62,7 +62,7 @@
             </timeline-content>
           </timeline-panel>
         </timeline-node>
-          <timeline-node ng-if="doneTasks.data==null">
+          <timeline-node ng-if="doneTasks.data[0]===undefined">
             <timeline-badge class="warning"> <i class="glyphicon glyphicon-asterisk"></i>
             </timeline-badge>
             <timeline-panel>
